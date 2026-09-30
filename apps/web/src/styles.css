@@ -1,0 +1,24 @@
+/*
+ * The global layer: a reset, nothing else. Tokens are defineVars in
+ * lib/tokens.stylex.ts and every component style is StyleX, which emits
+ * unlayered rules, so anything here loses to a component without a fight.
+ * StyleX's sheet is appended to this file in the build.
+ */
+
+@layer base {
+  *,
+  ::before,
+  ::after {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family: system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  svg {
+    display: block;
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "peek",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "check-types": "turbo run check-types",
+    "format": "biome format --write .",
+    "lint": "biome check ."
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.15",
+    "turbo": "^2.9.14",
+    "typescript": "^6.0.2"
+  },
+  "packageManager": "bun@1.4.0",
+  "trustedDependencies": [
+    "esbuild",
+    "lightningcss"
+  ]
+}
