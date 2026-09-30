@@ -10,7 +10,8 @@
       "!!**/.output",
       "!!**/.nitro",
       "!!**/.tanstack",
-      "!!**/routeTree.gen.ts"
+      "!!**/routeTree.gen.ts",
+      "!!doan-labs-avatar-studio.html"
     ]
   },
   "assist": { "actions": { "source": { "organizeImports": "on" } } },
