@@ -51,9 +51,9 @@ export const Route = createRootRoute({
     ],
     links: [
       { rel: 'stylesheet', href: appCss },
-      /* The semicircle peeking over the tab's edge, eyes up. The touch icon
-       * is the same drawing, square, since iOS rounds its own corners. */
-      { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' },
+      /* The semicircle until the page runs, then creatures.tsx deals a
+       * random face and shuts its eyes while the tab is away. */
+      { rel: 'icon', href: '/favicon-semicircle.svg', type: 'image/svg+xml' },
       { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
     ],
   }),

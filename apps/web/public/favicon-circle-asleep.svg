@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <title>Peek, asleep</title>
+  <rect width="32" height="32" rx="7.333" fill="#121110"/>
+  <circle cx="16" cy="16.333" r="11.667" fill="#F5C8B8"/>
+  <path d="M8.4 15.467Q11.6 17.867 14.8 15.467M17.2 15.467Q20.4 17.867 23.6 15.467" fill="none" stroke="#121110" stroke-width="1.6" stroke-linecap="round"/>
+  <path d="M14.267 20.533Q16 22.586 17.733 20.533" fill="none" stroke="#121110" stroke-width="1.467" stroke-linecap="round"/>
+</svg>

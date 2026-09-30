@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <title>Peek</title>
+  <rect width="32" height="32" rx="7.333" fill="#121110"/>
+  <path transform="scale(1.3333)" d="M2 17.5A10 10 0 0 1 22 17.5Q22 18.5 21 18.5L3 18.5Q2 18.5 2 17.5Z" fill="#BFD2EC"/>
+  <circle cx="11.467" cy="17.2" r="3.6" fill="#FFFFFF"/><circle cx="11.867" cy="17.733" r="2.4" fill="#121110"/>
+  <circle cx="20.533" cy="17.2" r="3.6" fill="#FFFFFF"/><circle cx="20.133" cy="17.733" r="2.4" fill="#121110"/>
+  <path d="M14.267 21.467Q16 23.52 17.733 21.467" fill="none" stroke="#121110" stroke-width="1.467" stroke-linecap="round"/>
+</svg>

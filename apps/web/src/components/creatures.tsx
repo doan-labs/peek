@@ -300,14 +300,17 @@ export function Creatures({
     // Leave the tab and it falls asleep; come back and they all jump.
     const icon = document.querySelector<HTMLLinkElement>('link[rel="icon"]')
     const title = document.title
+    // A new face on each return; it keeps that one while you are away.
+    let face = DROP_SHAPES[Math.floor(Math.random() * DROP_SHAPES.length)]
     const seen = () => {
       if (document.hidden) {
         document.title = 'Peek · come back'
-        if (icon) icon.href = '/favicon-asleep.svg'
+        if (icon) icon.href = `/favicon-${face}-asleep.svg`
         return
       }
       document.title = title
-      if (icon) icon.href = '/favicon.svg'
+      face = DROP_SHAPES[Math.floor(Math.random() * DROP_SHAPES.length)]
+      if (icon) icon.href = `/favicon-${face}.svg`
       if (still) return
       rigs.forEach((rig, i) => {
         rig.poke('attentive')
@@ -317,6 +320,7 @@ export function Creatures({
       movedAt = clock
     }
     document.addEventListener('visibilitychange', seen)
+    if (icon) icon.href = `/favicon-${face}.svg`
 
     let raf = 0
     let last = performance.now()
@@ -361,7 +365,7 @@ export function Creatures({
       button?.removeEventListener('click', spin)
       document.removeEventListener('visibilitychange', seen)
       document.title = title
-      if (icon) icon.href = '/favicon.svg'
+      if (icon) icon.href = '/favicon-semicircle.svg'
       for (const rig of rigs) rig.svg.remove()
       for (const d of drops) d.host.remove()
     }

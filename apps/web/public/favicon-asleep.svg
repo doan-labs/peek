@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <title>Peek, asleep</title>
-  <clipPath id="t"><rect width="64" height="64" rx="14"/></clipPath>
-  <g clip-path="url(#t)">
-    <rect width="64" height="64" fill="#121110"/>
-    <circle cx="32" cy="70" r="42" fill="#C8D6E8"/>
-    <path d="M13 45Q21 50 29 45M35 45Q43 50 51 45" fill="none" stroke="#1A1918" stroke-width="3.5" stroke-linecap="round"/>
-  </g>
-</svg>
