@@ -21,16 +21,34 @@ real file.
 
 ## Where it is
 
-Scaffold only. `/` is a placeholder. No library package.
+`/` is the coming soon page, the teaser's last frame made live. No library
+package. The creature rig in `apps/web/src/lib/rig.ts` is transcribed from
+the Avatar Studio sketch (v1.1); "Avatar Studio" was a mockup name, the
+product is **Peek**.
 Deploys to Cloudflare Workers as static assets: every route prerenders, and
 the root `wrangler.jsonc` serves `apps/web/dist/client`.
 `../avatars-poc/engine.js` is the prior sketch of the idea: string hash,
 seeded rng, palettes, pure SVG.
 
+## Motion
+
+`motion` (`motion/react`) for page choreography, the rig's own springs for
+the creatures. Load the `motion` skill before new animation.
+
+- **Beats live in `BEAT`** in `lib/motion.ts`. Curves and springs come from
+  the same file; never an inline easing.
+- **Reduced motion cuts the duration to `NONE`, never the `initial` pose.**
+  `useReducedMotion()` is null on the server.
+- **Anything read every frame is a mutable object or a DOM write**, never
+  React state. Rigs step from one shared loop in `creatures.tsx`.
+- Rig tables (`SHAPES`, `STATES`, `CHOREO`) are transcribed. Tune them, do
+  not redraw them by eye.
+
 ## Rules
 
-- **Deterministic.** The same input renders the same SVG, on the server and
-  the client. No `Math.random`, no `Date` in anything that draws.
+- **The library is deterministic.** The same input renders the same SVG, on
+  the server and the client. The page's creatures may be random in what they
+  do, never in what they are.
 - **Pure SVG, no runtime deps** in anything that ships as the library.
 - **Never an em dash**, in copy or in comments. Comma, colon, period or a
   middle dot.

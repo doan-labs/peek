@@ -10,10 +10,7 @@ import { colors } from '@/lib/tokens.stylex'
 import appCss from '../styles.css?url'
 
 const styles = stylex.create({
-  body: {
-    backgroundColor: colors['--paper'],
-    color: colors['--ink'],
-  },
+  body: { backgroundColor: colors['--ground'] },
 })
 
 export const Route = createRootRoute({
@@ -21,7 +18,12 @@ export const Route = createRootRoute({
     meta: [
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'Peek' },
+      { title: 'Peek · Coming soon' },
+      {
+        name: 'description',
+        content: 'Peek, from Doan Labs. Coming soon.',
+      },
+      { name: 'theme-color', content: '#121110' },
     ],
     links: [
       { rel: 'stylesheet', href: appCss },

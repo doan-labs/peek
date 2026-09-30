@@ -25,9 +25,15 @@
     "enabled": true,
     "rules": {
       "preset": "recommended",
-      "correctness": { "noUnusedVariables": "warn" },
+      "correctness": {
+        "noUnusedVariables": "warn",
+        "useExhaustiveDependencies": "off"
+      },
       "style": { "noNonNullAssertion": "off" },
-      "suspicious": { "noExplicitAny": "off" }
+      "suspicious": {
+        "noArrayIndexKey": "off",
+        "noExplicitAny": "off"
+      }
     }
   },
   "javascript": {

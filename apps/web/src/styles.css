@@ -1,6 +1,9 @@
+@import "@fontsource-variable/inter-tight/wght.css";
+@import "@fontsource-variable/jetbrains-mono/wght.css";
+
 /*
- * The global layer: a reset, nothing else. Tokens are defineVars in
- * lib/tokens.stylex.ts and every component style is StyleX, which emits
+ * The global layer: fonts and a reset, nothing else. Tokens are defineVars
+ * in lib/tokens.stylex.ts and every component style is StyleX, which emits
  * unlayered rules, so anything here loses to a component without a fight.
  * StyleX's sheet is appended to this file in the build.
  */
@@ -12,10 +15,20 @@
     box-sizing: border-box;
   }
 
+  html {
+    background: #121110;
+    color-scheme: dark;
+  }
+
   body {
     margin: 0;
-    font-family: system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  p {
+    margin: 0;
   }
 
   svg {
