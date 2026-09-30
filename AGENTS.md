@@ -50,6 +50,7 @@ the creatures. Load the `motion` skill before new animation.
   the server and the client. The page's creatures may be random in what they
   do, never in what they are.
 - **Pure SVG, no runtime deps** in anything that ships as the library.
+- **Always "Doan Labs", never "Doan" alone**, in copy and in comments.
 - **Never an em dash**, in copy or in comments. Comma, colon, period or a
   middle dot.
 - Brand rules travel: `../doan-labs.com/AGENTS.md` applies to anything this

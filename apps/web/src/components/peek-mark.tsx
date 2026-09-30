@@ -3,7 +3,7 @@
  * their creature inks, scattered O N over D A. The ring opens a pair of
  * eyes, then the grid takes a quarter turn while each piece turns back the
  * other way, so nothing ends up tilted, and every ink settles to bone. The
- * result reads D O over A N: the Doan mark at rest, one shape looking back.
+ * result reads D O over A N: the Doan Labs mark at rest, one shape looking back.
  *
  * Nesting is turn > counter > land > shape, so the quarter turn, the
  * counter turn and the landing each own one transform. Both turns share one

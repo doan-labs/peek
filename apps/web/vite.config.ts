@@ -1,5 +1,6 @@
 import { fileURLToPath } from 'node:url'
 import stylex from '@stylexjs/unplugin'
+import { devtools } from '@tanstack/devtools-vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
@@ -10,6 +11,9 @@ export default defineConfig({
   resolve: { tsconfigPaths: true },
   server: { port: 5173 },
   plugins: [
+    // First, so it sees source before anything else transforms it. It strips
+    // the devtools from the build on its own.
+    devtools(),
     /*
      * StyleX compiles at build time and ships no runtime. The build appends
      * its sheet to the one CSS asset, styles.css; dev serves it as

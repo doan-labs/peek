@@ -12,6 +12,9 @@
  * - Leave the pointer still for a while and they get bored, then sleepy.
  *   Move it and the sleepers wake up, one after another.
  * - Poke one and it jumps.
+ * - Easter eggs: type "peek", keep pressing the mark past a full turn
+ *   (they rain down; any that hit the line roll off its end), leave the
+ *   tab.
  *
  * The frame is transparent and only a body answers the pointer, so a poke
  * on the empty corner of one frame lands on the creature behind it.
@@ -83,9 +86,42 @@ const pick = (not: State): State => {
 const BORED = 9
 const ASLEEP = 17
 
-export function Creatures({ mark }: { mark: RefObject<HTMLElement | null> }) {
+/* The shower from the mark: sizes and shapes taken in turn, so only where
+ * one falls is left to chance. Capped, since every rig steps every frame. */
+const DROP_PX = [84, 64, 104, 72]
+const DROP_SHAPES: ShapeKey[] = ['circle', 'diamond', 'semicircle']
+const MAX_DROPS = 24
+/** px/s², a quick fall. */
+const GRAVITY = 2600
+/** px/s, how fast a landed one rolls along the line, low and high. */
+const ROLL = [140, 300] as const
+/** The line's box top sits above its letters; land on the letters. */
+const CAP = 0.14
+
+type Drop = {
+  rig: Rig
+  host: HTMLDivElement
+  px: number
+  x: number
+  y: number
+  vx: number
+  vy: number
+  /** Degrees, from rolling. */
+  spin: number
+  /** Whether it is still over the line; once off, only the page's bottom. */
+  shelf: boolean
+}
+
+export function Creatures({
+  mark,
+  line,
+}: {
+  mark: RefObject<HTMLElement | null>
+  line: RefObject<HTMLElement | null>
+}) {
   const still = useReducedMotion() ?? false
   const hosts = useRef<(HTMLDivElement | null)[]>([])
+  const rain = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const rigs = CAST.map((c, i) => {
@@ -158,6 +194,130 @@ export function Creatures({ mark }: { mark: RefObject<HTMLElement | null> }) {
     window.addEventListener('pointermove', move, { passive: true })
     document.addEventListener('pointerout', leave)
 
+    // Type "peek" and they duck under the edge and peek in again.
+    let typed = ''
+    const key = (e: KeyboardEvent) => {
+      if (still || e.metaKey || e.ctrlKey || e.altKey || e.key.length !== 1)
+        return
+      typed = (typed + e.key.toLowerCase()).slice(-4)
+      if (typed !== 'peek') return
+      typed = ''
+      rigs.forEach((rig, i) => {
+        const at = 0.9 + CAST[i]!.cue * 0.2
+        const drowsing = rig.state === 'sleepy' || rig.state === 'bored'
+        rig.duck(at, drowsing ? 'attentive' : rig.state)
+        mood[i] = clock + at + 5
+      })
+      drowsy = 0
+      movedAt = clock
+    }
+    window.addEventListener('keydown', key)
+
+    // Keep pressing the mark past a full turn and more of them fall in from
+    // the top, a few a press, anywhere across the page. One over the line
+    // lands on the letters, bounces, rolls to its end and drops off; the
+    // rest fall straight past it and off the bottom.
+    const drops: Drop[] = []
+    let dropped = 0
+    let presses: number[] = []
+    const spin = () => {
+      const l = line.current?.getBoundingClientRect()
+      if (still || !l) return
+      presses = [...presses.filter((t) => clock - t < 2.4), clock]
+      if (presses.length <= 4) return
+      for (let k = 0; k < 3 && drops.length < MAX_DROPS; k++, dropped++) {
+        const px = DROP_PX[dropped % DROP_PX.length]!
+        const host = document.createElement('div')
+        host.className = stylex.props(styles.drop).className ?? ''
+        host.style.width = host.style.height = `${px}px`
+        rain.current!.append(host)
+        const rig = new Rig(host, DROP_SHAPES[dropped % 3]!, false)
+        rig.svg.setAttribute('width', '100%')
+        rig.svg.setAttribute('height', '100%')
+        rig.resize(px)
+        rig.setState('surprised')
+        const d: Drop = {
+          rig,
+          host,
+          px,
+          x: Math.random() * (window.innerWidth - px),
+          y: -px * (1 + k * 0.9),
+          vx: 0,
+          vy: 0,
+          spin: 0,
+          shelf: true,
+        }
+        place(d)
+        drops.push(d)
+      }
+    }
+    const place = (d: Drop) => {
+      d.host.style.transform = `translate(${d.x}px, ${d.y}px) rotate(${d.spin}deg)`
+    }
+    const fall = (dt: number) => {
+      const l = line.current?.getBoundingClientRect()
+      for (let j = drops.length - 1; j >= 0; j--) {
+        const d = drops[j]!
+        d.rig.update(dt)
+        if (d.y > window.innerHeight) {
+          d.host.remove()
+          drops.splice(j, 1)
+          continue
+        }
+        // off the end once its middle passes the last letter
+        const mid = d.x + d.px / 2
+        if (d.shelf && l && (mid < l.left || mid > l.right)) {
+          d.shelf = false
+          d.rig.setState('surprised')
+        }
+        d.vy += GRAVITY * dt
+        d.x += d.vx * dt
+        d.y += d.vy * dt
+        // rolling without slipping: the turn is the distance over the radius
+        d.spin += ((d.vx * dt) / (d.px / 2)) * (180 / Math.PI)
+        const floor = l ? l.top + l.height * CAP - d.px : 0
+        if (d.shelf && l && d.y >= floor) {
+          d.y = floor
+          if (d.vy > 500) {
+            if (d.vy > 900) d.rig.poke()
+            d.vy *= -0.32
+          } else {
+            d.vy = 0
+            // set rolling the first time it settles, towards the nearer end
+            if (!d.vx) {
+              const dir = mid < l.left + l.width / 2 ? -1 : 1
+              d.vx = dir * (ROLL[0] + Math.random() * (ROLL[1] - ROLL[0]))
+              d.rig.setState('excited')
+            }
+          }
+        }
+        place(d)
+      }
+    }
+    const button = mark.current
+    button?.addEventListener('click', spin)
+
+    // Leave the tab and it falls asleep; come back and they all jump.
+    const icon = document.querySelector<HTMLLinkElement>('link[rel="icon"]')
+    const title = document.title
+    const seen = () => {
+      if (document.hidden) {
+        document.title = 'Peek · come back'
+        if (icon) icon.href = '/favicon-asleep.svg'
+        return
+      }
+      document.title = title
+      if (icon) icon.href = '/favicon.svg'
+      if (still) return
+      rigs.forEach((rig, i) => {
+        rig.poke('attentive')
+        mood[i] = clock + 3 + Math.random() * 3
+      })
+      drowsy = 0
+      movedAt = clock
+    }
+    document.addEventListener('visibilitychange', seen)
+
     let raf = 0
     let last = performance.now()
     const frame = (now: number) => {
@@ -187,6 +347,7 @@ export function Creatures({ mark }: { mark: RefObject<HTMLElement | null> }) {
           clock + (drowsy ? 2 + Math.random() * 3 : 5 + Math.random() * 7)
       })
       for (const rig of rigs) rig.update(dt)
+      fall(dt)
       raf = requestAnimationFrame(frame)
     }
     if (!still) raf = requestAnimationFrame(frame)
@@ -196,25 +357,34 @@ export function Creatures({ mark }: { mark: RefObject<HTMLElement | null> }) {
       ro.disconnect()
       window.removeEventListener('pointermove', move)
       document.removeEventListener('pointerout', leave)
+      window.removeEventListener('keydown', key)
+      button?.removeEventListener('click', spin)
+      document.removeEventListener('visibilitychange', seen)
+      document.title = title
+      if (icon) icon.href = '/favicon.svg'
       for (const rig of rigs) rig.svg.remove()
+      for (const d of drops) d.host.remove()
     }
   }, [still])
 
   return (
-    <div aria-hidden='true' {...stylex.props(styles.row)}>
-      {CAST.map((c, i) => (
-        <div
-          key={`${c.shape}-${i}`}
-          ref={(n) => {
-            hosts.current[i] = n
-          }}
-          {...stylex.props(
-            styles.frame(c.size, c.overlap),
-            c.front && styles.front,
-          )}
-        />
-      ))}
-    </div>
+    <>
+      <div ref={rain} aria-hidden='true' {...stylex.props(styles.rain)} />
+      <div aria-hidden='true' {...stylex.props(styles.row)}>
+        {CAST.map((c, i) => (
+          <div
+            key={`${c.shape}-${i}`}
+            ref={(n) => {
+              hosts.current[i] = n
+            }}
+            {...stylex.props(
+              styles.frame(c.size, c.overlap),
+              c.front && styles.front,
+            )}
+          />
+        ))}
+      </div>
+    </>
   )
 }
 
@@ -243,4 +413,13 @@ const styles = stylex.create({
     marginLeft: `calc(${U} * ${-overlap})`,
   }),
   front: { zIndex: 1 },
+  // over the type and the cast, under the grain
+  rain: {
+    position: 'fixed',
+    inset: 0,
+    zIndex: 2,
+    overflow: 'hidden',
+    pointerEvents: 'none',
+  },
+  drop: { position: 'absolute', top: 0, left: 0 },
 })

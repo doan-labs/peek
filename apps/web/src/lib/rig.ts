@@ -759,6 +759,23 @@ export class Rig {
     if (this.still) return this.setState(state)
     this.val.alt = this.base.alt = -2.4
     this.val.lid = this.base.lid = 1
+    this.rise(delay, state)
+  }
+
+  /** Ducks back below the floor, quick, then peeks in again as it entered. */
+  duck(delay: number, state: State) {
+    if (this.still) return
+    this.queue = [
+      {
+        at: this.clock,
+        set: { alt: -2.4, lid: 1 },
+        spr: { body: [12, 1], eyes: [16, 1] },
+      },
+    ]
+    this.rise(delay, state)
+  }
+
+  private rise(delay: number, state: State) {
     const at = this.clock + delay
     this.queue.push(
       {

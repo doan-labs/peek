@@ -1,0 +1,1093 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Doan Labs Avatar Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: the frame is the product. One large square stage on the left, a narrow instrument panel on the right, reference strips below. */
+:root{
+  --page:#FFFFFF; --fg:#1A1918; --soft:#5E5A55; --muted:#8C8881;
+  --line:rgba(26,25,24,.12); --line2:rgba(26,25,24,.22); --chip:#F3F0E8;
+  --signal:#E5412D; --frame-edge:rgba(26,25,24,0); --knock:#FFFFFF;
+  --sans:"Inter Tight","Inter",ui-sans-serif,-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --page:#121110; --fg:#ECE8E0; --soft:#B5B0A6; --muted:#878178;
+    --line:rgba(236,232,224,.12); --line2:rgba(236,232,224,.24); --chip:#1D1B19;
+    --signal:#EE5B46; --frame-edge:rgba(236,232,224,.16); --knock:#121110; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --page:#121110; --fg:#ECE8E0; --soft:#B5B0A6; --muted:#878178;
+  --line:rgba(236,232,224,.12); --line2:rgba(236,232,224,.24); --chip:#1D1B19;
+  --signal:#EE5B46; --frame-edge:rgba(236,232,224,.16); --knock:#121110; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{background:var(--page)}
+body{margin:0;background:var(--page);color:var(--fg);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1440px;margin:0 auto;padding-inline:clamp(16px,4.4vw,64px);padding-block:0 56px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+button:focus-visible,.frame:focus-visible{outline:2px solid var(--signal);outline-offset:3px}
+.mono{font-family:var(--mono);letter-spacing:.05em}
+.rd{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--signal);flex:none}
+
+/* chrome */
+.top{display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:76px;border-bottom:1px solid var(--fg);flex-wrap:wrap;padding-block:14px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:600;font-size:16px;letter-spacing:-.01em}
+.brand svg{width:30px;height:30px;display:block}
+.brand span{font-family:var(--mono);font-weight:400;font-size:11px;color:var(--muted);letter-spacing:.06em}
+.top .mono{font-size:11px;color:var(--muted);display:flex;gap:10px;align-items:center}
+
+.intro{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:32px;align-items:end;padding-block:48px 36px}
+.intro h1{font-size:clamp(44px,7vw,88px);line-height:.92;letter-spacing:-.045em;font-weight:600;margin:0;text-wrap:balance}
+.intro p{margin:18px 0 0;font-size:17px;line-height:1.5;color:var(--soft);max-width:56ch}
+.facts{display:grid;grid-template-columns:repeat(3,auto);gap:0 32px;border-top:1px solid var(--fg);padding-top:12px}
+.facts div{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.05em;line-height:1.6}
+.facts b{display:block;font-family:var(--sans);font-size:22px;color:var(--fg);letter-spacing:-.02em;font-weight:600}
+
+/* studio */
+.studio{display:grid;grid-template-columns:minmax(0,1fr) 372px;gap:clamp(28px,4vw,64px);border-top:1px solid var(--fg);padding-block:28px 64px;align-items:start}
+.stage{display:flex;flex-direction:column;gap:14px;min-width:0}
+.frame{width:100%;aspect-ratio:1;position:relative;cursor:pointer;box-shadow:0 0 0 1px var(--frame-edge);touch-action:manipulation}
+.frame svg{display:block;width:100%;height:100%}
+.readout{max-width:760px;display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:wrap;font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;color:var(--muted);border-bottom:1px solid var(--line2);padding-bottom:12px;font-variant-numeric:tabular-nums}
+.readout b{color:var(--fg);font-weight:700;display:flex;gap:8px;align-items:center}
+.readout .tele{display:flex;gap:16px;flex-wrap:wrap}
+.readout .tele span{white-space:pre}
+.note{max-width:760px;font-size:15px;line-height:1.5;color:var(--soft);margin:0;min-height:3em}
+.note em{font-style:normal;font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:4px}
+
+.panel{display:flex;flex-direction:column;gap:30px;min-width:0}
+.ctl h3{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.06em;margin:0 0 14px;display:flex;justify-content:space-between;gap:12px}
+.ctl h3 span{font-weight:400;color:var(--muted)}
+.faces{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.face{display:flex;flex-direction:column;gap:8px;text-align:left}
+.face .thumb{position:relative;width:100%;aspect-ratio:1;outline:1px solid transparent;outline-offset:3px;transition:outline-color .15s}
+.face .thumb svg{display:block;width:100%;height:100%}
+.face:hover .thumb{outline-color:var(--line2)}
+.face[aria-pressed="true"] .thumb{outline:2px solid var(--signal)}
+.face[aria-pressed="true"] .thumb::after{content:"";position:absolute;top:-7px;right:-7px;width:9px;height:9px;border-radius:50%;background:var(--signal);box-shadow:0 0 0 2px var(--knock)}
+.face b{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em}
+.face small{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.04em;line-height:1.45}
+.trait{margin:14px 0 0;font-size:13.5px;line-height:1.5;color:var(--soft)}
+.trait b{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--fg);display:block;margin-bottom:2px}
+
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pill{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;border:1px solid var(--line2);border-radius:20px;padding:6px 11px;display:inline-flex;gap:7px;align-items:center;color:var(--muted);transition:border-color .15s,color .15s}
+.pill:hover{border-color:var(--fg);color:var(--fg)}
+.pill .rd{display:none}
+.pill[aria-pressed="true"]{border-color:var(--fg);color:var(--fg)}
+.pill[aria-pressed="true"] .rd{display:inline-block}
+.pill.live{animation:none}
+.rows{display:flex;flex-direction:column;gap:10px}
+.row{display:grid;grid-template-columns:78px minmax(0,1fr);gap:12px;align-items:center}
+.row > span{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.05em}
+.keys{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.04em;line-height:1.7;margin:14px 0 0}
+.keys kbd{font-family:inherit;border:1px solid var(--line2);border-radius:4px;padding:0 5px;color:var(--fg)}
+
+/* sections */
+.sec{border-top:1px solid var(--fg);padding-block:28px 64px}
+.sec__head{display:flex;justify-content:space-between;align-items:baseline;gap:12px 32px;margin-bottom:36px;flex-wrap:wrap}
+.sec__head h2{font-size:clamp(28px,3.4vw,40px);letter-spacing:-.03em;font-weight:600;margin:0}
+.sec__head p{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.04em;max-width:460px;line-height:1.6;margin:0}
+
+.ramp{display:flex;align-items:flex-end;gap:clamp(14px,3vw,36px);flex-wrap:wrap;border-bottom:1px solid var(--fg);padding-bottom:14px}
+.ramp figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:10px}
+.ramp figure div svg{display:block;width:100%;height:100%}
+.ramp figcaption{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.04em}
+.ramp-note{display:flex;gap:28px;flex-wrap:wrap;margin-top:16px;font-family:var(--mono);font-size:10.5px;color:var(--muted);line-height:1.6;letter-spacing:.04em}
+.ramp-note b{color:var(--fg);display:block}
+
+.palette{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:1px;background:var(--line2);border:1px solid var(--line2)}
+.sw{background:var(--page);display:flex;flex-direction:column}
+.sw .chip{aspect-ratio:1.25;position:relative}
+.sw .chip i{position:absolute;right:10px;bottom:10px;width:34%;aspect-ratio:1}
+.sw .meta{padding:12px 12px 14px;display:flex;flex-direction:column;gap:3px;font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.04em;line-height:1.5}
+.sw .meta b{color:var(--fg);font-size:10.5px;letter-spacing:.06em}
+.sw .meta span{font-variant-numeric:tabular-nums}
+.pal-rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;margin-top:28px}
+.pal-rules div{font-size:13.5px;line-height:1.5;color:var(--soft)}
+.pal-rules b{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--fg);display:flex;gap:8px;align-items:center;margin-bottom:4px}
+
+.foot{border-top:1px solid var(--fg);padding-top:18px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.04em}
+
+/* adjustment rig: sliders sit on the frame's edges, the height rail on its right side */
+.rig{max-width:760px;display:flex;flex-direction:column;gap:18px}
+.adj-top{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:28px}
+.frame-row{display:grid;grid-template-columns:minmax(0,1fr) 62px;gap:12px}
+.adj-bottom{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 112px;grid-template-areas:"mouth mouth pad" "tilt trait pad";gap:16px 28px;align-items:start}
+#adj-mouth{grid-area:mouth} #adj-tilt{grid-area:tilt} #adj-trait{grid-area:trait} #adj-gaze{grid-area:pad}
+.adj__head{display:flex;justify-content:space-between;gap:10px;font-family:var(--mono);font-size:10px;letter-spacing:.06em;margin-bottom:7px;font-variant-numeric:tabular-nums}
+.adj__head b{font-weight:700}
+.adj__head span{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.track,.vtrack{position:relative;border:1px solid var(--line2);border-radius:10px;cursor:pointer;touch-action:none;transition:border-color .15s}
+.track{height:18px;padding-inline:8px}
+.vtrack{width:18px;height:100%;padding-block:8px;flex:none}
+.track:hover,.vtrack:hover,.pad:hover,.drag{border-color:var(--fg)}
+.track:focus-visible,.vtrack:focus-visible,.pad:focus-visible{outline:2px solid var(--signal);outline-offset:3px}
+.track .in,.vtrack .in,.stops .in,.vstops .in{position:relative;width:100%;height:100%}
+.tick{position:absolute;width:3px;height:3px;border-radius:50%;background:var(--line2);transform:translate(-50%,-50%)}
+.track .tick{top:50%} .vtrack .tick{left:50%}
+.knob{position:absolute;width:12px;height:12px;border-radius:50%;background:var(--signal);transform:translate(-50%,-50%);pointer-events:none}
+.track .knob{top:50%} .vtrack .knob{left:50%}
+.glide .knob{transition:left .55s cubic-bezier(.3,.8,.2,1),top .55s cubic-bezier(.3,.8,.2,1)}
+.stops{height:14px;margin-top:6px;padding-inline:8px}
+.stops button,.vstops button{position:absolute;font-family:var(--mono);font-size:9.5px;letter-spacing:.04em;color:var(--muted);white-space:nowrap;line-height:14px;transition:color .15s}
+.stops button{top:0}
+.stops button:hover,.vstops button:hover,.stops button.on,.vstops button.on{color:var(--fg)}
+.adj--v{display:flex;gap:9px;height:100%}
+.vstops{flex:1;padding-block:8px}
+.vstops button{left:0;transform:translateY(-50%)}
+.pad{position:relative;width:100%;aspect-ratio:1;border:1px solid var(--line2);padding:9px;cursor:crosshair;touch-action:none;transition:border-color .15s}
+.pad .dot{position:absolute;width:3px;height:3px;border-radius:50%;background:var(--line2);transform:translate(-50%,-50%)}
+.pad .axis{position:absolute;background:var(--line)}
+.pad .knob{left:50%;top:50%}
+@media (max-width:980px){
+  .studio{grid-template-columns:minmax(0,1fr)}
+  .intro{grid-template-columns:minmax(0,1fr)}
+  .palette{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:560px){
+  .adj-top{grid-template-columns:minmax(0,1fr);gap:16px}
+  .adj-bottom{grid-template-columns:minmax(0,1fr) 96px;grid-template-areas:"mouth mouth" "tilt pad" "trait pad";gap:16px 20px}
+  .frame-row{grid-template-columns:minmax(0,1fr) 54px;gap:8px}
+  .facts{grid-template-columns:repeat(3,minmax(0,1fr));gap:0 14px}
+  .facts b{font-size:18px}
+  .pal-rules{grid-template-columns:minmax(0,1fr)}
+  .palette{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .readout .tele{gap:10px}
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><svg viewBox="0 0 400 400" aria-hidden="true"><rect width="400" height="400" fill="#1A1918"/><path d="M120 95A50 50 0 0 1 120 195Z" fill="#F3F0E8"/><circle cx="243" cy="140" r="36" fill="none" stroke="#F3F0E8" stroke-width="18"/><path d="M145 214L196 302L94 302Z" fill="#F3F0E8"/><path d="M257 194L315 252L257 310L199 252ZM257 226L231 252L257 278L283 252Z" fill="#F3F0E8" fill-rule="evenodd"/></svg>Doan Labs <span>/ DESIGN SYSTEM / IDENTITY / AVATARS / STUDIO</span></div>
+    <div class="mono"><i class="rd"></i>SYS/AVATAR · MOTION LAYER · v1.1 · 2026.09</div>
+  </header>
+
+  <section class="intro">
+    <div>
+      <h1>Avatar<br>Studio</h1>
+      <p>The three default faces, now alive inside their square. Each one sits on the bottom edge of the frame, sinks below it when tired and climbs back over it when something catches its eye. Pick a face and a state, or shape one by hand with the sliders around the frame. Tap the frame to startle it.</p>
+    </div>
+    <div class="facts">
+      <div><b>3 faces</b>SAME SHAPES AS v1.0</div>
+      <div><b>11 states</b>SPRING-DRIVEN</div>
+      <div><b>1 edge</b>THE FRAME FLOOR</div>
+    </div>
+  </section>
+
+  <main class="studio">
+    <div class="stage">
+      <div class="rig">
+        <div class="adj-top">
+          <div id="adj-brows"></div>
+          <div id="adj-lids"></div>
+        </div>
+        <div class="frame-row">
+          <div class="frame" id="stage" role="img" tabindex="0" aria-label="Animated avatar. Press to startle it."></div>
+          <div id="adj-height"></div>
+        </div>
+        <div class="adj-bottom">
+          <div id="adj-mouth"></div>
+          <div id="adj-tilt"></div>
+          <div id="adj-trait"></div>
+          <div id="adj-gaze"></div>
+        </div>
+      </div>
+      <div class="readout" aria-live="off">
+        <b><i class="rd"></i><span id="ro-state">DIAMOND · NORMAL</span></b>
+        <div class="tele" id="ro-tele"></div>
+      </div>
+      <p class="note" id="note"></p>
+    </div>
+
+    <aside class="panel">
+      <div class="ctl">
+        <h3>AVATAR <span>3 FACES · 1 TRAIT EACH</span></h3>
+        <div class="faces" id="faces"></div>
+        <p class="trait" id="trait"></p>
+      </div>
+      <div class="ctl">
+        <h3>EXPRESSION <span id="exp-count">11 STATES</span></h3>
+        <div class="pills" id="states"></div>
+      </div>
+      <div class="ctl">
+        <h3>ANIMATION <span id="clock">T 00.0 S</span></h3>
+        <div class="rows">
+          <div class="row"><span>PLAYBACK</span><div class="pills"><button class="pill" id="play" aria-pressed="true"><i class="rd"></i><span>PLAYING</span></button></div></div>
+          <div class="row"><span>MODE</span><div class="pills" id="mode"></div></div>
+          <div class="row"><span>PRINT</span><div class="pills" id="print"></div></div>
+          <div class="row"><span>FRAME</span><div class="pills" id="container"></div></div>
+        </div>
+        <p class="keys"><kbd>←</kbd> <kbd>→</kbd> STATE · <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> FACE · <kbd>SPACE</kbd> PLAY · <kbd>R</kbd> RISO · TAP FRAME TO STARTLE<br>DRAG ANY SLIDER TO TAKE THE FACE BY HAND · PICK AN EXPRESSION TO HAND IT BACK</p>
+      </div>
+    </aside>
+  </main>
+
+  <section class="sec">
+    <div class="sec__head"><h2>Size ramp</h2><p>THE SAME STATE AT FIVE SIZES. MISREGISTRATION AND INK TEXTURE FADE OUT BELOW 120PX, STROKES THICKEN BELOW 96PX.</p></div>
+    <div class="ramp" id="ramp"></div>
+    <div class="ramp-note"><div><b>≥ 480</b>RISO FULL · 1PX PLATES</div><div><b>120–479</b>RISO SCALED</div><div><b>&lt; 120</b>CLEAN VECTOR</div><div><b>≥ 96</b>STROKE ×1.0</div><div><b>40–55</b>×1.6</div><div><b>&lt; 30</b>×2.4</div></div>
+  </section>
+
+  <section class="sec">
+    <div class="sec__head"><h2>Palette</h2><p>SIX INKS, THREE FACE PAIRS. EVERY FACE USES ITS BODY INK, ITS DEEP PARTNER, INK AND PAPER. NOTHING ELSE.</p></div>
+    <div class="palette" id="palette"></div>
+    <div class="pal-rules">
+      <div><b><i class="rd"></i>PAIRS</b>Each body ink has one deep partner at the same hue. The deep ink carries cheeks and the signature trait, so a face never borrows a colour from another face.</div>
+      <div><b><i class="rd"></i>PLATES</b>Printed as two plates: colour (body, cheeks, trait) and key (eyes, brows, mouth). At large sizes the plates sit about 1px out of register.</div>
+      <div><b><i class="rd"></i>SIGNAL</b>Red stays in the interface. It marks the selected state and the chosen face, and never appears on a face.</div>
+    </div>
+  </section>
+
+  <footer class="foot"><span>DEFAULT AVATAR SYSTEM v1.1 · DIAMOND · SEMICIRCLE · CIRCLE · THE TRIANGLE STAYS RESERVED FOR THE MARK</span><span>© 2026 DOAN LABS</span></footer>
+</div>
+
+<script>
+(() => {
+'use strict';
+const NS = 'http://www.w3.org/2000/svg';
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- palette: six inks, three face pairs ---------- */
+const INK = {
+  ink:   { hex:'#1A1918', code:'D-01', name:'INK',      role:'Frame, key plate' },
+  bone:  { hex:'#F3F0E8', code:'D-02', name:'BONE',     role:'Light frame' },
+  paper: { hex:'#FFFDF8', code:'D-02W', name:'PAPER',   role:'Eye whites' },
+  lav:   { hex:'#D8CDF0', code:'D-03', name:'LAVENDER', role:'Diamond body', deep:'#BDAEE6' },
+  fog:   { hex:'#C8D6E8', code:'D-04', name:'FOG',      role:'Semicircle body', deep:'#A8BCDC' },
+  clay:  { hex:'#F1CDBF', code:'D-05', name:'CLAY',     role:'Circle body', deep:'#E2A893' },
+  signal:{ hex:'#E5412D', code:'D-06', name:'SIGNAL',   role:'Interface only' },
+};
+
+/* ---------- shapes: geometry transcribed from v1.0, untouched ---------- */
+const SHAPES = {
+  diamond: {
+    label:'DIAMOND', glyph:'◆ FACE D', body:{ d:'M170 20L320 170L170 320L20 170Z' }, top:20, bottom:320, sink:30,
+    fill:INK.lav.hex, deep:INK.lav.deep,
+    eyes:[[132.5,155],[207.5,155]], rx:20, ry:27.5, pr:10,
+    brow:{ y:102.5, hw:18.75, arch:15, w:5.62 },
+    cheeks:[[117.5,200],[222.5,200]], crx:11.25, cry:5.62,
+    mouth:{ type:'poly', x:170, y:218.75, w:15, d:16.25, sw:4.38 },
+    trait:'square', traitName:'TILTED SQUARE',
+    traitText:'A small square floats above the top vertex. It rights itself to a true 45° when alert and flops flat when tired.'
+  },
+  semicircle: {
+    label:'SEMICIRCLE', glyph:'◗ FACE S', body:{ d:'M0 255A170 170 0 0 1 340 255Z' }, top:85, bottom:255, sink:0,
+    fill:INK.fog.hex, deep:INK.fog.deep,
+    eyes:[[102.5,175],[237.5,175]], rx:30, ry:25, pr:11.25,
+    brow:{ y:127.5, hw:25, arch:15, w:5.62 },
+    cheeks:[[55,212.5],[285,212.5]], crx:11.25, cry:5.62,
+    mouth:{ type:'round', x:170, y:221.25, w:16.25, d:16.25, sw:4.38 },
+    trait:'fin', traitName:'QUARTER FIN',
+    traitText:'A quarter disc on the left of the crown, one quarter turn of the mark. It stands up when startled and folds over when sad.'
+  },
+  circle: {
+    label:'CIRCLE', glyph:'● FACE C', body:{ circle:[170,170,150] }, top:20, bottom:320, sink:20,
+    fill:INK.clay.hex, deep:INK.clay.deep,
+    eyes:[[112.8,162.2],[227.2,162.2]], rx:29.9, ry:29.9, pr:13,
+    brow:{ y:110.2, hw:23.4, arch:15.6, w:5.85 },
+    cheeks:[[84.2,203.8],[255.8,203.8]], crx:11.7, cry:5.85,
+    mouth:{ type:'round', x:170, y:223.3, w:16.9, d:16.9, sw:4.55 },
+    trait:'ring', traitName:'THE RING',
+    traitText:'The ring from the mark, worn at one o’clock. It rides up when excited and slides down the side when sleepy.'
+  },
+};
+const SHAPE_KEYS = Object.keys(SHAPES);
+
+/* frame: viewBox -30 -30 400 400, floor at y = 370 */
+const VB = [-30,-30,400,400], FLOOR = 370;
+for (const s of Object.values(SHAPES)) {
+  s.baseY = FLOOR + s.sink - s.bottom;              // translate so the body rests on the floor
+  s.eyeY = s.eyes[0][1];
+  s.R = FLOOR - (s.eyeY + s.baseY);                 // altitude -1 puts the eye line on the floor
+}
+
+/* ---------- channels ---------- */
+const GROUPS = {
+  eyes:  ['lid','lower','lidTilt','eyeS','lidAsym'],
+  pupil: ['pupil','gx','gy','shine'],
+  brows: ['browY','browTilt','browArch','browW','browAsym'],
+  mouth: ['mw','mt','mb','mx','my','mk'],
+  body:  ['alt','rot','x','sx','sy'],
+  extra: ['blush','hair','dim','thing'],
+};
+const GROUP_OF = {}; for (const g in GROUPS) for (const c of GROUPS[g]) GROUP_OF[c] = g;
+const CHANNELS = Object.keys(GROUP_OF);
+
+const BASE = { alt:0, rot:0, x:0, sx:1, sy:1,
+  lid:.1, lower:0, lidTilt:0, eyeS:1, lidAsym:0,
+  pupil:1, gx:0, gy:0, shine:.7,
+  browY:0, browTilt:0, browArch:.4, browW:1, browAsym:0,
+  mw:.72, mt:0, mb:.5, mx:0, my:0, mk:0,
+  blush:0, hair:0, dim:0, thing:0 };
+
+const S = (o) => Object.assign({}, BASE, o);
+const STATES = {
+  normal:   S({}),
+  happy:    S({ lid:0, lower:.42, shine:1, gy:-.05, browY:-5, browArch:1, mw:1, mb:1, blush:1, hair:.45, alt:.05 }),
+  sad:      S({ lid:.42, lidTilt:16, pupil:.95, gy:.8, shine:0, browY:3, browTilt:14, browArch:0, mw:.8, mt:-.55, mb:-.55, my:6, alt:-.16, sy:.985, hair:-.75 }),
+  angry:    S({ lid:.34, lidTilt:-22, lower:.12, pupil:.82, gy:.1, shine:0, browY:5, browTilt:-21, browArch:0, browW:1.3, mw:.8, mt:-.08, mb:-.08, my:3, sx:1.02, sy:.98, hair:.25 }),
+  sleepy:   S({ lid:1, lidTilt:4, pupil:.9, gy:.5, shine:0, browY:6, browTilt:3, browArch:.15, browW:.9, mw:.35, mt:-.3, mb:.3, my:2, alt:-1.12, rot:-3, hair:-1 }),
+  curious:  S({ lid:0, eyeS:1.06, pupil:1.05, shine:1, browY:-3, browAsym:9, browArch:.8, mw:.38, mt:-.36, mb:.36, rot:6, alt:-.32, hair:.3, thing:1 }),
+  surprised:S({ lid:0, eyeS:1.2, pupil:.66, shine:.8, browY:-13, browArch:1, mw:.55, mt:-.62, mb:.62, alt:.36, hair:1 }),
+  excited:  S({ lid:0, lower:.5, eyeS:1.08, pupil:1.08, shine:1, browY:-9, browArch:1, mw:1.15, mb:1.3, blush:1, hair:1, alt:.12 }),
+  confused: S({ lid:.22, lidAsym:.28, lidTilt:-4, pupil:.92, gx:-.35, gy:-.45, shine:.3, browY:-2, browAsym:11, browTilt:-5, browArch:.3, mw:.6, mt:-.1, mb:.12, mx:5, mk:13, rot:-7, alt:-.05, hair:.1 }),
+  bored:    S({ lid:.5, pupil:.9, gx:-.55, gy:.25, shine:0, browY:3, browArch:.1, mw:.55, mt:0, mb:.04, mx:-5, alt:-.34, hair:-.45, dim:1 }),
+  attentive:S({ lid:0, eyeS:1.1, pupil:.8, gy:-.1, shine:1, browY:-7, browArch:.7, mw:.55, mb:.4, alt:.15, sy:1.03, hair:.65 }),
+};
+const STATE_KEYS = Object.keys(STATES);
+
+const NOTES = {
+  normal:   'Sits on the bottom edge of the frame. Blinks, glances around, breathes.',
+  happy:    'Eyes curve up from below, brows lift, the mouth fills out, then one small hop.',
+  sad:      'Lids droop at the outer corners and the gaze drops. The whole head settles lower.',
+  angry:    'The brows move first. Lids cut in from the inside, pupils narrow, one short shake.',
+  sleepy:   'Eyes close first, then the brows let go, then it sinks below the edge. Now and then it nods back up.',
+  curious:  'Ducks to the edge, rises slowly, pauses, then looks at the thing in the corner.',
+  surprised:'Eyes widen, the mouth opens, a quick squash and it pops up over the edge.',
+  excited:  'Wide, bright and hopping. The trait stands straight up.',
+  confused: 'One brow up, one eye narrowed, the gaze searching back and forth.',
+  bored:    'Lids half down, the gaze wanders off, and it slowly sinks. Colour drains a little.',
+  attentive:'Eyes sharpen, pupils focus, then it rises to look over the edge.',
+  custom:   'Shaped by hand. Every slider scrubs between named poses, so any point on a track is a blend of its two neighbours. Blinks and breathing keep running.',
+};
+
+/* choreography: when each group starts moving, how springy it is, and timed keys */
+const DEF_DELAY = { eyes:0, pupil:50, brows:110, mouth:170, extra:140, body:230 };
+const CUSTOM_SPR = { eyes:[16,.86], pupil:[18,.86], brows:[14,.8], mouth:[14,.8], body:[8,.78], extra:[10,.55] };
+const DEF_SPR = { eyes:[14,.82], pupil:[15,.8], brows:[11,.72], mouth:[12,.74], body:[7,.72], extra:[8,.5] };
+const CHOREO = {
+  normal:   {},
+  happy:    { delay:{ eyes:0, pupil:40, brows:120, mouth:200, extra:220, body:280 }, spr:{ body:[9,.42], extra:[9,.35] },
+              keys:[[280,{ alt:.2 },{ body:[11,.5] }],[520,{ alt:.05 },{ body:[8,.38] }]] },
+  sad:      { delay:{ eyes:0, pupil:160, brows:260, mouth:380, extra:420, body:560 },
+              spr:{ eyes:[6,.95], pupil:[5,.95], brows:[6,.95], mouth:[6,.9], body:[3.2,.95], extra:[3,.9] } },
+  angry:    { delay:{ brows:0, eyes:40, pupil:60, mouth:160, body:100, extra:60 }, spr:{ brows:[18,.7], eyes:[16,.75], body:[14,.5] } },
+  sleepy:   { delay:{ eyes:0, pupil:200, brows:750, mouth:950, extra:900, body:1150 },
+              spr:{ eyes:[2.6,1], pupil:[3,1], brows:[3.2,1], mouth:[3,1], extra:[2.4,.9], body:[1.9,1] },
+              keys:[[0,{ lid:.62 }],[1300,{ lid:1 }]] },
+  curious:  { delay:{ eyes:0, pupil:0, brows:220, mouth:320, extra:0, body:0 }, spr:{ body:[6,.95] },
+              keys:[[0,{ alt:-.8, rot:0, gx:0, gy:-.1, thing:0 }],
+                    [900,{ alt:-.56 },{ body:[2.2,1] }],
+                    [1500,{ thing:1 },{ extra:[5,.9] }],
+                    [2200,{ look:1 },{ pupil:[6,.9] }],
+                    [2500,{ rot:7 },{ body:[3,.9] }],
+                    [2900,{ alt:-.32 },{ body:[2,1] }]] },
+  surprised:{ delay:{ eyes:0, pupil:0, brows:0, mouth:40, extra:60, body:0 },
+              spr:{ eyes:[30,.62], pupil:[26,.7], brows:[24,.55], mouth:[22,.6], extra:[15,.32] },
+              keys:[[0,{ alt:v => v - .1, sy:.9, sx:1.05 },{ body:[30,1] }],
+                    [110,{ alt:.36, sy:1.08, sx:.97 },{ body:[17,.42] }],
+                    [380,{ sy:1, sx:1 },{ body:[10,.5] }]] },
+  excited:  { delay:{ eyes:0, pupil:30, brows:80, mouth:140, extra:120, body:180 }, spr:{ body:[9,.4], extra:[12,.3] } },
+  confused: { delay:{ eyes:0, brows:60, pupil:100, mouth:250, body:200, extra:200 }, spr:{ body:[5,.7] } },
+  bored:    { delay:{ eyes:0, pupil:300, brows:500, mouth:600, extra:700, body:800 },
+              spr:{ eyes:[3,1], pupil:[2.5,1], brows:[3,1], mouth:[3,1], body:[1.6,1], extra:[2,1] } },
+  attentive:{ delay:{ eyes:0, pupil:180, brows:90, mouth:240, extra:200, body:360 },
+              spr:{ eyes:[20,.8], pupil:[20,.85], brows:[16,.7], body:[5,.78], extra:[11,.4] } },
+};
+
+/* how much the pointer steers the eyes, per state */
+const ATTENTION = { custom:0, normal:.8, happy:.6, sad:.2, angry:.6, sleepy:0, curious:1, surprised:.5, excited:.5, confused:.3, bored:.1, attentive:1 };
+const BLINK = { custom:[2.4,5], normal:[2.4,5], happy:[2.2,4], sad:[3,6], angry:[3.5,6], sleepy:null, curious:[3.5,6], surprised:[3,5], excited:[1.8,3.2], confused:[2,4], bored:[4.5,7.5], attentive:[4.5,7.5] };
+
+const clamp = (v,a,b) => v < a ? a : v > b ? b : v;
+const smooth = (a,b,v) => { const t = clamp((v-a)/(b-a),0,1); return t*t*(3-2*t); };
+const rand = (a,b) => a + Math.random()*(b-a);
+const f2 = v => (Math.round(v*100)/100);
+const strokeFor = px => px >= 96 ? 1 : px >= 56 ? 1.25 : px >= 40 ? 1.6 : px >= 30 ? 2 : 2.4;
+
+function el(tag, attrs, parent) {
+  const n = document.createElementNS(NS, tag);
+  if (attrs) for (const k in attrs) n.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(n);
+  return n;
+}
+let UID = 0;
+
+/* ---------- rig: one living avatar ---------- */
+class Rig {
+  constructor(host, opts = {}) {
+    this.host = host; this.opts = opts; this.uid = 'r' + (++UID);
+    this.shape = opts.shape || 'diamond';
+    this.state = 'normal'; this.riso = opts.riso !== false; this.container = 'ink';
+    this.clock = 0; this.enteredAt = 0; this.size = 400;
+    this.val = {}; this.vel = {}; this.base = {}; this.spr = {};
+    for (const c of CHANNELS) { this.val[c] = BASE[c]; this.vel[c] = 0; this.base[c] = BASE[c]; this.spr[c] = DEF_SPR[GROUP_OF[c]]; }
+    this.queue = []; this.bumps = [];
+    this.blinkAt = rand(1,3); this.blinkT = -1; this.blinkDur = .16; this.doubleBlink = false;
+    this.saccAt = rand(.6,1.8); this.sacc = { gx:0, gy:0 };
+    this.nodAt = 0; this.lookThing = false;
+    this.lag = { y:0, v:0 };
+    this.pointer = null;
+    this.build();
+    new ResizeObserver(es => { for (const e of es) { this.size = e.contentRect.width || this.size; this.applyPrint(); } }).observe(host);
+    this.size = host.getBoundingClientRect().width || 400;
+    this.applyPrint();
+    this.render();
+  }
+
+  build() {
+    const u = this.uid, sh = SHAPES[this.shape];
+    this.host.textContent = '';
+    const svg = this.svg = el('svg', { viewBox: VB.join(' '), 'aria-hidden':'true' }, this.host);
+    const defs = el('defs', null, svg);
+    el('rect', { x:VB[0], y:VB[1], width:VB[2], height:VB[3] }, el('clipPath', { id:u+'-f' }, defs));
+    this.eyeClip = []; this.lidClip = [];
+    for (let i = 0; i < 2; i++) {
+      this.eyeClip.push(el('ellipse', { cx:0, cy:0 }, el('clipPath', { id:`${u}-e${i}` }, defs)));
+      this.lidClip.push(el('ellipse', { cx:0, cy:0 }, el('clipPath', { id:`${u}-l${i}` }, defs)));
+    }
+    // riso plates: gentle edge wander + mottled ink coverage, a different seed per plate
+    const riso = (id, seedA, seedB, scale) => {
+      const f = el('filter', { id, x:'-20%', y:'-20%', width:'140%', height:'140%', 'color-interpolation-filters':'sRGB' }, defs);
+      el('feTurbulence', { type:'fractalNoise', baseFrequency:'0.032', numOctaves:'2', seed:seedA, result:'warp' }, f);
+      this['disp'+id.slice(-1)] = el('feDisplacementMap', { in:'SourceGraphic', in2:'warp', scale, xChannelSelector:'R', yChannelSelector:'G', result:'moved' }, f);
+      el('feTurbulence', { type:'fractalNoise', baseFrequency:'0.85', numOctaves:'2', seed:seedB, result:'grain' }, f);
+      this['mask'+id.slice(-1)] = el('feColorMatrix', { in:'grain', type:'matrix', values:'', result:'mask' }, f);
+      el('feComposite', { in:'moved', in2:'mask', operator:'in' }, f);
+    };
+    riso(u+'-pA', 4, 11, 3.2);
+    riso(u+'-pB', 9, 23, 2.2);
+    const gf = el('filter', { id:u+'-grain', x:'0', y:'0', width:'1', height:'1', 'color-interpolation-filters':'sRGB' }, defs);
+    el('feTurbulence', { type:'fractalNoise', baseFrequency:'0.9', numOctaves:'2', seed:'5' }, gf);
+    this.grainMatrix = el('feColorMatrix', { type:'matrix', values:'' }, gf);
+
+    this.bg = el('rect', { x:VB[0], y:VB[1], width:VB[2], height:VB[3] }, svg);
+    const clip = el('g', { 'clip-path':`url(#${u}-f)` }, svg);
+
+    // the thing a curious avatar looks at: a dot lattice from the mark's vocabulary
+    this.lattice = el('g', null, clip);
+    this.dots = [];
+    for (let j = 0; j < 3; j++) for (let i = 0; i < 3; i++) this.dots.push(el('circle', { cx:312 + i*18, cy:2 + j*18, r:3.4 }, this.lattice));
+    this.thingPos = [330, 20];
+
+    this.av = el('g', null, clip);
+    this.plateA = el('g', null, this.av);
+    this.plateB = el('g', null, this.av);
+
+    // colour plate
+    this.body = sh.body.d ? el('path', { d:sh.body.d, fill:sh.fill }, this.plateA)
+                          : el('circle', { cx:sh.body.circle[0], cy:sh.body.circle[1], r:sh.body.circle[2], fill:sh.fill }, this.plateA);
+    this.cheeks = sh.cheeks.map(([x,y]) => el('ellipse', { cx:x, cy:y, rx:sh.crx, ry:sh.cry, fill:sh.deep }, this.plateA));
+    this.traitG = el('g', null, this.plateA);
+    if (sh.trait === 'square') this.traitEl = el('rect', { x:-11, y:-11, width:22, height:22, fill:sh.deep }, this.traitG);
+    if (sh.trait === 'fin')    this.traitEl = el('path', { d:'M0 0L0 -40A40 40 0 0 1 40 0Z', fill:sh.deep }, this.traitG);
+    if (sh.trait === 'ring')   this.traitEl = el('circle', { cx:0, cy:0, r:12.5, fill:'none', stroke:sh.deep, 'stroke-width':7 }, this.traitG);
+
+    // key plate
+    this.eyes = sh.eyes.map(([x,y], i) => {
+      const g = el('g', { transform:`translate(${x} ${y})` }, this.plateB);
+      const inner = el('g', { 'clip-path':`url(#${u}-e${i})` }, g);
+      const white = el('ellipse', { cx:0, cy:0, fill:INK.paper.hex }, inner);
+      const pupil = el('circle', { fill:INK.ink.hex }, inner);
+      const shine = el('circle', { fill:INK.paper.hex }, inner);
+      const lids = el('g', { 'clip-path':`url(#${u}-l${i})` }, g);
+      const lid = el('rect', { fill:sh.fill }, lids);
+      const lower = el('ellipse', { fill:sh.fill }, lids);
+      const closed = el('path', { fill:'none', stroke:INK.ink.hex, 'stroke-linecap':'round' }, g);
+      return { g, white, pupil, shine, lid, lower, closed, x, y };
+    });
+    this.brows = sh.eyes.map(() => el('path', { fill:'none', stroke:INK.ink.hex, 'stroke-linecap':'round', 'stroke-linejoin':'round' }, this.plateB));
+    this.mouth = el('path', { fill:INK.ink.hex, stroke:INK.ink.hex, 'stroke-linecap':'round', 'stroke-linejoin':'round' }, this.plateB);
+
+    this.grain = el('rect', { x:VB[0], y:VB[1], width:VB[2], height:VB[3], filter:`url(#${u}-grain)`, 'pointer-events':'none' }, svg);
+    this.applyContainer();
+  }
+
+  setShape(k) { if (k === this.shape) return; this.shape = k; this.build(); this.applyPrint(); this.render(); }
+  setContainer(c) { this.container = c; this.applyContainer(); }
+  applyContainer() {
+    const c = this.container;
+    this.bg.setAttribute('fill', c === 'ink' ? INK.ink.hex : c === 'bone' ? INK.bone.hex : INK.paper.hex);
+    const dot = c === 'ink' ? INK.bone.hex : INK.ink.hex;
+    this.dots.forEach(d => d.setAttribute('fill', dot));
+    // grain: bone speckle on ink, ink speckle on light grounds
+    const [r,g,b] = (c === 'ink' ? [.953,.941,.91] : [.102,.098,.094]);
+    this.grainMatrix.setAttribute('values', `0 0 0 0 ${r}  0 0 0 0 ${g}  0 0 0 0 ${b}  7 0 0 0 -5.1`);
+    this.grain.setAttribute('opacity', c === 'ink' ? .3 : .16);
+  }
+  setRiso(on) { this.riso = on; this.applyPrint(); }
+  applyPrint() {
+    // registration error grows with size: nothing at 120px, about 1px per plate at 480px and up
+    const k = this.riso ? smooth(120, 480, this.size) : 0;
+    this.risoK = k;
+    const upp = VB[2] / Math.max(this.size, 1);
+    this.offA = [-.55*k*upp, .45*k*upp];
+    this.offB = [ .6*k*upp, -.5*k*upp];
+    const on = k > 0.01;
+    this.plateA.setAttribute('filter', on ? `url(#${this.uid}-pA)` : '');
+    this.plateB.setAttribute('filter', on ? `url(#${this.uid}-pB)` : '');
+    if (!on) { this.plateA.removeAttribute('filter'); this.plateB.removeAttribute('filter'); }
+    if (this.dispA) this.dispA.setAttribute('scale', (3.2*k).toFixed(2));
+    if (this.dispB) this.dispB.setAttribute('scale', (2.2*k).toFixed(2));
+    // ink voids: only where the noise peaks, and only as strong as the print scale allows
+    const mk = k*k;
+    for (const m of [this.maskA, this.maskB]) if (m) m.setAttribute('values', `0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  ${(-8*mk).toFixed(3)} 0 0 0 ${(1 + 5.85*mk).toFixed(3)}`);
+    this.grain.style.display = on ? '' : 'none';
+    this.st = strokeFor(this.size);
+    this.render();
+  }
+
+  /* ----- state changes: each group starts on its own beat ----- */
+  /* hand control: targets come straight from the sliders, springs stay on so the face follows the knob */
+  setCustom(obj, { restart = false } = {}) {
+    if (this.state !== 'custom' || restart) {
+      this.state = 'custom'; this.enteredAt = this.clock; this.queue = []; this.lookThing = false;
+      for (const c of CHANNELS) this.spr[c] = CUSTOM_SPR[GROUP_OF[c]];
+    }
+    Object.assign(this.base, obj);
+    if (REDUCED) { for (const c of CHANNELS) { this.val[c] = this.base[c]; this.vel[c] = 0; } this.render(); }
+  }
+
+  setState(name, { restart = false } = {}) {
+    if (name === 'custom') return this.setCustom(STATES.custom, { restart });
+    if (!STATES[name]) return;
+    if (name === this.state && !restart) return;
+    const prev = this.state;
+    this.state = name; this.enteredAt = this.clock; this.lookThing = false;
+    this.queue = [];
+    const tgt = STATES[name], ch = CHOREO[name] || {};
+    const delay = Object.assign({}, DEF_DELAY, ch.delay), spr = Object.assign({}, DEF_SPR, ch.spr);
+    if (REDUCED) {
+      for (const c of CHANNELS) { this.base[c] = this.val[c] = tgt[c]; this.vel[c] = 0; }
+      this.lookThing = name === 'curious';
+      this.render(); return;
+    }
+    for (const g in GROUPS) {
+      const set = {}; for (const c of GROUPS[g]) set[c] = tgt[c];
+      this.queue.push({ at:this.clock + delay[g]/1000, set, spr:{ [g]:spr[g] } });
+    }
+    for (const [t, set, s] of (ch.keys || [])) this.queue.push({ at:this.clock + t/1000 + 1e-4, set, spr:s });
+    this.queue.sort((a,b) => a.at - b.at);
+    // a startled sleeper wakes with a double blink
+    if (name === 'surprised') { this.blinkAt = this.clock + .75; this.doubleBlink = true; }
+    if (name === 'sleepy') this.nodAt = this.clock + rand(6,8);
+    if (prev === 'sleepy' && name !== 'sleepy') this.bumps = [];
+  }
+
+  bump(ch, amt, a, h, r) { this.bumps.push({ ch, amt, t0:this.clock, a, h, r }); }
+
+  thingGaze() {
+    const sh = SHAPES[this.shape];
+    const ex = 170 + this.val.x, ey = sh.eyeY + sh.baseY - this.val.alt * sh.R;
+    return [clamp((this.thingPos[0]-ex)/150, -1, 1), clamp((this.thingPos[1]-ey)/150, -1, 1)];
+  }
+
+  update(dt) {
+    if (REDUCED) return;
+    this.clock += dt;
+    const t = this.clock, age = t - this.enteredAt, st = this.state;
+    // due keys
+    while (this.queue.length && this.queue[0].at <= t) {
+      const q = this.queue.shift();
+      if (q.spr) for (const g in q.spr) if (q.spr[g]) for (const c of GROUPS[g]) this.spr[c] = q.spr[g];
+      for (const c in q.set) {
+        if (c === 'look') { this.lookThing = true; continue; }
+        const v = q.set[c];
+        this.base[c] = typeof v === 'function' ? v(this.val[c]) : v;
+      }
+    }
+
+    const tgt = {}, out = {};
+    for (const c of CHANNELS) { tgt[c] = 0; out[c] = 0; }
+
+    // gaze: resting target, micro saccades, the thing, the pointer
+    let gx = this.base.gx, gy = this.base.gy;
+    if (this.lookThing) { const [a,b] = this.thingGaze(); gx = a; gy = b; }
+    const still = st === 'sleepy' || st === 'bored' || st === 'custom';
+    if (!still && t >= this.saccAt) {
+      this.sacc = { gx:rand(-.17,.17), gy:rand(-.1,.1) };
+      this.saccAt = t + rand(.8, 2.6);
+    }
+    if (!still) { gx += this.sacc.gx; gy += this.sacc.gy; }
+    const w = ATTENTION[st] || 0;
+    if (this.pointer && w > 0) {
+      const sh = SHAPES[this.shape];
+      const ex = 170 + this.val.x, ey = sh.eyeY + sh.baseY - this.val.alt * sh.R;
+      const px = clamp((this.pointer[0]-ex)/170, -1, 1), py = clamp((this.pointer[1]-ey)/170, -1, 1);
+      gx += (px - gx) * w; gy += (py - gy) * w;
+    }
+    tgt.gx = gx - this.base.gx; tgt.gy = gy - this.base.gy;
+
+    // per-state life
+    const br = st === 'sleepy' ? 1.3 : st === 'bored' ? 1.2 : st === 'attentive' ? 2.6 : 2.1;
+    const ba = st === 'sleepy' ? .018 : st === 'attentive' ? .004 : .007;
+    out.sy += ba * Math.sin(t*br);
+    out.alt += (st === 'sleepy' ? .03 : .008) * Math.sin(t*br + 1.1);
+    if (st === 'happy') out.rot += 1.4 * Math.sin(t*1.7);
+    if (st === 'angry') { out.x += 7*Math.sin(age*42)*Math.exp(-age*6); out.x += .35*Math.sin(t*31); }
+    if (st === 'excited') {
+      const ph = age % 1.5;
+      if (ph < .9) { const h = Math.max(0, Math.sin(ph/.45*Math.PI)); out.alt += h*.17; out.sy += h*.045; out.rot += 2*Math.sin(t*9)*h; }
+    }
+    if (st === 'confused') { tgt.gx += .45*Math.sin(age*1.1); out.rot += 2.2*Math.sin(age*.7); }
+    if (st === 'bored') tgt.gx += .22*Math.sin(t*.33);
+    if (st === 'sleepy' && t >= this.nodAt && age > 3) {
+      // nods back up, half opens its eyes, gives in again
+      this.bump('alt', .3, .14, .5, 1.6); this.bump('lid', -.5, .14, .45, 1.3); this.bump('hair', .6, .12, .4, 1.2);
+      this.nodAt = t + rand(6.5, 9.5);
+    }
+    if ((st === 'sad' || st === 'bored') && Math.random() < dt/7) { this.bump('sy', -.035, .5, .25, .9); this.bump('alt', -.05, .5, .25, .9); }
+
+    // springs
+    const n = 2, h = dt/n;
+    for (const c of CHANNELS) {
+      const [om, ze] = this.spr[c], target = this.base[c] + tgt[c];
+      let x = this.val[c], v = this.vel[c];
+      for (let i = 0; i < n; i++) { v += (om*om*(target - x) - 2*ze*om*v) * h; x += v*h; }
+      this.val[c] = x; this.vel[c] = v;
+    }
+
+    // bumps
+    this.bumps = this.bumps.filter(b => {
+      const u = t - b.t0, tot = b.a + b.h + b.r;
+      if (u > tot) return false;
+      const e = u < b.a ? smooth(0,1,u/b.a) : u < b.a+b.h ? 1 : 1 - smooth(0,1,(u-b.a-b.h)/b.r);
+      out[b.ch] += b.amt * e; return true;
+    });
+
+    // blinks
+    const bl = BLINK[st];
+    let blink = 0;
+    if (bl && this.val.lid < .75) {
+      if (this.blinkT < 0 && t >= this.blinkAt) { this.blinkT = 0; this.blinkDur = st === 'bored' ? .42 : .16; }
+      if (this.blinkT >= 0) {
+        this.blinkT += dt; const u = this.blinkT / this.blinkDur;
+        if (u >= 1) {
+          this.blinkT = -1;
+          if (this.doubleBlink) { this.doubleBlink = false; this.blinkAt = t + .09; }
+          else this.blinkAt = t + rand(bl[0], bl[1]);
+        } else blink = Math.sin(u*Math.PI);
+      }
+    } else if (!bl) this.blinkT = -1;
+    this.blinkV = blink;
+
+    // trait lags behind the body a little
+    const sh = SHAPES[this.shape];
+    const avY = -(this.val.alt + out.alt) * sh.R;
+    const lom = 10, lze = .32;
+    this.lag.v += (lom*lom*(avY - this.lag.y) - 2*lze*lom*this.lag.v) * dt; this.lag.y += this.lag.v*dt;
+
+    this.out = out;
+    this.render();
+  }
+
+  render() {
+    const sh = SHAPES[this.shape], V = this.val, O = this.out || {};
+    const g = c => V[c] + (O[c] || 0);
+    const alt = g('alt'), rot = g('rot'), x = g('x'), sx = g('sx'), sy = g('sy');
+    const B = sh.bottom, ty = sh.baseY - alt*sh.R;
+    this.av.setAttribute('transform', `translate(${f2(x)} ${f2(ty)}) rotate(${f2(rot)} 170 ${B}) translate(170 ${B}) scale(${f2(sx*1000)/1000} ${f2(sy*1000)/1000}) translate(-170 ${-B})`);
+    if (this.offA) {
+      this.plateA.setAttribute('transform', `translate(${this.offA[0].toFixed(2)} ${this.offA[1].toFixed(2)})`);
+      this.plateB.setAttribute('transform', `translate(${this.offB[0].toFixed(2)} ${this.offB[1].toFixed(2)})`);
+    }
+    const dim = clamp(g('dim'), 0, 1);
+    this.av.style.filter = dim > .01 ? `saturate(${(1 - dim*.55).toFixed(3)})` : '';
+
+    // thing in the corner
+    const th = clamp(g('thing'), 0, 1);
+    this.dots.forEach((d, i) => { const k = smooth(i/12, i/12 + .35, th); d.setAttribute('opacity', (k*.55).toFixed(3)); d.setAttribute('r', (1.2 + 2.2*k).toFixed(2)); });
+
+    // eyes
+    const eyeS = g('eyeS'), rx = sh.rx*eyeS, ry = sh.ry*eyeS;
+    const lid0 = g('lid'), lidAsym = g('lidAsym'), lower = clamp(g('lower'), 0, 1);
+    const blink = this.blinkV || 0;
+    const pr = sh.pr * g('pupil');
+    const rangeX = Math.max(0, sh.rx - sh.pr) * .9, rangeY = Math.max(0, sh.ry - sh.pr) * .8;
+    const gx = clamp(g('gx'), -1.1, 1.1), gy = clamp(g('gy'), -1.1, 1.1);
+    const tilt = g('lidTilt'), shine = clamp(g('shine'), 0, 1);
+    const sw = sh.brow.w * this.st;
+    this.eyes.forEach((e, i) => {
+      const side = i === 0 ? -1 : 1;
+      let lid = clamp(lid0 + (i === 0 ? lidAsym : -lidAsym*.3), 0, 1);
+      lid = lid + (1 - lid) * blink;
+      this.eyeClip[i].setAttribute('rx', f2(rx)); this.eyeClip[i].setAttribute('ry', f2(ry));
+      this.lidClip[i].setAttribute('rx', f2(rx + 1.6)); this.lidClip[i].setAttribute('ry', f2(ry + 1.6));
+      e.white.setAttribute('rx', f2(rx)); e.white.setAttribute('ry', f2(ry));
+      const px = gx*rangeX, py = gy*rangeY;
+      e.pupil.setAttribute('cx', f2(px)); e.pupil.setAttribute('cy', f2(py)); e.pupil.setAttribute('r', f2(pr));
+      e.shine.setAttribute('cx', f2(px + pr*.44)); e.shine.setAttribute('cy', f2(py - pr*.44)); e.shine.setAttribute('r', f2(pr*.3));
+      e.shine.setAttribute('opacity', f2(shine));
+      // upper lid: a straight cut, tilted, same as the v1.0 sad and angry lids
+      const edge = -ry - 1.6 + lid*(2*ry + 3.2);
+      const a = side * tilt;
+      e.lid.setAttribute('x', f2(-rx*2.2)); e.lid.setAttribute('width', f2(rx*4.4));
+      e.lid.setAttribute('y', f2(-ry*3)); e.lid.setAttribute('height', f2(Math.max(0, edge + ry*3)));
+      e.lid.setAttribute('transform', `rotate(${f2(a)})`);
+      // lower lid: a wide arc pushing up from below, the smiling squint
+      const lrx = rx*1.55, lry = ry*1.15, top = ry + 1.6 - lower*ry*1.5;
+      e.lower.setAttribute('rx', f2(lrx)); e.lower.setAttribute('ry', f2(lry));
+      e.lower.setAttribute('cx', 0); e.lower.setAttribute('cy', f2(top + lry));
+      // closed eye: a hairline drawn once the lid is down
+      const co = smooth(.86, 1, lid);
+      if (co > .01) {
+        const yy = Math.min(edge, ry) - 1, hw = rx*.92;
+        e.closed.setAttribute('d', `M${f2(-hw)} ${f2(yy - 2)}Q0 ${f2(yy + 6)} ${f2(hw)} ${f2(yy - 2)}`);
+        e.closed.setAttribute('transform', `rotate(${f2(a*.6)})`);
+        e.closed.setAttribute('stroke-width', f2(sw*.85));
+        e.closed.setAttribute('opacity', f2(co));
+      } else e.closed.setAttribute('opacity', 0);
+    });
+
+    // brows
+    const browY = g('browY') - (eyeS - 1)*sh.ry*.9, btilt = g('browTilt'), arch = g('browArch'), basym = g('browAsym');
+    this.brows.forEach((p, i) => {
+      const side = i === 0 ? -1 : 1, [ex] = sh.eyes[i];
+      const yy = sh.brow.y + browY + (i === 1 ? -basym : basym*.3);
+      const hw = sh.brow.hw, c = -sh.brow.arch * arch;
+      p.setAttribute('d', `M${f2(-hw)} 0Q0 ${f2(c)} ${f2(hw)} 0`);
+      p.setAttribute('transform', `translate(${ex} ${f2(yy)}) rotate(${f2(side*btilt)})`);
+      p.setAttribute('stroke-width', f2(sw * g('browW')));
+    });
+
+    // mouth
+    const m = sh.mouth, mw = m.w * Math.max(.05, g('mw')), mt = g('mt')*m.d, mb = g('mb')*m.d;
+    let d;
+    if (m.type === 'poly') d = `M${f2(-mw)} 0L0 ${f2(mt)}L${f2(mw)} 0L0 ${f2(mb)}Z`;
+    else { const k = 4/3; d = `M${f2(-mw)} 0C${f2(-mw)} ${f2(mb*k)} ${f2(mw)} ${f2(mb*k)} ${f2(mw)} 0C${f2(mw)} ${f2(mt*k)} ${f2(-mw)} ${f2(mt*k)} ${f2(-mw)} 0Z`; }
+    this.mouth.setAttribute('d', d);
+    this.mouth.setAttribute('transform', `translate(${f2(m.x + g('mx'))} ${f2(m.y + g('my'))}) rotate(${f2(g('mk'))})`);
+    this.mouth.setAttribute('stroke-width', f2(m.sw * this.st));
+
+    // cheeks
+    const blush = clamp(g('blush'), 0, 1);
+    this.cheeks.forEach((c, i) => {
+      c.setAttribute('opacity', f2(blush));
+      c.setAttribute('transform', `translate(${sh.cheeks[i][0]} ${f2(sh.cheeks[i][1] - lower*4)}) scale(${f2(.6 + .4*blush)}) translate(${-sh.cheeks[i][0]} ${-sh.cheeks[i][1]})`);
+    });
+
+    // signature trait
+    const hair = g('hair'), lag = clamp(((this.lag.y) - (-(alt)*sh.R)) * .4, -16, 16);
+    if (sh.trait === 'square') {
+      const yy = -2 - hair*10 + lag, r = 22 + hair*23;
+      this.traitG.setAttribute('transform', `translate(170 ${f2(yy)}) rotate(${f2(r)})`);
+    } else if (sh.trait === 'fin') {
+      const r = -22 + (hair >= 0 ? hair*20 : hair*55) - lag*.8;
+      this.traitG.setAttribute('transform', `translate(108.6 ${f2(102.9 + lag*.25)}) rotate(${f2(r)})`);
+    } else {
+      const ang = (-55 - hair*14 - (hair < 0 ? hair*-21 : 0) + lag*.9) * Math.PI/180;
+      const s = 1 + Math.max(0, hair)*.1;
+      this.traitG.setAttribute('transform', `translate(${f2(170 + 158*Math.cos(ang))} ${f2(170 + 158*Math.sin(ang))}) scale(${f2(s)})`);
+      this.traitEl.setAttribute('stroke-width', f2(7 * (this.state === 'angry' ? 1.25 : 1)));
+    }
+  }
+}
+
+/* ---------- app ---------- */
+const app = { shape:'diamond', state:'normal', playing:true, mode:'idle', riso:true, container:'ink', poked:null, reactAt:0, reactIx:0, clock:0 };
+
+const stageRig = new Rig(document.getElementById('stage'), { shape:app.shape });
+const thumbRigs = [];
+const facesEl = document.getElementById('faces');
+SHAPE_KEYS.forEach((k, i) => {
+  const b = document.createElement('button');
+  b.className = 'face'; b.dataset.shape = k; b.setAttribute('aria-pressed', k === app.shape);
+  b.setAttribute('aria-label', `${SHAPES[k].label.toLowerCase()} avatar`);
+  b.innerHTML = `<span class="thumb"></span><b>${SHAPES[k].label}</b><small>${SHAPES[k].traitName}</small>`;
+  facesEl.appendChild(b);
+  const r = new Rig(b.querySelector('.thumb'), { shape:k });
+  thumbRigs.push(r);
+  b.addEventListener('click', () => setShape(k));
+});
+
+const RAMP = [240, 120, 64, 40, 28];
+const rampEl = document.getElementById('ramp');
+const rampRigs = RAMP.map(px => {
+  const f = document.createElement('figure');
+  f.innerHTML = `<div style="width:${px}px;height:${px}px;max-width:100%"></div><figcaption>${px}</figcaption>`;
+  rampEl.appendChild(f);
+  return new Rig(f.firstChild, { shape:app.shape });
+});
+const ALL = [stageRig, ...thumbRigs, ...rampRigs];
+const FOLLOW_SHAPE = [stageRig, ...rampRigs];
+
+const statesEl = document.getElementById('states');
+STATE_KEYS.forEach(k => {
+  const b = document.createElement('button');
+  b.className = 'pill'; b.dataset.state = k; b.setAttribute('aria-pressed', k === app.state);
+  b.innerHTML = `<i class="rd"></i>${k.toUpperCase()}`;
+  b.addEventListener('click', () => { if (app.mode === 'reaction') setMode('idle'); setState(k); });
+  statesEl.appendChild(b);
+});
+
+function seg(host, items, current, on) {
+  const el = document.getElementById(host);
+  items.forEach(([v, label]) => {
+    const b = document.createElement('button');
+    b.className = 'pill'; b.dataset.v = v; b.setAttribute('aria-pressed', v === current);
+    b.innerHTML = `<i class="rd"></i>${label}`;
+    b.addEventListener('click', () => on(v));
+    el.appendChild(b);
+  });
+}
+const mark = (host, v) => document.querySelectorAll(`#${host} .pill`).forEach(b => b.setAttribute('aria-pressed', b.dataset.v === String(v)));
+seg('mode', [['idle','IDLE'],['reaction','REACTION']], app.mode, v => setMode(v));
+seg('print', [['on','RISO'],['off','CLEAN']], 'on', v => setRiso(v === 'on'));
+seg('container', [['ink','INK'],['bone','BONE'],['paper','PAPER']], app.container, v => setContainer(v));
+
+function setShape(k) {
+  app.shape = k;
+  FOLLOW_SHAPE.forEach(r => { r.setShape(k); r.setState(app.poked || app.state, { restart:true }); });
+  document.querySelectorAll('.face').forEach(b => b.setAttribute('aria-pressed', b.dataset.shape === k));
+  updateText();
+}
+function setState(k, { transient = false } = {}) {
+  if (!transient) app.state = k;
+  ALL.forEach(r => r.setState(k));
+  document.querySelectorAll('#states .pill').forEach(b => b.setAttribute('aria-pressed', b.dataset.state === app.state));
+  if (!transient && PRESET_POS[k]) syncAdjust(PRESET_POS[k]);
+  updateText(k);
+}
+function setMode(m) {
+  app.mode = m; mark('mode', m);
+  if (m === 'reaction') { app.reactIx = Math.max(0, SEQ.findIndex(s => s[0] === app.state)); app.reactAt = app.clock + .2; }
+}
+function setRiso(on) { app.riso = on; ALL.forEach(r => r.setRiso(on)); mark('print', on ? 'on' : 'off'); }
+function setContainer(c) { app.container = c; ALL.forEach(r => r.setContainer(c)); mark('container', c); }
+function setPlaying(p) {
+  app.playing = p;
+  const b = document.getElementById('play');
+  b.setAttribute('aria-pressed', p); b.querySelector('span').textContent = p ? 'PLAYING' : 'PAUSED';
+}
+document.getElementById('play').addEventListener('click', () => setPlaying(!app.playing));
+
+/* ---------- adjustment sliders ---------- */
+const sgn = v => (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(2);
+
+// each track scrubs through named poses; a knob between two stops is a straight blend of both
+const ADJ = {
+  brows:  { label:'BROWS', stops:[['SAD',{ browY:3, browTilt:14, browArch:0 }],['ANGRY',{ browY:5, browTilt:-21, browArch:0, browW:1.3 }],['NORMAL',{}],['ARCHED',{ browY:-5, browArch:1 }],['RAISED',{ browY:-12, browArch:1 }],['ONE UP',{ browY:-2, browTilt:-5, browArch:.3, browAsym:11 }]],
+            keys:['browY','browTilt','browArch','browW','browAsym'] },
+  lids:   { label:'EYES', stops:[['WIDE',{ lid:0, eyeS:1.2, pupil:.66, shine:.8 }],['OPEN',{}],['SMILE',{ lid:0, lower:.45, eyeS:1.05, pupil:1.05, shine:1 }],['CUT',{ lid:.34, lidTilt:-22, lower:.12, pupil:.82, shine:0 }],['DROOP',{ lid:.42, lidTilt:16, pupil:.95, shine:0 }],['SHUT',{ lid:1, lidTilt:4, pupil:.9, shine:0 }]],
+            keys:['lid','lower','lidTilt','eyeS','lidAsym','pupil','shine'] },
+  mouth:  { label:'MOUTH', stops:[['SMILE',{ mw:1, mb:1, blush:1 }],['SOFT',{}],['O',{ mw:.55, mt:-.62, mb:.62 }],['FLAT',{ mw:.6, mt:0, mb:.04 }],['SAD',{ mw:.8, mt:-.55, mb:-.55, my:6 }],['WRY',{ mw:.6, mt:-.1, mb:.12, mx:5, mk:13 }]],
+            keys:['mw','mt','mb','mx','my','mk','blush'] },
+  height: { label:'HEIGHT', orient:'v', stops:[['BELOW',{ alt:-1.12 }],['PEEK',{ alt:-.8 }],['LOW',{ alt:-.34 }],['SIT',{ alt:0 }],['RISE',{ alt:.15 }],['POP',{ alt:.36 }]], keys:['alt'] },
+  tilt:   { label:'TILT', stops:[['LEFT',{ rot:-9 }],['LEVEL',{ rot:0 }],['RIGHT',{ rot:9 }]], keys:['rot'] },
+  trait:  { label:'TRAIT', stops:[['DROOP',{ hair:-1 }],['REST',{ hair:0 }],['PERK',{ hair:1 }]], keys:['hair'] },
+};
+for (const a of Object.values(ADJ)) a.stops = a.stops.map(([n, o]) => { const full = {}; for (const k of a.keys) full[k] = k in o ? o[k] : BASE[k]; return [n, full]; });
+
+// where each preset sits on the tracks, so picking an expression moves the knobs with it
+const PRESET_POS = {
+  normal:   { brows:2,   lids:1,   mouth:1,   height:3,    tilt:1,   trait:1,    gx:0,    gy:0 },
+  happy:    { brows:3,   lids:2,   mouth:0,   height:3.33, tilt:1,   trait:1.45, gx:0,    gy:-.05 },
+  sad:      { brows:0,   lids:4,   mouth:4,   height:2.53, tilt:1,   trait:.25,  gx:0,    gy:.8 },
+  angry:    { brows:1,   lids:3,   mouth:3.9, height:3,    tilt:1,   trait:1.25, gx:0,    gy:.1 },
+  sleepy:   { brows:2,   lids:5,   mouth:2.4, height:0,    tilt:.67, trait:0,    gx:0,    gy:.5 },
+  curious:  { brows:5,   lids:.6,  mouth:2.1, height:2.06, tilt:1.67,trait:1.3,  gx:.85,  gy:-.6 },
+  surprised:{ brows:4,   lids:0,   mouth:2,   height:5,    tilt:1,   trait:2,    gx:0,    gy:0 },
+  excited:  { brows:3.6, lids:2,   mouth:0,   height:3.8,  tilt:1,   trait:2,    gx:0,    gy:0 },
+  confused: { brows:5,   lids:1.5, mouth:5,   height:2.85, tilt:.22, trait:1.1,  gx:-.35, gy:-.45 },
+  bored:    { brows:2.2, lids:4.6, mouth:3,   height:2,    tilt:1,   trait:.55,  gx:-.55, gy:.25 },
+  attentive:{ brows:3.4, lids:.45, mouth:1.5, height:4,    tilt:1,   trait:1.65, gx:0,    gy:-.1 },
+};
+const pos = Object.assign({}, PRESET_POS.normal);
+
+function blendStops(a, v) {
+  const n = a.stops.length, i = clamp(Math.floor(v), 0, n - 2), t = clamp(v - i, 0, 1), A = a.stops[i][1], B = a.stops[i+1][1], o = {};
+  for (const k of a.keys) o[k] = A[k] + (B[k] - A[k]) * t;
+  return o;
+}
+function composeCustom() {
+  const o = Object.assign({}, BASE);
+  for (const k in ADJ) Object.assign(o, blendStops(ADJ[k], pos[k]));
+  o.gx = pos.gx; o.gy = pos.gy;
+  return o;
+}
+function describeStop(a, v) {
+  const n = a.stops.length, near = Math.round(v);
+  if (Math.abs(v - near) < .06) return a.stops[near][0];
+  const i = clamp(Math.floor(v), 0, n - 2), t = v - i;
+  return `${a.stops[i][0]} ${Math.round((1-t)*100)} · ${a.stops[i+1][0]} ${Math.round(t*100)}`;
+}
+
+function makeSlider(host, key, a) {
+  const n = a.stops.length, vert = a.orient === 'v';
+  host.className = vert ? 'adj--v' : 'adj';
+  host.innerHTML = vert
+    ? `<div class="vtrack" role="slider" tabindex="0" aria-orientation="vertical"><div class="in"></div></div><div class="vstops"><div class="in"></div></div>`
+    : `<div class="adj__head"><b>${a.label}</b><span></span></div><div class="track" role="slider" tabindex="0"><div class="in"></div></div><div class="stops"><div class="in"></div></div>`;
+  const track = host.querySelector('[role=slider]'), inn = track.querySelector('.in'), lab = host.querySelector(vert ? '.vstops .in' : '.stops .in'), head = host.querySelector('.adj__head span');
+  track.setAttribute('aria-label', a.label.toLowerCase());
+  track.setAttribute('aria-valuemin', 0); track.setAttribute('aria-valuemax', n - 1);
+  const at = i => vert ? (100 - i/(n-1)*100) + '%' : (i/(n-1)*100) + '%';
+  const labels = a.stops.map(([name], i) => {
+    const t = document.createElement('i'); t.className = 'tick'; t.style[vert ? 'top' : 'left'] = at(i); inn.appendChild(t);
+    const b = document.createElement('button'); b.type = 'button'; b.tabIndex = -1; b.textContent = name;
+    b.style[vert ? 'top' : 'left'] = at(i);
+    if (!vert) b.style.transform = i === 0 ? 'translateX(-8px)' : i === n-1 ? 'translateX(calc(-100% + 8px))' : 'translateX(-50%)';
+    b.addEventListener('click', () => { api.set(i, true); onAdjust(key, i); });
+    lab.appendChild(b); return b;
+  });
+  const knob = document.createElement('span'); knob.className = 'knob'; inn.appendChild(knob);
+  const api = {
+    value:0,
+    set(v, glide) {
+      v = clamp(v, 0, n - 1); api.value = v;
+      track.classList.toggle('glide', !!glide);
+      knob.style[vert ? 'top' : 'left'] = vert ? (100 - v/(n-1)*100) + '%' : (v/(n-1)*100) + '%';
+      const near = Math.round(v); labels.forEach((b, i) => b.classList.toggle('on', i === near));
+      const text = describeStop(a, v);
+      track.setAttribute('aria-valuenow', v.toFixed(2)); track.setAttribute('aria-valuetext', text);
+      if (head) head.textContent = text;
+    }
+  };
+  const from = e => { const r = inn.getBoundingClientRect(); const u = vert ? 1 - (e.clientY - r.top)/r.height : (e.clientX - r.left)/r.width; return clamp(u, 0, 1) * (n - 1); };
+  let drag = false;
+  track.addEventListener('pointerdown', e => { drag = true; track.setPointerCapture(e.pointerId); track.classList.add('drag'); api.set(from(e)); onAdjust(key, api.value); });
+  track.addEventListener('pointermove', e => { if (drag) { api.set(from(e)); onAdjust(key, api.value); } });
+  const end = () => { drag = false; track.classList.remove('drag'); };
+  track.addEventListener('pointerup', end); track.addEventListener('pointercancel', end);
+  track.addEventListener('keydown', e => {
+    const step = e.shiftKey ? 1 : .1, map = { ArrowRight:step, ArrowUp:step, ArrowLeft:-step, ArrowDown:-step, PageUp:1, PageDown:-1 };
+    let v = null;
+    if (e.key in map) v = api.value + map[e.key]; else if (e.key === 'Home') v = 0; else if (e.key === 'End') v = n - 1;
+    if (v === null) return;
+    e.preventDefault(); e.stopPropagation(); api.set(v, e.key.startsWith('Page') || e.key === 'Home' || e.key === 'End'); onAdjust(key, api.value);
+  });
+  return api;
+}
+
+function makePad(host) {
+  host.innerHTML = `<div class="adj__head"><b>GAZE</b><span></span></div><div class="pad" role="slider" tabindex="0" aria-label="gaze, two axes"><div class="in" style="position:relative;width:100%;height:100%"></div></div>`;
+  const pad = host.querySelector('.pad'), inn = pad.querySelector('.in'), head = host.querySelector('.adj__head span');
+  for (const x of [0, 50, 100]) for (const y of [0, 50, 100]) { const d = document.createElement('i'); d.className = 'dot'; d.style.left = x + '%'; d.style.top = y + '%'; inn.appendChild(d); }
+  const knob = document.createElement('span'); knob.className = 'knob'; inn.appendChild(knob);
+  const api = {
+    x:0, y:0,
+    set(x, y, glide) {
+      api.x = clamp(x, -1, 1); api.y = clamp(y, -1, 1);
+      pad.classList.toggle('glide', !!glide);
+      knob.style.left = ((api.x + 1)*50) + '%'; knob.style.top = ((api.y + 1)*50) + '%';
+      const t = `${sgn(api.x)} ${sgn(api.y)}`; head.textContent = t;
+      pad.setAttribute('aria-valuetext', `horizontal ${api.x.toFixed(2)}, vertical ${api.y.toFixed(2)}`);
+    }
+  };
+  const from = e => { const r = inn.getBoundingClientRect(); return [clamp((e.clientX - r.left)/r.width, 0, 1)*2 - 1, clamp((e.clientY - r.top)/r.height, 0, 1)*2 - 1]; };
+  let drag = false;
+  pad.addEventListener('pointerdown', e => { drag = true; pad.setPointerCapture(e.pointerId); pad.classList.add('drag'); api.set(...from(e)); onAdjust('gaze', [api.x, api.y]); });
+  pad.addEventListener('pointermove', e => { if (drag) { api.set(...from(e)); onAdjust('gaze', [api.x, api.y]); } });
+  const end = () => { drag = false; pad.classList.remove('drag'); };
+  pad.addEventListener('pointerup', end); pad.addEventListener('pointercancel', end);
+  pad.addEventListener('keydown', e => {
+    const s = e.shiftKey ? .5 : .1, d = { ArrowLeft:[-s,0], ArrowRight:[s,0], ArrowUp:[0,-s], ArrowDown:[0,s] }[e.key];
+    if (e.key === 'Home') { e.preventDefault(); e.stopPropagation(); api.set(0, 0, true); onAdjust('gaze', [0, 0]); return; }
+    if (!d) return;
+    e.preventDefault(); e.stopPropagation(); api.set(api.x + d[0], api.y + d[1]); onAdjust('gaze', [api.x, api.y]);
+  });
+  return api;
+}
+
+function onAdjust(key, v) {
+  if (key === 'gaze') { pos.gx = v[0]; pos.gy = v[1]; } else pos[key] = v;
+  if (app.mode === 'reaction') setMode('idle');
+  if (app.poked) { app.poked = null; clearTimeout(poke.t); }
+  app.state = 'custom';
+  STATES.custom = composeCustom();
+  ALL.forEach(r => r.setCustom(STATES.custom));
+  document.querySelectorAll('#states .pill').forEach(b => b.setAttribute('aria-pressed', 'false'));
+  updateText('custom');
+}
+function syncAdjust(p) {
+  Object.assign(pos, p);
+  for (const k in sliders) sliders[k].set(pos[k], true);
+  gazePad.set(pos.gx, pos.gy, true);
+}
+const sliders = {};
+for (const k in ADJ) sliders[k] = makeSlider(document.getElementById('adj-' + k), k, ADJ[k]);
+const gazePad = makePad(document.getElementById('adj-gaze'));
+for (const k in sliders) sliders[k].set(pos[k]);
+gazePad.set(0, 0);
+STATES.custom = composeCustom();
+
+function updateText(shown = app.poked || app.state) {
+  const sh = SHAPES[app.shape];
+  document.getElementById('ro-state').textContent = `${sh.label} · ${shown.toUpperCase()}${app.poked ? ' · STARTLED' : ''}`;
+  document.getElementById('note').innerHTML = `<em>${shown.toUpperCase()}</em>${NOTES[shown]}`;
+  document.getElementById('trait').innerHTML = `<b>${sh.traitName}</b>${sh.traitText}`;
+}
+
+/* reaction mode: a short loop through the vocabulary */
+const SEQ = [['normal',2.4],['curious',4.2],['attentive',2.6],['surprised',2],['happy',2.6],['excited',2.8],['normal',1.8],['confused',3],['angry',2.4],['sad',3.2],['bored',3.6],['sleepy',6]];
+
+/* pointer: eyes follow inside the stage */
+const stageEl = document.getElementById('stage');
+function toFrame(ev) {
+  const r = stageEl.getBoundingClientRect();
+  return [VB[0] + (ev.clientX - r.left)/r.width*VB[2], VB[1] + (ev.clientY - r.top)/r.height*VB[3]];
+}
+stageEl.addEventListener('pointermove', e => { stageRig.pointer = toFrame(e); });
+stageEl.addEventListener('pointerleave', () => { stageRig.pointer = null; });
+function poke() {
+  if (!app.playing) setPlaying(true);
+  const back = app.state;
+  app.poked = 'surprised';
+  stageRig.setState('surprised', { restart:true });
+  updateText('surprised');
+  clearTimeout(poke.t);
+  poke.t = setTimeout(() => { app.poked = null; stageRig.setState(back, { restart:true }); updateText(); }, 1300);
+}
+stageEl.addEventListener('click', poke);
+stageEl.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); poke(); } });
+
+document.addEventListener('keydown', e => {
+  if (e.target.closest && e.target.closest('input,textarea,[role=slider]')) return;
+  const i = STATE_KEYS.indexOf(app.state);
+  if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+    e.preventDefault(); if (app.mode === 'reaction') setMode('idle');
+    setState(STATE_KEYS[(i + (e.key === 'ArrowRight' ? 1 : -1) + STATE_KEYS.length) % STATE_KEYS.length]);
+  } else if (e.key === ' ' && e.target === document.body) { e.preventDefault(); setPlaying(!app.playing); }
+  else if (['1','2','3'].includes(e.key)) setShape(SHAPE_KEYS[+e.key - 1]);
+  else if (e.key === 'r' || e.key === 'R') setRiso(!app.riso);
+});
+
+/* palette */
+const palEl = document.getElementById('palette');
+[['ink',null],['bone',null],['lav','lav'],['fog','fog'],['clay','clay'],['signal',null]].forEach(([k, pair]) => {
+  const c = INK[k];
+  const d = document.createElement('div'); d.className = 'sw';
+  const edge = k === 'bone' ? 'box-shadow:inset 0 -1px 0 var(--line2)' : '';
+  d.innerHTML = `<div class="chip" style="background:${c.hex};${edge}">${pair ? `<i style="background:${c.deep}"></i>` : ''}</div>
+    <div class="meta"><b>${c.code} ${c.name}</b><span>${c.hex}${pair ? ' · ' + c.deep : ''}</span>${c.role}${pair ? ' · deep for cheeks, trait' : ''}</div>`;
+  palEl.appendChild(d);
+});
+
+/* telemetry */
+const tele = document.getElementById('ro-tele'), clockEl = document.getElementById('clock');
+function telemetry() {
+  const V = stageRig.val, O = stageRig.out || {};
+  const alt = V.alt + (O.alt || 0);
+  const lid = clamp(V.lid + (1 - V.lid)*(stageRig.blinkV || 0), 0, 1);
+  tele.innerHTML = `<span>ALT ${sgn(alt)}</span><span>LID ${lid.toFixed(2)}</span><span>GAZE ${sgn(V.gx)} ${sgn(V.gy)}</span><span>BROW ${Math.round(V.browTilt)}°</span>`;
+  clockEl.textContent = `T ${app.clock.toFixed(1).padStart(4,'0')} S`;
+}
+
+/* loop */
+let last = performance.now(), teleAt = 0;
+function frame(now) {
+  const dt = Math.min(.05, (now - last)/1000); last = now;
+  if (app.playing && !REDUCED) {
+    app.clock += dt;
+    if (app.mode === 'reaction' && !app.poked && app.clock >= app.reactAt) {
+      const [s, dur] = SEQ[app.reactIx % SEQ.length];
+      setState(s); app.reactAt = app.clock + dur; app.reactIx++;
+    }
+    for (const r of ALL) r.update(dt);
+  }
+  if (now - teleAt > 90) { telemetry(); teleAt = now; }
+  requestAnimationFrame(frame);
+}
+updateText();
+telemetry();
+requestAnimationFrame(frame);
+})();
+</script>
+
+</html>

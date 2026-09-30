@@ -33,6 +33,8 @@ export const BEAT = {
   pieces: 0.35,
   eyes: 1.05,
   turn: 1.55,
-  word: 2.0,
-  creatures: 2.7,
+  rise: 2.5,
+  word: 3.0,
+  maker: 3.5,
+  creatures: 3.7,
 } as const
