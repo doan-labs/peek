@@ -20,7 +20,9 @@ export default defineConfig({
      * imports with its own resolver, which never reads tsconfig paths.
      */
     stylex.vite({ aliases: { '@/*': [src], '#/*': [src] } }),
-    tanstackStart(),
+    // Static for now: every route prerenders to HTML, which the root
+    // wrangler.jsonc serves as Worker assets.
+    tanstackStart({ prerender: { enabled: true, crawlLinks: true } }),
     viteReact(),
   ],
 })

@@ -21,7 +21,9 @@ real file.
 
 ## Where it is
 
-Scaffold only. `/` is a placeholder. No library package, no deploy target.
+Scaffold only. `/` is a placeholder. No library package.
+Deploys to Cloudflare Workers as static assets: every route prerenders, and
+the root `wrangler.jsonc` serves `apps/web/dist/client`.
 `../avatars-poc/engine.js` is the prior sketch of the idea: string hash,
 seeded rng, palettes, pure SVG.
 

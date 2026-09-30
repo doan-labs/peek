@@ -1,0 +1,7 @@
+{
+  // Static only: no `main`, so Cloudflare serves the prerendered files and
+  // never runs a Worker. `name` must equal the dashboard project name.
+  "name": "peek",
+  "compatibility_date": "2026-09-30",
+  "assets": { "directory": "./apps/web/dist/client" }
+}

@@ -11,7 +11,8 @@
     "build": "turbo run build",
     "check-types": "turbo run check-types",
     "format": "biome format --write .",
-    "lint": "biome check ."
+    "lint": "biome check .",
+    "deploy": "turbo run build && bunx wrangler deploy"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.15",
