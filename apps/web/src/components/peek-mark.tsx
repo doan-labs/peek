@@ -1,10 +1,9 @@
 /*
  * The mark, the way the teaser builds it. Four pieces land one by one in
- * their creature inks, laid out as the Doan mark (D O over A N). The ring
- * opens a pair of eyes, then the grid takes a quarter turn while each piece
- * turns back the other way, so nothing ends up tilted, and every ink settles
- * to bone. The result reads A D over N O: the same four shapes, one of them
- * looking back.
+ * their creature inks, scattered O N over D A. The ring opens a pair of
+ * eyes, then the grid takes a quarter turn while each piece turns back the
+ * other way, so nothing ends up tilted, and every ink settles to bone. The
+ * result reads D O over A N: the Doan mark at rest, one shape looking back.
  *
  * Nesting is turn > counter > land > shape, so the quarter turn, the
  * counter turn and the landing each own one transform. Both turns share one
@@ -39,7 +38,7 @@ const PIECES: Piece[] = [
     key: 'd',
     draw: (paint) => (
       <motion.path
-        d='M120 95A50 50 0 0 1 120 195Z'
+        d='M123 218A50 50 0 0 1 123 318Z'
         {...paint('fill', INKS.fog)}
       />
     ),
@@ -48,8 +47,8 @@ const PIECES: Piece[] = [
     key: 'o',
     draw: (paint) => (
       <motion.circle
-        cx='243'
-        cy='140'
+        cx='148'
+        cy='156'
         r='36'
         fill='none'
         strokeWidth='18'
@@ -60,14 +59,17 @@ const PIECES: Piece[] = [
   {
     key: 'a',
     draw: (paint) => (
-      <motion.path d='M145 214L196 302L94 302Z' {...paint('fill', INKS.bone)} />
+      <motion.path
+        d='M260 224L311 312L209 312Z'
+        {...paint('fill', INKS.bone)}
+      />
     ),
   },
   {
     key: 'n',
     draw: (paint) => (
       <motion.path
-        d='M257 194L315 252L257 310L199 252ZM257 226L231 252L257 278L283 252Z'
+        d='M260 98L318 156L260 214L202 156ZM260 130L234 156L260 182L286 156Z'
         fillRule='evenodd'
         {...paint('fill', INKS.lav)}
       />
@@ -206,11 +208,11 @@ function Eyes({ still }: { still: boolean }) {
       {...stylex.props(styles.center)}
     >
       <g ref={lids} {...stylex.props(styles.center)}>
-        <ellipse cx='231' cy='140' rx='8' ry='9.6' fill={INKS.paper} />
-        <ellipse cx='255' cy='140' rx='8' ry='9.6' fill={INKS.paper} />
+        <ellipse cx='136' cy='156' rx='8' ry='9.6' fill={INKS.paper} />
+        <ellipse cx='160' cy='156' rx='8' ry='9.6' fill={INKS.paper} />
         <motion.g style={{ x, y }}>
-          <circle cx='231' cy='140' r='4.4' fill={INKS.ink} />
-          <circle cx='255' cy='140' r='4.4' fill={INKS.ink} />
+          <circle cx='136' cy='156' r='4.4' fill={INKS.ink} />
+          <circle cx='160' cy='156' r='4.4' fill={INKS.ink} />
         </motion.g>
       </g>
     </motion.g>
