@@ -1,7 +1,8 @@
 /*
  * One living Peek creature, drawn into an SVG it owns. Transcribed from the
- * Avatar Studio sketch (v1.1): the same shapes, channels, states, springs and
- * choreography, so a face here reads the way it did in the teaser.
+ * Avatar Studio sketch (v1.1), the triangle from Peek v1.2: the same shapes,
+ * channels, states, springs and choreography, so a face here reads the way
+ * it did in the teaser.
  *
  * Every frame writes attributes straight onto the nodes. React never hears
  * about a frame: the component mounts a rig and calls `update(dt)` from one
@@ -28,7 +29,8 @@ type Mouth = {
   sw: number
 }
 type Shape = {
-  body: { d: string } | { circle: [number, number, number] }
+  /** `stroke` rounds the corners: a round-join outline in the body ink. */
+  body: { d: string; stroke?: number } | { circle: [number, number, number] }
   bottom: number
   sink: number
   fill: string
@@ -42,7 +44,9 @@ type Shape = {
   crx: number
   cry: number
   mouth: Mouth
-  trait: 'square' | 'fin' | 'ring'
+  trait: 'square' | 'fin' | 'ring' | 'dot'
+  /** Altitude out of sight, below the floor, trait and all. */
+  hide?: number
 }
 
 export const SHAPES = {
@@ -114,6 +118,33 @@ export const SHAPES = {
     cry: 5.85,
     mouth: { type: 'round', x: 170, y: 223.3, w: 16.9, d: 16.9, sw: 4.55 },
     trait: 'ring',
+  },
+  /* The v2.1 spec (M50 12L92 88H8Z on a 100u grid, 8u round joins, eyes at
+   * 62u) scaled x3.4 about the centre. */
+  triangle: {
+    body: { d: 'M170 40.8L312.8 299.2L27.2 299.2Z', stroke: 27.2 },
+    bottom: 312.8,
+    sink: 0,
+    fill: '#CFE7D6',
+    deep: '#A5CDB1',
+    eyes: [
+      [132.6, 210.8],
+      [207.4, 210.8],
+    ],
+    rx: 20.4,
+    ry: 27.2,
+    pr: 10,
+    brow: { y: 166.6, hw: 18.7, arch: 15.3, w: 5.62 },
+    cheeks: [
+      [98.6, 238],
+      [241.4, 238],
+    ],
+    crx: 11.5,
+    cry: 5.75,
+    mouth: { type: 'round', x: 170, y: 254, w: 17, d: 16.25, sw: 4.38 },
+    trait: 'dot',
+    // its eyes sit low, so -2.4 leaves the apex and the dot showing
+    hide: -3.5,
   },
 } satisfies Record<string, Shape>
 
@@ -609,6 +640,7 @@ export class Rig {
   private baseY: number
   private eyeY: number
   private R: number
+  private hide: number
 
   /** The body, the one part that answers the pointer. */
   readonly body: SVGGElement
@@ -629,6 +661,7 @@ export class Rig {
     this.eyeY = sh.eyes[0][1]
     // altitude -1 puts the eye line on the floor
     this.R = FLOOR - (this.eyeY + this.baseY)
+    this.hide = sh.hide ?? -2.4
     for (const c of CHANNELS) {
       this.vel[c] = 0
       this.out[c] = 0
@@ -663,8 +696,22 @@ export class Rig {
     const clip = el('g', { 'clip-path': `url(#${u}-f)` }, svg)
     this.body = el('g', null, clip)
 
-    if ('d' in sh.body) el('path', { d: sh.body.d, fill: sh.fill }, this.body)
-    else {
+    if ('d' in sh.body) {
+      const { d, stroke } = sh.body
+      el(
+        'path',
+        stroke
+          ? {
+              d,
+              fill: sh.fill,
+              stroke: sh.fill,
+              'stroke-width': stroke,
+              'stroke-linejoin': 'round',
+            }
+          : { d, fill: sh.fill },
+        this.body,
+      )
+    } else {
       const [cx, cy, r] = sh.body.circle
       el('circle', { cx, cy, r, fill: sh.fill }, this.body)
     }
@@ -689,18 +736,24 @@ export class Rig {
               { d: 'M0 0L0 -40A40 40 0 0 1 40 0Z', fill: sh.deep },
               this.traitG,
             )
-          : el(
-              'circle',
-              {
-                cx: 0,
-                cy: 0,
-                r: 12.5,
-                fill: 'none',
-                stroke: sh.deep,
-                'stroke-width': 7,
-              },
-              this.traitG,
-            )
+          : sh.trait === 'dot'
+            ? el(
+                'circle',
+                { cx: 0, cy: 0, r: 12.5, fill: sh.deep },
+                this.traitG,
+              )
+            : el(
+                'circle',
+                {
+                  cx: 0,
+                  cy: 0,
+                  r: 12.5,
+                  fill: 'none',
+                  stroke: sh.deep,
+                  'stroke-width': 7,
+                },
+                this.traitG,
+              )
 
     this.eyes = sh.eyes.map(([x, y], i) => {
       const g = el('g', { transform: `translate(${x} ${y})` }, this.body)
@@ -757,7 +810,7 @@ export class Rig {
    */
   enter(delay: number, state: State) {
     if (this.still) return this.setState(state)
-    this.val.alt = this.base.alt = -2.4
+    this.val.alt = this.base.alt = this.hide
     this.val.lid = this.base.lid = 1
     this.rise(delay, state)
   }
@@ -768,7 +821,7 @@ export class Rig {
     this.queue = [
       {
         at: this.clock,
-        set: { alt: -2.4, lid: 1 },
+        set: { alt: this.hide, lid: 1 },
         spr: { body: [12, 1], eyes: [16, 1] },
       },
     ]
@@ -1168,6 +1221,21 @@ export class Rig {
       this.traitG.setAttribute(
         'transform',
         `translate(108.6 ${f2(102.9 + lag * 0.25)}) rotate(${f2(r)})`,
+      )
+    } else if (sh.trait === 'dot') {
+      // rests on the rounded apex; lifts clear of it when perky, rolls over
+      // the tip and down the right slope when low
+      const rr = 13.6 + 12.5
+      const s = clamp(-hair, 0, 1.2)
+      const th = (Math.min(1, s / 0.35) * 61.05 * Math.PI) / 180
+      const travel = (Math.max(0, s - 0.35) / 0.65) * 92
+      const cx = 170 + rr * Math.sin(th) + 0.4837 * travel
+      let cy = 40.8 - rr * Math.cos(th) + 0.8753 * travel
+      if (hair > 0) cy -= hair * 18
+      cy += lag * (s > 0.35 ? 0.3 : 1)
+      this.traitG.setAttribute(
+        'transform',
+        `translate(${f2(cx)} ${f2(cy)}) scale(${f2(1 + Math.max(0, hair) * 0.1)})`,
       )
     } else {
       const ang =

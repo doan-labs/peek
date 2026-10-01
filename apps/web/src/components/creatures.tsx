@@ -60,6 +60,8 @@ const CAST: Cast[] = [
   },
   { shape: 'diamond', size: 1.55, overlap: 0.46, cue: 1, mood: 'normal' },
   { shape: 'circle', size: 0.74, overlap: 0.24, cue: 3, mood: 'happy' },
+  /* Peek v1.2's new face, not in the teaser: it peeks in last. */
+  { shape: 'triangle', size: 1.2, overlap: 0.18, cue: 6, mood: 'excited' },
 ]
 
 /* The moods a creature wanders between, by weight. Angry and sad are left
@@ -89,7 +91,7 @@ const ASLEEP = 17
 /* The shower from the mark: sizes and shapes taken in turn, so only where
  * one falls is left to chance. Capped, since every rig steps every frame. */
 const DROP_PX = [84, 64, 104, 72]
-const DROP_SHAPES: ShapeKey[] = ['circle', 'diamond', 'semicircle']
+const DROP_SHAPES: ShapeKey[] = ['circle', 'diamond', 'semicircle', 'triangle']
 const MAX_DROPS = 24
 /** px/s², a quick fall. */
 const GRAVITY = 2600
@@ -231,7 +233,11 @@ export function Creatures({
         host.className = stylex.props(styles.drop).className ?? ''
         host.style.width = host.style.height = `${px}px`
         rain.current!.append(host)
-        const rig = new Rig(host, DROP_SHAPES[dropped % 3]!, false)
+        const rig = new Rig(
+          host,
+          DROP_SHAPES[dropped % DROP_SHAPES.length]!,
+          false,
+        )
         rig.svg.setAttribute('width', '100%')
         rig.svg.setAttribute('height', '100%')
         rig.resize(px)
@@ -393,8 +399,8 @@ export function Creatures({
 }
 
 /* One row unit: wide screens are bounded by height so the cast never climbs
- * into the type; phones by width so all six still fit. */
-const U = 'min(22vw, 19svh, 220px)'
+ * into the type; phones by width so all seven still fit. */
+const U = 'min(18vw, 19svh, 220px)'
 
 const styles = stylex.create({
   row: {
