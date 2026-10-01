@@ -18,7 +18,7 @@ const CARD = `${import.meta.env.DEV ? '' : SITE}/og.png`
 const TITLE = 'Peek · Coming soon'
 const DESCRIPTION = 'Peek, from Doan Labs. Coming soon.'
 const CARD_ALT =
-  'Peek, icons from a string: a curious semicircle, a surprised circle and a happy diamond, each in its own ink frame.'
+  'Peek, icons from a string: a happy diamond, a curious semicircle, a surprised circle and an excited triangle, each in its own ink frame.'
 
 const styles = stylex.create({
   body: { backgroundColor: colors['--ground'] },
@@ -33,7 +33,7 @@ export const Route = createRootRoute({
       { name: 'description', content: DESCRIPTION },
       { name: 'theme-color', content: '#121110' },
       /* The share card, public/og.png, 1200x630: a sheet from the Avatar
-       * Studio, three faces in riso print. X reads only the twitter: tags,
+       * Studio, four faces in riso print. X reads only the twitter: tags,
        * so they repeat the og: ones. */
       { property: 'og:title', content: TITLE },
       { property: 'og:description', content: DESCRIPTION },
