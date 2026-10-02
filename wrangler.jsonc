@@ -1,7 +1,20 @@
 {
-  // Static only: no `main`, so Cloudflare serves the prerendered files and
-  // never runs a Worker. `name` must equal the dashboard project name.
+  // Every route is a prerendered asset, served before the Worker runs. The
+  // Worker only sees what no file matches, which is /api/notify and 404s.
+  // `name` must equal the dashboard project name.
   "name": "peek",
   "compatibility_date": "2026-09-30",
-  "assets": { "directory": "./apps/web/dist/client" }
+  "main": "./apps/web/worker.ts",
+  "assets": { "directory": "./apps/web/dist/client" },
+  // No id: wrangler provisions the namespace on the first deploy.
+  "kv_namespaces": [{ "binding": "NOTIFY" }],
+  // Five signups a minute per IP. `namespace_id` is any number, unique
+  // to this limit on the account.
+  "ratelimits": [
+    {
+      "name": "LIMIT",
+      "namespace_id": "1001",
+      "simple": { "limit": 5, "period": 60 }
+    }
+  ]
 }

@@ -612,6 +612,8 @@ export class Rig {
   state: State = 'normal'
   /** The pointer, in frame units, or null when it is away. */
   pointer: [number, number] | null = null
+  /** Where the eyes go, in frame units, in any state and at once. */
+  gaze: [number, number] | null = null
   /** What a curious creature turns to, in frame units. */
   thing: [number, number] = [330, 20]
 
@@ -810,14 +812,24 @@ export class Rig {
    */
   enter(delay: number, state: State) {
     if (this.still) return this.setState(state)
-    this.val.alt = this.base.alt = this.hide
-    this.val.lid = this.base.lid = 1
+    this.away(true)
     this.rise(delay, state)
   }
 
   /** Ducks back below the floor, quick, then peeks in again as it entered. */
   duck(delay: number, state: State) {
     if (this.still) return
+    this.away()
+    this.rise(delay, state)
+  }
+
+  /** Ducks below the floor and stays there; `snap` puts it there at once. */
+  away(snap = false) {
+    if (this.still) return
+    if (snap) {
+      this.val.alt = this.base.alt = this.hide
+      this.val.lid = this.base.lid = 1
+    }
     this.queue = [
       {
         at: this.clock,
@@ -825,7 +837,7 @@ export class Rig {
         spr: { body: [12, 1], eyes: [16, 1] },
       },
     ]
-    this.rise(delay, state)
+    this.pending = null
   }
 
   private rise(delay: number, state: State) {
@@ -939,6 +951,10 @@ export class Rig {
     if (this.lookThing) {
       gx = clamp((this.thing[0] - ex) / 150, -1, 1)
       gy = clamp((this.thing[1] - ey) / 150, -1, 1)
+    }
+    if (this.gaze) {
+      gx = clamp((this.gaze[0] - ex) / 150, -1, 1)
+      gy = clamp((this.gaze[1] - ey) / 150, -1, 1)
     }
     const quiet = st === 'sleepy' || st === 'bored'
     if (!quiet && t >= this.saccAt) {

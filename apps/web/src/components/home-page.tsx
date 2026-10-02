@@ -17,6 +17,7 @@ import { motion, useReducedMotion } from 'motion/react'
 import { useRef } from 'react'
 import { Chrome } from '@/components/chrome'
 import { Creatures } from '@/components/creatures'
+import { NotifyForm } from '@/components/notify-form'
 import { PeekMark } from '@/components/peek-mark'
 import { BEAT, CURVE, NONE } from '@/lib/motion'
 import { colors, fonts } from '@/lib/tokens.stylex'
@@ -77,6 +78,9 @@ export function HomePage() {
             )
           })}
         </h1>
+        <div {...stylex.props(styles.notify)}>
+          <NotifyForm />
+        </div>
       </div>
       <Creatures mark={mark} line={line} />
       <div aria-hidden='true' {...stylex.props(styles.grain)} />
@@ -132,6 +136,14 @@ const styles = stylex.create({
     textAlign: 'center',
     // room for the blur to spill without clipping
     paddingBottom: '0.08em',
+  },
+  // out of flow, under the line, so DROP still centres the mark
+  notify: {
+    position: 'absolute',
+    top: `calc(100% - ${FOOT})`,
+    left: '50%',
+    transform: 'translateX(-50%)',
+    paddingTop: 'clamp(20px, 4svh, 36px)',
   },
   word: { display: 'inline-block', whiteSpace: 'nowrap' },
   letter: {

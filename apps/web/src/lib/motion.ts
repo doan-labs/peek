@@ -36,5 +36,6 @@ export const BEAT = {
   rise: 2.5,
   word: 3.0,
   maker: 3.5,
+  notify: 3.6,
   creatures: 3.7,
 } as const

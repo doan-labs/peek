@@ -25,6 +25,19 @@ import { type RefObject, useEffect, useRef } from 'react'
 import { BEAT } from '@/lib/motion'
 import { Rig, type ShapeKey, type State, VB } from '@/lib/rig'
 
+/* The shower, for the rest of the page: `rain(n)` drops n at once. Set
+ * while the cast is mounted. */
+let shower: ((n: number) => void) | null = null
+export const rain = (n: number) => shower?.(n)
+
+/* Rigs that live elsewhere on the page but step on this loop. `ride`
+ * returns the way off. */
+const riders = new Set<Rig>()
+export function ride(rig: Rig) {
+  riders.add(rig)
+  return () => riders.delete(rig)
+}
+
 type Cast = {
   shape: ShapeKey
   /** Frame width, in row units. */
@@ -223,11 +236,14 @@ export function Creatures({
     let dropped = 0
     let presses: number[] = []
     const spin = () => {
-      const l = line.current?.getBoundingClientRect()
-      if (still || !l) return
+      if (still) return
       presses = [...presses.filter((t) => clock - t < 2.4), clock]
-      if (presses.length <= 4) return
-      for (let k = 0; k < 3 && drops.length < MAX_DROPS; k++, dropped++) {
+      if (presses.length > 4) pour(3)
+    }
+    // stacked above the top, so a big pour arrives as a stream
+    const pour = (n: number) => {
+      if (still || !line.current) return
+      for (let k = 0; k < n && drops.length < MAX_DROPS; k++, dropped++) {
         const px = DROP_PX[dropped % DROP_PX.length]!
         const host = document.createElement('div')
         host.className = stylex.props(styles.drop).className ?? ''
@@ -302,6 +318,7 @@ export function Creatures({
     }
     const button = mark.current
     button?.addEventListener('click', spin)
+    shower = pour
 
     // Leave the tab and it falls asleep; come back and they all jump.
     const icon = document.querySelector<HTMLLinkElement>('link[rel="icon"]')
@@ -357,6 +374,7 @@ export function Creatures({
           clock + (drowsy ? 2 + Math.random() * 3 : 5 + Math.random() * 7)
       })
       for (const rig of rigs) rig.update(dt)
+      for (const rig of riders) rig.update(dt)
       fall(dt)
       raf = requestAnimationFrame(frame)
     }
@@ -369,6 +387,7 @@ export function Creatures({
       document.removeEventListener('pointerout', leave)
       window.removeEventListener('keydown', key)
       button?.removeEventListener('click', spin)
+      shower = null
       document.removeEventListener('visibilitychange', seen)
       document.title = title
       if (icon) icon.href = '/favicon-semicircle.svg'
