@@ -6,8 +6,10 @@
   "compatibility_date": "2026-09-30",
   "main": "./apps/web/worker.ts",
   "assets": { "directory": "./apps/web/dist/client" },
-  // No id: wrangler provisions the namespace on the first deploy.
-  "kv_namespaces": [{ "binding": "NOTIFY" }],
+  // peek-notify, made by the first deploy. The id pins every deploy to it.
+  "kv_namespaces": [
+    { "binding": "NOTIFY", "id": "1a71e323cf6d46a2b435446bb06a08ed" }
+  ],
   // Five signups a minute per IP. `namespace_id` is any number, unique
   // to this limit on the account.
   "ratelimits": [
