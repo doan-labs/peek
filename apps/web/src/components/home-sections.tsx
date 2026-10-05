@@ -25,6 +25,7 @@ import { line, MANAGERS, type Manager } from '@/components/figures/install'
 import { useAutoplay } from '@/components/figures/kit'
 import { ManagerLogo } from '@/components/manager-logo'
 import { CURVE, LAND, NONE } from '@/lib/motion'
+import { playSound } from '@/lib/sound'
 import { COMBOS, EXPRESSION_LIST, NAMES } from '@/lib/studio'
 import { colors, fonts } from '@/lib/tokens.stylex'
 
@@ -54,11 +55,16 @@ export function InstallPill() {
   const still = useReducedMotion()
   const group = useId()
   const cmd = line(pm)
-  const copy = () => {
-    navigator.clipboard?.writeText(cmd).catch(() => {})
-    cheer()
-    setDone(true)
-    setTimeout(() => setDone(false), 1600)
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(cmd)
+      cheer()
+      playSound('success')
+      setDone(true)
+      setTimeout(() => setDone(false), 1600)
+    } catch {
+      // A denied clipboard write gets no success cue.
+    }
   }
   return (
     <div {...stylex.props(styles.installBox)}>
@@ -89,6 +95,7 @@ export function InstallPill() {
         type='button'
         whileTap={{ scale: 0.97 }}
         onClick={copy}
+        data-sound-cue='success'
         aria-label={`Copy: ${cmd}`}
         {...stylex.props(styles.install)}
       >
@@ -313,6 +320,7 @@ function Moods() {
               onClick={() => {
                 play.stop()
                 setMood(e)
+                playSound('change')
               }}
               {...stylex.props(styles.mood, e === mood && styles.moodOn)}
             >

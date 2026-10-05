@@ -27,7 +27,9 @@ import {
   InstallPill,
 } from '@/components/home-sections'
 import { PeekMark } from '@/components/peek-mark'
+import { SoundControl } from '@/components/sound-control'
 import { BEAT, CURVE, NONE } from '@/lib/motion'
+import { playSound } from '@/lib/sound'
 import { colors, fonts } from '@/lib/tokens.stylex'
 
 const LINE = 'A name in, a face out'
@@ -59,12 +61,14 @@ export function HomePage() {
     a.click()
     setTimeout(() => URL.revokeObjectURL(url), 1000)
     cheer()
+    playSound('success')
     setSaved(true)
     setTimeout(() => setSaved(false), 1600)
   }
 
   return (
     <main id='main' {...stylex.props(styles.main)}>
+      <SoundControl />
       <section {...stylex.props(styles.hero)}>
         <Chrome />
         <div {...stylex.props(styles.stack)}>

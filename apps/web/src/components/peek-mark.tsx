@@ -31,6 +31,7 @@ import {
 import { type ReactNode, type Ref, useEffect, useRef, useState } from 'react'
 import { INKS } from '@/lib/inks'
 import { BEAT, CURVE, HOP, LAND, NONE, TURN } from '@/lib/motion'
+import { playSound } from '@/lib/sound'
 import { colors } from '@/lib/tokens.stylex'
 
 /* What a piece's paint does: arrive in its creature ink and settle to bone
@@ -161,6 +162,7 @@ export function PeekMark({ ref }: { ref?: Ref<HTMLButtonElement> }) {
       type='button'
       aria-label='Turn the mark'
       onClick={() => {
+        playSound('turn')
         setTurns((n) => n + 1)
         setJolt((n) => n + 1)
       }}

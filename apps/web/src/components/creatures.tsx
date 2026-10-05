@@ -36,6 +36,7 @@ import { useReducedMotion } from 'motion/react'
 import { type RefObject, useEffect, useRef } from 'react'
 import { BEAT } from '@/lib/motion'
 import { Rig, type ShapeKey, STATES, type State, VB } from '@/lib/rig'
+import { playSound } from '@/lib/sound'
 
 /* The shower, for the rest of the page: `rain(n)` drops n at once. Set
  * while the cast is mounted. */
@@ -187,6 +188,10 @@ export function Creatures({
       rig.body.style.pointerEvents = 'visiblePainted'
       rig.body.style.cursor = 'pointer'
       rig.body.addEventListener('pointerdown', () => {
+        playSound(
+          'poke',
+          ['circle', 'triangle', 'semicircle', 'diamond'].indexOf(c.shape),
+        )
         if (still) return
         rig.poke()
         mood[i] = clock + 4 + Math.random() * 4
