@@ -7,7 +7,7 @@
  * The hashes are real: the server one is the string rendered into the
  * HTML, the client one is computed again in an effect in the browser.
  */
-import { Peek, toSvg } from '@doanlabs/peek'
+import { Peek, toSvg } from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { useEffect, useState } from 'react'

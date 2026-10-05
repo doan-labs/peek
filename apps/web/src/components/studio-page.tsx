@@ -8,7 +8,7 @@
  * hero reads a deferred copy of the name, so typing stays instant while
  * the faces below catch up.
  */
-import { COLORS, EXPRESSIONS, FACES, identify, Peek } from '@doanlabs/peek'
+import { COLORS, EXPRESSIONS, FACES, identify, Peek } from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { Link } from '@tanstack/react-router'
 import { useDeferredValue, useRef, useState } from 'react'
@@ -55,7 +55,7 @@ export function StudioPage() {
           </Link>
           <p {...stylex.props(styles.status)}>
             <i {...stylex.props(styles.dot)} />
-            @doanlabs/peek · peek@{who.version}
+            @doan-labs/peek · peek@{who.version}
           </p>
         </header>
 

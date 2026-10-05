@@ -1,53 +1,13 @@
 /*
  * Short, playful sounds for deliberate actions. Music is only a tiny
- * two-note flourish on opt-in and success, never a background track.
+ * two-note flourish on success, never a background track. Always on: every
+ * cue is called from a gesture, so the context is made and resumed there.
  */
-let enabled = false
 let context: AudioContext | null = null
 let last = Number.NEGATIVE_INFINITY
-let generation = 0
-const listeners = new Set<() => void>()
 const active = new Set<OscillatorNode>()
 
-export const soundEnabled = () => enabled
-export const soundServerSnapshot = () => false
-export function watchSound(listener: () => void) {
-  listeners.add(listener)
-  return () => {
-    listeners.delete(listener)
-  }
-}
-const publish = () => {
-  for (const listener of listeners) listener()
-}
-
-export function setSound(on: boolean) {
-  const ticket = ++generation
-  enabled = on
-  publish()
-  if (!on) {
-    for (const oscillator of active) oscillator.stop()
-    active.clear()
-    void context?.suspend().catch(() => {})
-    return
-  }
-  try {
-    context ??= new AudioContext()
-    // Resume inside the opt-in gesture, then give one tiny musical hello.
-    void context
-      .resume()
-      .then(() => {
-        if (ticket === generation && enabled) playSound('hello')
-      })
-      .catch(() => {
-        if (ticket === generation) setSound(false)
-      })
-  } catch {
-    setSound(false)
-  }
-}
-
-type Cue = 'click' | 'turn' | 'poke' | 'success' | 'change' | 'hello'
+type Cue = 'click' | 'turn' | 'poke' | 'success' | 'change'
 const CUES = {
   click: { notes: [620], duration: 0.065, level: 0.045, wave: 'triangle' },
   turn: { notes: [185], duration: 0.21, level: 0.065, wave: 'sine' },
@@ -59,7 +19,6 @@ const CUES = {
     level: 0.045,
     wave: 'sine',
   },
-  hello: { notes: [523.25, 783.99], duration: 0.11, level: 0.04, wave: 'sine' },
 } satisfies Record<
   Cue,
   {
@@ -71,8 +30,13 @@ const CUES = {
 >
 
 export function playSound(cue: Cue, voice = 0) {
-  const ctx = context
-  if (!enabled || !ctx || ctx.state !== 'running') return
+  let ctx: AudioContext
+  try {
+    ctx = context ??= new AudioContext()
+  } catch {
+    return
+  }
+  if (ctx.state !== 'running') void ctx.resume().catch(() => {})
   const now = ctx.currentTime
   // Explicit action cues run before the delegated button click. This also
   // keeps rapid tapping from stacking a loud pile of sounds.

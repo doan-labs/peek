@@ -1,13 +1,30 @@
 {
-  "name": "@doanlabs/peek",
-  "version": "0.1.0",
+  "name": "@doan-labs/peek",
+  "version": "1.0.0",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "development": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./svg": {
+      "types": "./dist/svg.d.ts",
+      "import": "./dist/svg.js",
+      "default": "./dist/svg.js"
+    },
+    "./identity": {
+      "types": "./dist/identity.d.ts",
+      "import": "./dist/identity.js",
+      "default": "./dist/identity.js"
+    }
   },
   "scripts": {
     "check-types": "tsc --noEmit",
-    "test": "bun test"
+    "test": "bun test",
+    "build": "bun scripts/build.ts",
+    "prepack": "bun run build"
   },
   "peerDependencies": {
     "react": ">=19"
@@ -20,5 +37,36 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "typescript": "^6.0.2"
+  },
+  "description": "Deterministic SVG avatars from a name, with expressions and a React component.",
+  "license": "MIT",
+  "author": "Doan Labs",
+  "homepage": "https://peek.doan-labs.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/doan-labs/peek.git",
+    "directory": "packages/peek"
+  },
+  "keywords": [
+    "avatar",
+    "svg",
+    "react",
+    "deterministic",
+    "peek"
+  ],
+  "files": [
+    "dist",
+    "src/*.ts",
+    "src/*.tsx",
+    "!src/*.test.ts",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
   }
 }

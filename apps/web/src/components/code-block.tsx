@@ -12,7 +12,7 @@
  * Live snippets (a figure's code, rewritten as the reader plays) flash each
  * line that just changed. Copy always takes the plain text.
  */
-import { AXES, Peek, type PeekProps } from '@doanlabs/peek'
+import { AXES, Peek, type PeekProps } from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { Fragment, type ReactNode, useEffect, useRef, useState } from 'react'

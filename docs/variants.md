@@ -49,7 +49,7 @@ persona = mulberry32(seed('persona'))   // continuous proportions, fixed draw or
 
 ## The `peek` style
 
-Shipped as `@doanlabs/peek` (`packages/peek`), style version `peek@1`.
+Shipped as `@doan-labs/peek` (`packages/peek`), style version `peek@1`.
 Tables in `packages/peek/src/tables.ts`; `VERSIONS` pins how much of each
 list a version picks from.
 

@@ -10,7 +10,7 @@ import {
   LATEST,
   type PeekOptions,
   VERSIONS,
-} from '@doanlabs/peek'
+} from '@doan-labs/peek'
 
 export type Look = {
   expression: Expression

@@ -5,7 +5,7 @@
  * the <img> tag, folded until the reader opens it. Every number on them is measured from
  * the string toSvg just returned.
  */
-import { toSvg } from '@doanlabs/peek'
+import { toSvg } from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'

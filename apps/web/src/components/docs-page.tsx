@@ -7,7 +7,7 @@
  * on navigation (never on first paint, so the prerendered HTML shows), and
  * copy buttons swap their icon in place.
  */
-import { Peek } from '@doanlabs/peek'
+import { Peek } from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { Link, Outlet, useLocation } from '@tanstack/react-router'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
@@ -21,6 +21,7 @@ import {
   type DocPage,
   PAGES,
   pageUrl,
+  REPO,
   toMarkdown,
   toPrompt,
 } from '@/lib/docs'
@@ -117,6 +118,21 @@ export function DocsLayout() {
                   </a>
                 </li>
               ))}
+            </ul>
+          </div>
+          <div {...stylex.props(styles.group)}>
+            <p {...stylex.props(styles.groupHead)}>Source</p>
+            <ul {...stylex.props(styles.navList)}>
+              <li {...stylex.props(styles.navItem)}>
+                <a
+                  href={REPO}
+                  target='_blank'
+                  rel='noopener'
+                  {...stylex.props(styles.navLink)}
+                >
+                  GitHub ↗
+                </a>
+              </li>
             </ul>
           </div>
         </nav>

@@ -2,7 +2,8 @@
  * Two corner labels from the teaser, the page's file stamp. The clock fades
  * in first; the maker's lockup waits for the line. Then both stay quiet:
  * the clock counts, nothing else moves. The top left one is the maker's
- * lockup and a link; the clock is decoration.
+ * lockup and a link, the top right one the source on GitHub; the clock is
+ * decoration.
  *
  * The clock writes its own text node every frame; React renders it once.
  */
@@ -10,6 +11,7 @@ import * as stylex from '@stylexjs/stylex'
 import { motion, useReducedMotion } from 'motion/react'
 import { type ReactNode, useEffect, useRef } from 'react'
 import { DoanMark } from '@/components/doan-mark'
+import { REPO } from '@/lib/docs'
 import { BEAT, CURVE, NONE } from '@/lib/motion'
 import { colors, fonts } from '@/lib/tokens.stylex'
 
@@ -65,6 +67,16 @@ export function Chrome() {
           Doan Labs
         </span>
       </motion.a>
+      <motion.a
+        href={REPO}
+        target='_blank'
+        rel='noopener'
+        {...rise(0, BEAT.maker)}
+        {...stylex.props(styles.corner, styles.tr, styles.maker, styles.repo)}
+      >
+        GitHub
+        <span aria-hidden='true'>↗</span>
+      </motion.a>
       {corner(1, styles.br, <span ref={clock}>T 00.0 S</span>)}
     </>
   )
@@ -91,6 +103,15 @@ const styles = stylex.create({
     userSelect: 'none',
   },
   tl: { top: INSET, left: INSET },
+  tr: { top: INSET, right: INSET },
+  // as tall as the maker's mark, so the two labels share a centre line
+  repo: {
+    gap: '6px',
+    minHeight: '14px',
+    color: { default: colors['--muted'], ':hover': colors['--bone'] },
+    transitionProperty: 'color',
+    transitionDuration: '0.2s',
+  },
   maker: {
     gap: '10px',
     textTransform: 'uppercase',

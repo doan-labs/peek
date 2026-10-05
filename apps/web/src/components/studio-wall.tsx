@@ -6,7 +6,7 @@
  * Every live face steps from the library's one shared loop and pauses when
  * it scrolls away, so the wall costs what is on screen.
  */
-import { LATEST, Peek, toSvg } from '@doanlabs/peek'
+import { LATEST, Peek, toSvg } from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { motion, useReducedMotion } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'

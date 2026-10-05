@@ -10,7 +10,7 @@
  * Style is a label, not a control: there is one style. The layer is built
  * to grow; the bar does not pretend it has.
  */
-import { LATEST } from '@doanlabs/peek'
+import { LATEST } from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { motion, useReducedMotion } from 'motion/react'
 import { LAND, NONE } from '@/lib/motion'

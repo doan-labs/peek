@@ -7,7 +7,7 @@
  * Below 40rem the table stacks: one block per prop, name and default on a
  * line, the type under them, then the note, so nothing scrolls sideways.
  */
-import * as peek from '@doanlabs/peek'
+import * as peek from '@doan-labs/peek'
 import {
   COLORS,
   EXPRESSIONS,
@@ -16,7 +16,7 @@ import {
   LATEST,
   PARTS,
   type PeekProps,
-} from '@doanlabs/peek'
+} from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { StudioSection } from '@/components/studio-section'
 import { FRAMES } from '@/lib/studio'
@@ -65,12 +65,12 @@ export function StudioUsage({
   // the JS snippet quotes the way its import does
   const q = `'${name.replace(/[\\']/g, '\\$&')}'`
   const face = identify(name).face
-  const react = `import { Peek } from '@doanlabs/peek'
+  const react = `import { Peek } from '@doan-labs/peek'
 
 <Peek name=${n} />
 <Peek name=${n} size={96} expression="happy" />
 <Peek name=${n} animate gaze="pointer" />`
-  const svg = `import { identify, toSvg } from '@doanlabs/peek'
+  const svg = `import { identify, toSvg } from '@doan-labs/peek'
 
 const svg = toSvg(${q}, {
   size: 96,
@@ -89,7 +89,7 @@ identify(${q}).face // '${face}'`
         <i {...stylex.props(styles.dot)} />
         <span>
           <b {...stylex.props(styles.soonHead)}>Install.</b>
-          npm install @doanlabs/peek
+          npm install @doan-labs/peek
         </span>
       </div>
       <div {...stylex.props(styles.snips)}>

@@ -6,7 +6,7 @@
  * Ported from Duo's blog figures, retuned to the sheet: thin rules, mono
  * micro labels, signal red spent on selection only.
  */
-import { Peek, type PeekProps } from '@doanlabs/peek'
+import { Peek, type PeekProps } from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import {
   AnimatePresence,

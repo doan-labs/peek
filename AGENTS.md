@@ -23,7 +23,7 @@ real file.
 
 `/` is the home page: a hero that is the teaser's last frame made live, then
 `home-sections.tsx`. The library
-is `packages/peek` (`@doanlabs/peek`); `docs/variants.md` is its
+is `packages/peek` (`@doan-labs/peek`); `docs/variants.md` is its
 model. `/docs` is sidebar docs from one source, `apps/web/src/lib/docs.ts`, which
 also builds `/llms.txt`, `/llms-full.txt` and each page's copy prompt. Edit
 content there, never in the components. `/studio` is the full

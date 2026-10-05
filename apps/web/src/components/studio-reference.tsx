@@ -14,7 +14,7 @@ import {
   LISTS,
   Peek,
   VERSIONS,
-} from '@doanlabs/peek'
+} from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { StudioSection } from '@/components/studio-section'
 import { COMBOS, EXPRESSION_LIST, type Look, lookProps } from '@/lib/studio'

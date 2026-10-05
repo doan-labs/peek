@@ -4,7 +4,7 @@
  * that cheers when the line is copied. RunsWhere: no box, a face hopping
  * along a line of runtimes, each stop's name drawn as its own face.
  */
-import { Peek } from '@doanlabs/peek'
+import { Peek } from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { motion, useReducedMotion } from 'motion/react'
 import { useEffect, useId, useRef, useState } from 'react'
@@ -21,7 +21,7 @@ const VERB: Record<Manager, string> = {
   pnpm: 'add',
   yarn: 'add',
 }
-export const line = (pm: Manager) => `${pm} ${VERB[pm]} @doanlabs/peek`
+export const line = (pm: Manager) => `${pm} ${VERB[pm]} @doan-labs/peek`
 const KEY = 0.035
 
 /* ---------- Install ---------- */

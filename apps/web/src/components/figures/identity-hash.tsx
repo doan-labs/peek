@@ -17,7 +17,7 @@ import {
   Peek,
   tidy,
   VERSIONS,
-} from '@doanlabs/peek'
+} from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { useEffect, useId, useRef, useState } from 'react'

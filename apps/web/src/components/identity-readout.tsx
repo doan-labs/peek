@@ -11,7 +11,7 @@ import {
   identify,
   LISTS,
   VERSIONS,
-} from '@doanlabs/peek'
+} from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { fonts, sheet } from '@/lib/tokens.stylex'
 

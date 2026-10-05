@@ -3,7 +3,7 @@
  * a drawing made of the faces it counts. SameFace: one name, drawn twice,
  * as a server would and as the browser does, and the bytes agree.
  *
- * Every number is read from @doanlabs/peek, never typed.
+ * Every number is read from @doan-labs/peek, never typed.
  */
 import {
   COLORS,
@@ -16,7 +16,7 @@ import {
   Peek,
   toSvg,
   VERSIONS,
-} from '@doanlabs/peek'
+} from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { motion, useInView, useReducedMotion } from 'motion/react'
 import { type ReactNode, useEffect, useRef, useState } from 'react'

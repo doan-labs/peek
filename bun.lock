@@ -13,7 +13,7 @@
     "apps/web": {
       "name": "web",
       "dependencies": {
-        "@doanlabs/peek": "workspace:*",
+        "@doan-labs/peek": "workspace:*",
         "@fontsource-variable/inter-tight": "^5.3.0",
         "@fontsource-variable/jetbrains-mono": "^5.3.0",
         "@stylexjs/stylex": "0.19.1",
@@ -39,7 +39,7 @@
       },
     },
     "packages/peek": {
-      "name": "@doanlabs/peek",
+      "name": "@doan-labs/peek",
       "version": "0.1.0",
       "devDependencies": {
         "@peek/typescript-config": "workspace:*",
@@ -53,6 +53,9 @@
       "peerDependencies": {
         "react": ">=19",
       },
+      "optionalPeers": [
+        "react",
+      ],
     },
     "packages/typescript-config": {
       "name": "@peek/typescript-config",
@@ -133,7 +136,7 @@
 
     "@cspotcode/source-map-support": ["@cspotcode/source-map-support@0.8.1", "", { "dependencies": { "@jridgewell/trace-mapping": "0.3.9" } }, "sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw=="],
 
-    "@doanlabs/peek": ["@doanlabs/peek@workspace:packages/peek"],
+    "@doan-labs/peek": ["@doan-labs/peek@workspace:packages/peek"],
 
     "@dual-bundle/import-meta-resolve": ["@dual-bundle/import-meta-resolve@4.2.1", "", {}, "sha512-id+7YRUgoUX6CgV0DtuhirQWodeeA7Lf4i2x71JS/vtA5pRb/hIGWlw+G6MeXvsM+MXrz0VAydTGElX1rAfgPg=="],
 

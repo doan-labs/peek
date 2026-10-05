@@ -11,7 +11,7 @@ import {
   type Expression,
   GROUPS,
   Peek,
-} from '@doanlabs/peek'
+} from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { motion, useReducedMotion } from 'motion/react'
 import { type KeyboardEvent, type PointerEvent, useState } from 'react'

@@ -15,10 +15,10 @@
  * title settles. Letters sit inside a span per word, so a phone breaks the
  * line between words and never inside one.
  */
-import { Peek, toSvg } from '@doanlabs/peek'
+import { Peek, toSvg } from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { motion, useReducedMotion } from 'motion/react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Chrome } from '@/components/chrome'
 import { Creatures, cheer } from '@/components/creatures'
 import {
@@ -27,7 +27,6 @@ import {
   InstallPill,
 } from '@/components/home-sections'
 import { PeekMark } from '@/components/peek-mark'
-import { SoundControl } from '@/components/sound-control'
 import { BEAT, CURVE, NONE } from '@/lib/motion'
 import { playSound } from '@/lib/sound'
 import { colors, fonts } from '@/lib/tokens.stylex'
@@ -49,6 +48,18 @@ export function HomePage() {
   const [typed, setTyped] = useState('')
   const [saved, setSaved] = useState(false)
   const name = typed.trim() || NAME
+  // a click for every action that has no cue of its own
+  useEffect(() => {
+    const click = (event: MouseEvent) => {
+      if (!(event.target instanceof Element)) return
+      const action = event.target.closest('button, a[href], [role="button"]')
+      if (!action || action.hasAttribute('data-sound-cue')) return
+      if (action instanceof HTMLButtonElement && action.disabled) return
+      playSound('click')
+    }
+    document.addEventListener('click', click)
+    return () => document.removeEventListener('click', click)
+  }, [])
   // the face as a file: what toSvg gives for the name, the size of a
   // profile picture
   const save = () => {
@@ -68,7 +79,6 @@ export function HomePage() {
 
   return (
     <main id='main' {...stylex.props(styles.main)}>
-      <SoundControl />
       <section {...stylex.props(styles.hero)}>
         <Chrome />
         <div {...stylex.props(styles.stack)}>

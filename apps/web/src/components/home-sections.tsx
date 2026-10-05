@@ -7,13 +7,12 @@
 import {
   COLORS,
   EXPRESSIONS,
-  type Expression,
   FACES,
   identify,
   LATEST,
   Peek,
   toSvg,
-} from '@doanlabs/peek'
+} from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { Link } from '@tanstack/react-router'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
@@ -22,11 +21,13 @@ import { type Lang, tokens } from '@/components/code-block'
 import { cheer } from '@/components/creatures'
 import { DoanMark } from '@/components/doan-mark'
 import { line, MANAGERS, type Manager } from '@/components/figures/install'
-import { useAutoplay } from '@/components/figures/kit'
+import { PropsPlayground } from '@/components/figures/react'
 import { ManagerLogo } from '@/components/manager-logo'
+import { REPO } from '@/lib/docs'
 import { CURVE, LAND, NONE } from '@/lib/motion'
 import { playSound } from '@/lib/sound'
 import { COMBOS, EXPRESSION_LIST, NAMES } from '@/lib/studio'
+import { inkSheet } from '@/lib/theme'
 import { colors, fonts } from '@/lib/tokens.stylex'
 
 /* The package manager: one pick for every install line on the page. */
@@ -282,14 +283,7 @@ function Calls() {
 
 /* ---------- 03 · The expressions ---------- */
 
-const STEP = 1.6
-
 function Moods() {
-  const [mood, setMood] = useState<Expression>('normal')
-  const reduce = useReducedMotion()
-  const play = useAutoplay<HTMLDivElement>((t) =>
-    setMood(EXPRESSION_LIST[Math.floor(t / STEP) % EXPRESSION_LIST.length]!),
-  )
   return (
     <section {...stylex.props(styles.section)}>
       <Head
@@ -300,41 +294,9 @@ function Moods() {
         The name decides who it is. Expression, gaze and motion are yours to
         set, and the face stays itself.
       </Head>
-      <div ref={play.ref} {...stylex.props(styles.moods)}>
-        <div {...stylex.props(styles.moodStage)}>
-          <Peek
-            name='Peek'
-            size={220}
-            expression={mood}
-            gaze='pointer'
-            riso
-            animate
-          />
-        </div>
-        <fieldset aria-label='Expression' {...stylex.props(styles.moodList)}>
-          {EXPRESSION_LIST.map((e) => (
-            <button
-              key={e}
-              type='button'
-              aria-pressed={e === mood}
-              onClick={() => {
-                play.stop()
-                setMood(e)
-                playSound('change')
-              }}
-              {...stylex.props(styles.mood, e === mood && styles.moodOn)}
-            >
-              {e === mood ? (
-                <motion.span
-                  layoutId='home-mood'
-                  transition={reduce ? NONE : LAND}
-                  {...stylex.props(styles.moodPill)}
-                />
-              ) : null}
-              <span {...stylex.props(styles.moodText)}>{e}</span>
-            </button>
-          ))}
-        </fieldset>
+      {/* the docs' playground, pinned to its dark scheme on the ink ground */}
+      <div {...stylex.props(inkSheet)}>
+        <PropsPlayground />
       </div>
     </section>
   )
@@ -398,6 +360,14 @@ function Footer() {
           </Link>
           <a href='/llms.txt' {...stylex.props(styles.baseLink)}>
             llms.txt
+          </a>
+          <a
+            href={REPO}
+            target='_blank'
+            rel='noopener'
+            {...stylex.props(styles.baseLink)}
+          >
+            GitHub
           </a>
           <span {...stylex.props(styles.version)}>peek@{LATEST}</span>
         </nav>
@@ -640,46 +610,6 @@ const styles = stylex.create({
   k_punct: { color: colors['--muted'] },
   k_com: { color: colors['--muted'] },
   k_plain: { color: colors['--bone'] },
-  moods: {
-    display: 'grid',
-    gridTemplateColumns: {
-      default: '1fr',
-      '@media (min-width: 800px)': 'minmax(0, 1fr) minmax(0, 1fr)',
-    },
-    alignItems: 'center',
-    gap: '40px',
-  },
-  moodStage: { display: 'grid', placeItems: 'center' },
-  moodList: {
-    margin: 0,
-    padding: 0,
-    borderWidth: 0,
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: '8px',
-  },
-  mood: {
-    ...MICRO,
-    ...RING,
-    position: 'relative',
-    paddingBlock: '11px',
-    paddingInline: '16px',
-    ...RULE,
-    borderRadius: '999px',
-    backgroundColor: 'transparent',
-    color: { default: colors['--muted'], ':hover': colors['--bone'] },
-    cursor: 'pointer',
-  },
-  moodOn: {
-    color: { default: colors['--ground'], ':hover': colors['--ground'] },
-  },
-  moodPill: {
-    position: 'absolute',
-    inset: '-1px',
-    borderRadius: '999px',
-    backgroundColor: colors['--bone'],
-  },
-  moodText: { position: 'relative' },
   facts: {
     margin: 0,
     display: 'grid',

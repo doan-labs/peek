@@ -10,9 +10,10 @@ import {
   LATEST,
   PARTS,
   type PeekProps,
-} from '@doanlabs/peek'
+} from '@doan-labs/peek'
 
 export const SITE = 'https://peek.doan-labs.com'
+export const REPO = 'https://github.com/doan-labs/peek'
 
 /** A string is a paragraph; `code` in backticks stays code. */
 export type Block =
@@ -80,7 +81,7 @@ export const PAGES: DocPage[] = [
           `State on top: ${EXPR.length} expressions, gaze, and optional animation.`,
         ],
       },
-      `Install with \`npm install @doanlabs/peek\`. Current style version: \`peek@${LATEST}\`.`,
+      `Install with \`npm install @doan-labs/peek\`. Current style version: \`peek@${LATEST}\`.`,
     ],
   },
   {
@@ -88,10 +89,10 @@ export const PAGES: DocPage[] = [
     group: 'Get started',
     title: 'Installation',
     blurb: 'One package, no runtime dependencies.',
-    task: 'Set up @doanlabs/peek in this project.',
+    task: 'Set up @doan-labs/peek in this project.',
     blocks: [
-      '`@doanlabs/peek` is one package. Add it with your package manager:',
-      { figure: 'install', md: '```bash\nnpm install @doanlabs/peek\n```' },
+      '`@doan-labs/peek` is one package. Add it with your package manager:',
+      { figure: 'install', md: '```bash\nnpm install @doan-labs/peek\n```' },
       {
         list: [
           '`<Peek>` needs React 19.',
@@ -126,7 +127,7 @@ export const PAGES: DocPage[] = [
       },
       { h: 'Read it' },
       {
-        code: `import { identify } from '@doanlabs/peek'
+        code: `import { identify } from '@doan-labs/peek'
 
 identify('Linh') // { face, color, eyes, brows, mouth, cheeks, trait, … }`,
         lang: 'ts',
@@ -167,7 +168,7 @@ identify('Linh') // { face, color, eyes, brows, mouth, cheeks, trait, … }`,
       {
         figure: 'props-playground',
         md: `\`\`\`tsx
-import { Peek } from '@doanlabs/peek'
+import { Peek } from '@doan-labs/peek'
 
 <Peek name="Linh" />
 <Peek name="Linh" size={96} expression="happy" />
@@ -206,7 +207,7 @@ import { Peek } from '@doanlabs/peek'
     task: 'Generate Peek avatars as SVG strings on the server with toSvg.',
     blocks: [
       {
-        code: `import { toSvg } from '@doanlabs/peek'
+        code: `import { toSvg } from '@doan-labs/peek'
 
 const svg = toSvg('Linh', { size: 96, frame: 'bone' })`,
         lang: 'ts',
@@ -265,7 +266,7 @@ export const toMarkdown = (p: DocPage) =>
 
 export const toPrompt = (p: DocPage) => `${p.task}
 
-Use \`@doanlabs/peek\` by Doan Labs. The full docs are at ${SITE}/llms-full.txt.
+Use \`@doan-labs/peek\` by Doan Labs. The full docs are at ${SITE}/llms-full.txt.
 Below is the page for this task.
 
 ${toMarkdown(p)}
@@ -283,6 +284,7 @@ ${PAGES.map((p) => `- [${p.title}](${pageUrl(p)}): ${p.blurb}`).join('\n')}
 ## Optional
 
 - [Full docs](${SITE}/llms-full.txt): every page above in one file
+- [Source](${REPO}): the code, on GitHub
 `
 
 export const llmsFull = () =>

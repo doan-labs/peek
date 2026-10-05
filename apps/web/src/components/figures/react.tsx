@@ -12,7 +12,7 @@ import {
   type Frame,
   type Gaze,
   Peek,
-} from '@doanlabs/peek'
+} from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { motion, useReducedMotion } from 'motion/react'
 import { type SyntheticEvent, useEffect, useRef, useState } from 'react'
@@ -91,7 +91,7 @@ function jsx(p: Props) {
   if (p.animate) lines.push('  animate')
   if (p.gaze === 'pointer') lines.push('  gaze="pointer"')
   else if (p.gaze !== 'none') lines.push(`  gaze={${p.gaze}}`)
-  return `import { Peek } from '@doanlabs/peek'\n\n<Peek\n${lines.join('\n')}\n/>`
+  return `import { Peek } from '@doan-labs/peek'\n\n<Peek\n${lines.join('\n')}\n/>`
 }
 
 export function PropsPlayground() {

@@ -4,7 +4,7 @@
  * control: tap it for the next one. Under the animate side, a row of faces
  * on the same shared loop.
  */
-import { type Expression, Peek } from '@doanlabs/peek'
+import { type Expression, Peek } from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { motion } from 'motion/react'
 import { useState } from 'react'
