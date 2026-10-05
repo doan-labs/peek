@@ -13,6 +13,7 @@
     "test": "bun worker.check.mjs"
   },
   "dependencies": {
+    "@doanlabs/peek": "workspace:*",
     "@fontsource-variable/inter-tight": "^5.3.0",
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
     "@stylexjs/stylex": "0.19.1",

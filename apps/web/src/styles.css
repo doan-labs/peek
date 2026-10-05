@@ -34,4 +34,25 @@
   svg {
     display: block;
   }
+
+  /* /studio and /docs are a white sheet with a dark twin, not the ink
+   * ground. The tokens are the sheet group in lib/tokens.stylex.ts. */
+  html:has([data-sheet]) {
+    background: var(--page);
+    color-scheme: light dark;
+  }
+
+  /* the studio's sticky control bar, two rows tall at every width */
+  html:has([data-studio]) {
+    scroll-padding-top: 6.5rem;
+  }
+
+  html:has([data-studio] dialog[open]) {
+    overflow: hidden;
+  }
+
+  [data-sheet] :focus-visible {
+    outline: 2px solid var(--red);
+    outline-offset: 3px;
+  }
 }

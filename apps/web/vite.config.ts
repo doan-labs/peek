@@ -60,9 +60,23 @@ export default defineConfig({
      * imports with its own resolver, which never reads tsconfig paths.
      */
     stylex.vite({ aliases: { '@/*': [src], '#/*': [src] } }),
-    // Static for now: every route prerenders to HTML, which the root
-    // wrangler.jsonc serves as Worker assets.
-    tanstackStart({ prerender: { enabled: true, crawlLinks: true } }),
+    // Static for now: pages prerender to HTML, which the root
+    // wrangler.jsonc serves as Worker assets. Only listed pages ship. /studio is held back until release: unlisted,
+    // unlinked, so it runs in dev and never reaches the build. Auto
+    // discovery is off, or every static route would prerender anyway.
+    tanstackStart({
+      prerender: {
+        enabled: true,
+        crawlLinks: true,
+        autoStaticPathsDiscovery: false,
+      },
+      pages: [
+        { path: '/' },
+        { path: '/docs' },
+        { path: '/llms.txt' },
+        { path: '/llms-full.txt' },
+      ],
+    }),
     viteReact(),
     worker(),
   ],

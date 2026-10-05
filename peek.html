@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Doan Labs Avatar Studio</title>
+<title>Peek · Doan Labs</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -43,8 +43,9 @@ button:focus-visible,.frame:focus-visible{outline:2px solid var(--signal);outlin
 
 .intro{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:32px;align-items:end;padding-block:48px 36px}
 .intro h1{font-size:clamp(44px,7vw,88px);line-height:.92;letter-spacing:-.045em;font-weight:600;margin:0;text-wrap:balance}
+.intro .tagline{margin:14px 0 0;font-size:clamp(20px,2.4vw,28px);line-height:1.2;letter-spacing:-.02em;font-weight:500;color:var(--fg);max-width:none}
 .intro p{margin:18px 0 0;font-size:17px;line-height:1.5;color:var(--soft);max-width:56ch}
-.facts{display:grid;grid-template-columns:repeat(3,auto);gap:0 32px;border-top:1px solid var(--fg);padding-top:12px}
+.facts{display:grid;grid-template-columns:repeat(4,auto);gap:0 32px;border-top:1px solid var(--fg);padding-top:12px}
 .facts div{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.05em;line-height:1.6}
 .facts b{display:block;font-family:var(--sans);font-size:22px;color:var(--fg);letter-spacing:-.02em;font-weight:600}
 
@@ -63,7 +64,17 @@ button:focus-visible,.frame:focus-visible{outline:2px solid var(--signal);outlin
 .panel{display:flex;flex-direction:column;gap:30px;min-width:0}
 .ctl h3{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.06em;margin:0 0 14px;display:flex;justify-content:space-between;gap:12px}
 .ctl h3 span{font-weight:400;color:var(--muted)}
-.faces{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.faces{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+/* name: the hash input. Same name in, same face out */
+.namebox{display:flex;align-items:baseline;gap:12px;border-bottom:1px solid var(--fg);padding-bottom:6px;transition:box-shadow .15s}
+.namebox:focus-within{box-shadow:0 1px 0 var(--signal)}
+.namebox input{flex:1;min-width:0;border:0;background:none;color:var(--fg);font:600 26px/1.15 var(--sans);letter-spacing:-.02em;padding:0;outline:none;border-radius:0}
+.namebox input::placeholder{color:var(--muted);font-weight:500;opacity:1}
+.namebox button{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--muted);transition:color .15s}
+.namebox button:hover{color:var(--fg)}
+.namebox button[hidden]{display:none}
+.namemeta{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.04em;line-height:1.7;margin:10px 0 12px;font-variant-numeric:tabular-nums;min-height:3.4em}
+.namemeta b{color:var(--fg);font-weight:700}
 .face{display:flex;flex-direction:column;gap:8px;text-align:left}
 .face .thumb{position:relative;width:100%;aspect-ratio:1;outline:1px solid transparent;outline-offset:3px;transition:outline-color .15s}
 .face .thumb svg{display:block;width:100%;height:100%}
@@ -101,7 +112,7 @@ button:focus-visible,.frame:focus-visible{outline:2px solid var(--signal);outlin
 .ramp-note{display:flex;gap:28px;flex-wrap:wrap;margin-top:16px;font-family:var(--mono);font-size:10.5px;color:var(--muted);line-height:1.6;letter-spacing:.04em}
 .ramp-note b{color:var(--fg);display:block}
 
-.palette{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:1px;background:var(--line2);border:1px solid var(--line2)}
+.palette{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:1px;background:var(--line2);border:1px solid var(--line2)}
 .sw{background:var(--page);display:flex;flex-direction:column}
 .sw .chip{aspect-ratio:1.25;position:relative}
 .sw .chip i{position:absolute;right:10px;bottom:10px;width:34%;aspect-ratio:1}
@@ -112,6 +123,19 @@ button:focus-visible,.frame:focus-visible{outline:2px solid var(--signal);outlin
 .pal-rules div{font-size:13.5px;line-height:1.5;color:var(--soft)}
 .pal-rules b{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--fg);display:flex;gap:8px;align-items:center;margin-bottom:4px}
 
+/* story: what this playground is for */
+.story__body{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 48px;max-width:1120px}
+.story__body p{margin:0;font-size:18px;line-height:1.55;color:var(--soft);max-width:52ch}
+.story__body p:first-child{color:var(--fg)}
+.demos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:28px;margin-top:44px;border-top:1px solid var(--line2);padding-top:28px}
+.demo{display:flex;flex-direction:column;gap:12px;min-width:0}
+.demo .mini{width:100%;max-width:220px;aspect-ratio:1;box-shadow:0 0 0 1px var(--frame-edge)}
+.demo .mini svg{display:block;width:100%;height:100%}
+.demo h4{margin:4px 0 0;font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.06em;display:flex;justify-content:space-between;gap:10px;max-width:220px}
+.demo h4 span{font-weight:400;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.demo p{margin:0;font-size:13.5px;line-height:1.5;color:var(--soft);max-width:34ch}
+.demo--react .mini{cursor:pointer;touch-action:manipulation}
+.story__end{margin:40px 0 0;font-size:15px;line-height:1.5;color:var(--soft);max-width:64ch}
 .foot{border-top:1px solid var(--fg);padding-top:18px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.04em}
 
 /* adjustment rig: sliders sit on the frame's edges, the height rail on its right side */
@@ -148,13 +172,19 @@ button:focus-visible,.frame:focus-visible{outline:2px solid var(--signal);outlin
 @media (max-width:980px){
   .studio{grid-template-columns:minmax(0,1fr)}
   .intro{grid-template-columns:minmax(0,1fr)}
-  .palette{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .palette{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .palette .sw:last-child{grid-column:span 2}
+  .palette .sw:last-child .chip{aspect-ratio:2.52}
+  .story__body{grid-template-columns:minmax(0,1fr)}
+  .demos{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (max-width:560px){
   .adj-top{grid-template-columns:minmax(0,1fr);gap:16px}
   .adj-bottom{grid-template-columns:minmax(0,1fr) 96px;grid-template-areas:"mouth mouth" "tilt pad" "trait pad";gap:16px 20px}
   .frame-row{grid-template-columns:minmax(0,1fr) 54px;gap:8px}
-  .facts{grid-template-columns:repeat(3,minmax(0,1fr));gap:0 14px}
+  .facts{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 14px}
+  .demos{gap:24px 18px}
+  .story__body p{font-size:16.5px}
   .facts b{font-size:18px}
   .pal-rules{grid-template-columns:minmax(0,1fr)}
   .palette{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -164,19 +194,21 @@ button:focus-visible,.frame:focus-visible{outline:2px solid var(--signal);outlin
 
 <div class="wrap">
   <header class="top">
-    <div class="brand"><svg viewBox="0 0 400 400" aria-hidden="true"><rect width="400" height="400" fill="#1A1918"/><path d="M120 95A50 50 0 0 1 120 195Z" fill="#F3F0E8"/><circle cx="243" cy="140" r="36" fill="none" stroke="#F3F0E8" stroke-width="18"/><path d="M145 214L196 302L94 302Z" fill="#F3F0E8"/><path d="M257 194L315 252L257 310L199 252ZM257 226L231 252L257 278L283 252Z" fill="#F3F0E8" fill-rule="evenodd"/></svg>Doan Labs <span>/ DESIGN SYSTEM / IDENTITY / AVATARS / STUDIO</span></div>
-    <div class="mono"><i class="rd"></i>SYS/AVATAR · MOTION LAYER · v1.1 · 2026.09</div>
+    <div class="brand"><svg viewBox="0 0 400 400" aria-hidden="true"><rect width="400" height="400" fill="#1A1918"/><path d="M120 95A50 50 0 0 1 120 195Z" fill="#F3F0E8"/><circle cx="243" cy="140" r="36" fill="none" stroke="#F3F0E8" stroke-width="18"/><path d="M145 214L196 302L94 302Z" fill="#F3F0E8"/><path d="M257 194L315 252L257 310L199 252ZM257 226L231 252L257 278L283 252Z" fill="#F3F0E8" fill-rule="evenodd"/></svg>Doan Labs <span>/ DESIGN SYSTEM / IDENTITY / AVATARS / PEEK</span></div>
+    <div class="mono"><i class="rd"></i>PEEK · MOTION LAYER · v1.2 · 2026.10</div>
   </header>
 
   <section class="intro">
     <div>
-      <h1>Avatar<br>Studio</h1>
-      <p>The three default faces, now alive inside their square. Each one sits on the bottom edge of the frame, sinks below it when tired and climbs back over it when something catches its eye. Pick a face and a state, or shape one by hand with the sliders around the frame. Tap the frame to startle it.</p>
+      <h1>Peek</h1>
+      <p class="tagline">peek · a little face, peeking through.</p>
+      <p>The four default faces, now alive inside their square. Each one sits on the bottom edge of the frame, sinks below it when tired and climbs back over it when something catches its eye. Type a name to meet the face that belongs to it, pick a state, or shape one by hand with the sliders around the frame. Tap the frame to startle it.</p>
     </div>
     <div class="facts">
-      <div><b>3 faces</b>SAME SHAPES AS v1.0</div>
+      <div><b>4 faces</b>TRIANGLE JOINS v1.2</div>
       <div><b>11 states</b>SPRING-DRIVEN</div>
       <div><b>1 edge</b>THE FRAME FLOOR</div>
+      <div><b>1 name</b>ONE FACE, EVERY TIME</div>
     </div>
   </section>
 
@@ -207,7 +239,13 @@ button:focus-visible,.frame:focus-visible{outline:2px solid var(--signal);outlin
 
     <aside class="panel">
       <div class="ctl">
-        <h3>AVATAR <span>3 FACES · 1 TRAIT EACH</span></h3>
+        <h3>NAME <span>SAME NAME → SAME FACE</span></h3>
+        <label class="namebox"><input id="name" type="text" maxlength="32" autocomplete="off" spellcheck="false" placeholder="Type a name" aria-label="Name. The same name always gives the same avatar."><button type="button" id="name-clear" hidden>CLEAR</button></label>
+        <p class="namemeta" id="namemeta" aria-live="polite"></p>
+        <div class="pills" id="names"></div>
+      </div>
+      <div class="ctl">
+        <h3>AVATAR <span>4 FACES · 1 TRAIT EACH</span></h3>
         <div class="faces" id="faces"></div>
         <p class="trait" id="trait"></p>
       </div>
@@ -223,10 +261,25 @@ button:focus-visible,.frame:focus-visible{outline:2px solid var(--signal);outlin
           <div class="row"><span>PRINT</span><div class="pills" id="print"></div></div>
           <div class="row"><span>FRAME</span><div class="pills" id="container"></div></div>
         </div>
-        <p class="keys"><kbd>←</kbd> <kbd>→</kbd> STATE · <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> FACE · <kbd>SPACE</kbd> PLAY · <kbd>R</kbd> RISO · TAP FRAME TO STARTLE<br>DRAG ANY SLIDER TO TAKE THE FACE BY HAND · PICK AN EXPRESSION TO HAND IT BACK</p>
+        <p class="keys"><kbd>←</kbd> <kbd>→</kbd> STATE · <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd> FACE · <kbd>SPACE</kbd> PLAY · <kbd>R</kbd> RISO · TAP FRAME TO STARTLE<br>DRAG ANY SLIDER TO TAKE THE FACE BY HAND · PICK AN EXPRESSION TO HAND IT BACK<br>LIVE: IT WATCHES YOU TYPE, GREETS NEW NAMES, AND DOZES OFF IF LEFT ALONE</p>
       </div>
     </aside>
   </main>
+
+  <section class="sec story" id="story">
+    <div class="sec__head"><h2>Có mood, và biết nhìn về đâu.</h2><p>VỀ PEEK · MỘT SÂN CHƠI ĐỂ NGHỊCH AVATAR, CHƯA PHẢI SẢN PHẨM.</p></div>
+    <div class="story__body">
+      <p>Gõ một cái tên, ra một avatar của riêng tên đó. Gõ lại đúng cái tên ấy, bạn gặp lại đúng gương mặt cũ: cùng hình dáng, cùng khoảng cách hai mắt, cùng cái nghiêng đầu quen. Không có gì ngẫu nhiên ở đây, mỗi cái tên chỉ dẫn về một khuôn mặt.</p>
+      <p>Nhưng một khuôn mặt đứng yên thì hơi buồn. Nên avatar ở đây có mood, có hướng nhìn, và để ý xem trên màn hình đang có chuyện gì.</p>
+    </div>
+    <div class="demos">
+      <figure class="demo" style="margin:0"><div class="mini" id="demo-mood"></div><h4>01 · ĐỔI MOOD <span id="demo-mood-s">HAPPY</span></h4><p>Vui, buồn, giận, buồn ngủ, tò mò… mười một trạng thái, chuyển qua nhau bằng lò xo chứ không cắt cảnh.</p></figure>
+      <figure class="demo" style="margin:0"><div class="mini" id="demo-gaze"></div><h4>02 · HƯỚNG NHÌN <span id="demo-gaze-s">←</span></h4><p>Liếc trái, ngó lên, cúi xuống. Ở phía trên, kéo ô GAZE để tự đặt hướng nhìn.</p></figure>
+      <figure class="demo" style="margin:0"><div class="mini" id="demo-watch"></div><h4>03 · NHÌN THEO <span id="demo-watch-s">POINTER</span></h4><p>Con trỏ đi đâu, ô nào đang được gõ, nó nhìn về đó. Mọi gương mặt trên trang này đều đang nhìn theo bạn.</p></figure>
+      <figure class="demo demo--react" style="margin:0"><div class="mini" id="demo-react" role="button" tabindex="0" aria-label="Triangle avatar. Hover or tap it to see it react."></div><h4>04 · PHẢN ỨNG <span id="demo-react-s">NORMAL</span></h4><p>Rê chuột vào thì hớn hở, chạm vào thì giật mình, bỏ mặc lâu thì chán rồi ngủ gật.</p></figure>
+    </div>
+    <p class="story__end">Trang này không cần là một sản phẩm hoàn chỉnh. Nó là chỗ để nghịch: gõ tên mình, tên bạn bè, rồi xem từng gương mặt nhìn lại bạn thế nào.</p>
+  </section>
 
   <section class="sec">
     <div class="sec__head"><h2>Size ramp</h2><p>THE SAME STATE AT FIVE SIZES. MISREGISTRATION AND INK TEXTURE FADE OUT BELOW 120PX, STROKES THICKEN BELOW 96PX.</p></div>
@@ -235,7 +288,7 @@ button:focus-visible,.frame:focus-visible{outline:2px solid var(--signal);outlin
   </section>
 
   <section class="sec">
-    <div class="sec__head"><h2>Palette</h2><p>SIX INKS, THREE FACE PAIRS. EVERY FACE USES ITS BODY INK, ITS DEEP PARTNER, INK AND PAPER. NOTHING ELSE.</p></div>
+    <div class="sec__head"><h2>Palette</h2><p>SEVEN INKS, FOUR FACE PAIRS. EVERY FACE USES ITS BODY INK, ITS DEEP PARTNER, INK AND PAPER. NOTHING ELSE.</p></div>
     <div class="palette" id="palette"></div>
     <div class="pal-rules">
       <div><b><i class="rd"></i>PAIRS</b>Each body ink has one deep partner at the same hue. The deep ink carries cheeks and the signature trait, so a face never borrows a colour from another face.</div>
@@ -244,7 +297,7 @@ button:focus-visible,.frame:focus-visible{outline:2px solid var(--signal);outlin
     </div>
   </section>
 
-  <footer class="foot"><span>DEFAULT AVATAR SYSTEM v1.1 · DIAMOND · SEMICIRCLE · CIRCLE · THE TRIANGLE STAYS RESERVED FOR THE MARK</span><span>© 2026 DOAN LABS</span></footer>
+  <footer class="foot"><span>PEEK v1.2 · DIAMOND · SEMICIRCLE · CIRCLE · TRIANGLE · SAME NAME, SAME FACE</span><span>© 2026 DOAN LABS</span></footer>
 </div>
 
 <script>
@@ -252,6 +305,8 @@ button:focus-visible,.frame:focus-visible{outline:2px solid var(--signal);outlin
 'use strict';
 const NS = 'http://www.w3.org/2000/svg';
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+/* what's happening on screen, in client px: the pointer, the caret while typing, the focused control */
+const LOOK = { pt:null, src:'POINTER' };
 
 /* ---------- palette: six inks, three face pairs ---------- */
 const INK = {
@@ -261,6 +316,7 @@ const INK = {
   lav:   { hex:'#D8CDF0', code:'D-03', name:'LAVENDER', role:'Diamond body', deep:'#BDAEE6' },
   fog:   { hex:'#C8D6E8', code:'D-04', name:'FOG',      role:'Semicircle body', deep:'#A8BCDC' },
   clay:  { hex:'#F1CDBF', code:'D-05', name:'CLAY',     role:'Circle body', deep:'#E2A893' },
+  mint:  { hex:'#CFE7D6', code:'D-07', name:'MINT',     role:'Triangle body', deep:'#A5CDB1' },
   signal:{ hex:'#E5412D', code:'D-06', name:'SIGNAL',   role:'Interface only' },
 };
 
@@ -295,6 +351,17 @@ const SHAPES = {
     mouth:{ type:'round', x:170, y:223.3, w:16.9, d:16.9, sw:4.55 },
     trait:'ring', traitName:'THE RING',
     traitText:'The ring from the mark, worn at one o’clock. It rides up when excited and slides down the side when sleepy.'
+  },
+  /* triangle: the v2.1 spec (M50 12L92 88H8Z on a 100u grid, 8u round joins, eyes at 62u) scaled ×3.4 about the centre */
+  triangle: {
+    label:'TRIANGLE', glyph:'▲ FACE T', body:{ d:'M170 40.8L312.8 299.2L27.2 299.2Z', stroke:27.2 }, top:27.2, bottom:312.8, sink:0,
+    fill:INK.mint.hex, deep:INK.mint.deep,
+    eyes:[[132.6,210.8],[207.4,210.8]], rx:20.4, ry:27.2, pr:10,
+    brow:{ y:166.6, hw:18.7, arch:15.3, w:5.62 },
+    cheeks:[[98.6,238],[241.4,238]], crx:11.5, cry:5.75,
+    mouth:{ type:'round', x:170, y:254, w:17, d:16.25, sw:4.38 },
+    trait:'dot', traitName:'APEX DOT',
+    traitText:'A small dot balanced on the apex. It hops clear of the tip when excited and rolls down the slope when sad or sleepy.'
   },
 };
 const SHAPE_KEYS = Object.keys(SHAPES);
@@ -423,7 +490,8 @@ class Rig {
     this.saccAt = rand(.6,1.8); this.sacc = { gx:0, gy:0 };
     this.nodAt = 0; this.lookThing = false;
     this.lag = { y:0, v:0 };
-    this.pointer = null;
+    this.persona = null;        // per-name offsets: proportions and habits, never the state
+    this.gazeOverride = null;   // a scripted look, used by the gaze demo
     this.build();
     new ResizeObserver(es => { for (const e of es) { this.size = e.contentRect.width || this.size; this.applyPrint(); } }).observe(host);
     this.size = host.getBoundingClientRect().width || 400;
@@ -473,11 +541,14 @@ class Rig {
     // colour plate
     this.body = sh.body.d ? el('path', { d:sh.body.d, fill:sh.fill }, this.plateA)
                           : el('circle', { cx:sh.body.circle[0], cy:sh.body.circle[1], r:sh.body.circle[2], fill:sh.fill }, this.plateA);
+    // soft corners: a round-join stroke in the body ink, so the tips never read as sharp
+    if (sh.body.stroke) { this.body.setAttribute('stroke', sh.fill); this.body.setAttribute('stroke-width', sh.body.stroke); this.body.setAttribute('stroke-linejoin', 'round'); }
     this.cheeks = sh.cheeks.map(([x,y]) => el('ellipse', { cx:x, cy:y, rx:sh.crx, ry:sh.cry, fill:sh.deep }, this.plateA));
     this.traitG = el('g', null, this.plateA);
     if (sh.trait === 'square') this.traitEl = el('rect', { x:-11, y:-11, width:22, height:22, fill:sh.deep }, this.traitG);
     if (sh.trait === 'fin')    this.traitEl = el('path', { d:'M0 0L0 -40A40 40 0 0 1 40 0Z', fill:sh.deep }, this.traitG);
     if (sh.trait === 'ring')   this.traitEl = el('circle', { cx:0, cy:0, r:12.5, fill:'none', stroke:sh.deep, 'stroke-width':7 }, this.traitG);
+    if (sh.trait === 'dot')    this.traitEl = el('circle', { cx:0, cy:0, r:12.5, fill:sh.deep }, this.traitG);
 
     // key plate
     this.eyes = sh.eyes.map(([x,y], i) => {
@@ -499,6 +570,7 @@ class Rig {
     this.applyContainer();
   }
 
+  setPersona(p) { this.persona = p; this.render(); }
   setShape(k) { if (k === this.shape) return; this.shape = k; this.build(); this.applyPrint(); this.render(); }
   setContainer(c) { this.container = c; this.applyContainer(); }
   applyContainer() {
@@ -599,18 +671,24 @@ class Rig {
     // gaze: resting target, micro saccades, the thing, the pointer
     let gx = this.base.gx, gy = this.base.gy;
     if (this.lookThing) { const [a,b] = this.thingGaze(); gx = a; gy = b; }
+    if (this.gazeOverride) { gx = this.gazeOverride[0]; gy = this.gazeOverride[1]; }
     const still = st === 'sleepy' || st === 'bored' || st === 'custom';
     if (!still && t >= this.saccAt) {
       this.sacc = { gx:rand(-.17,.17), gy:rand(-.1,.1) };
       this.saccAt = t + rand(.8, 2.6);
     }
     if (!still) { gx += this.sacc.gx; gy += this.sacc.gy; }
+    // watching the screen: whatever LOOK points at (pointer, caret, focused control), anywhere on the page
     const w = ATTENTION[st] || 0;
-    if (this.pointer && w > 0) {
-      const sh = SHAPES[this.shape];
-      const ex = 170 + this.val.x, ey = sh.eyeY + sh.baseY - this.val.alt * sh.R;
-      const px = clamp((this.pointer[0]-ex)/170, -1, 1), py = clamp((this.pointer[1]-ey)/170, -1, 1);
-      gx += (px - gx) * w; gy += (py - gy) * w;
+    if (this.opts.watch !== false && LOOK.pt && w > 0) {
+      const r = this.host.getBoundingClientRect();
+      if (r.width > 0) {
+        const fx = VB[0] + (LOOK.pt[0] - r.left)/r.width*VB[2], fy = VB[1] + (LOOK.pt[1] - r.top)/r.height*VB[3];
+        const sh = SHAPES[this.shape];
+        const ex = 170 + this.val.x, ey = sh.eyeY + sh.baseY - this.val.alt * sh.R;
+        const px = clamp((fx-ex)/170, -1, 1), py = clamp((fy-ey)/170, -1, 1);
+        gx += (px - gx) * w; gy += (py - gy) * w;
+      }
     }
     tgt.gx = gx - this.base.gx; tgt.gy = gy - this.base.gy;
 
@@ -661,7 +739,7 @@ class Rig {
         if (u >= 1) {
           this.blinkT = -1;
           if (this.doubleBlink) { this.doubleBlink = false; this.blinkAt = t + .09; }
-          else this.blinkAt = t + rand(bl[0], bl[1]);
+          else { const k = this.persona ? this.persona.blink : 1; this.blinkAt = t + rand(bl[0]*k, bl[1]*k); }
         } else blink = Math.sin(u*Math.PI);
       }
     } else if (!bl) this.blinkT = -1;
@@ -679,7 +757,8 @@ class Rig {
 
   render() {
     const sh = SHAPES[this.shape], V = this.val, O = this.out || {};
-    const g = c => V[c] + (O[c] || 0);
+    const P = this.persona, PA = P ? P.add : {}, PM = P ? P.mul : {}, spread = P ? P.spread : 0;
+    const g = c => (V[c] + (O[c] || 0)) * (PM[c] || 1) + (PA[c] || 0);
     const alt = g('alt'), rot = g('rot'), x = g('x'), sx = g('sx'), sy = g('sy');
     const B = sh.bottom, ty = sh.baseY - alt*sh.R;
     this.av.setAttribute('transform', `translate(${f2(x)} ${f2(ty)}) rotate(${f2(rot)} 170 ${B}) translate(170 ${B}) scale(${f2(sx*1000)/1000} ${f2(sy*1000)/1000}) translate(-170 ${-B})`);
@@ -705,6 +784,7 @@ class Rig {
     const sw = sh.brow.w * this.st;
     this.eyes.forEach((e, i) => {
       const side = i === 0 ? -1 : 1;
+      e.g.setAttribute('transform', `translate(${f2(e.x + side*spread)} ${e.y})`);
       let lid = clamp(lid0 + (i === 0 ? lidAsym : -lidAsym*.3), 0, 1);
       lid = lid + (1 - lid) * blink;
       this.eyeClip[i].setAttribute('rx', f2(rx)); this.eyeClip[i].setAttribute('ry', f2(ry));
@@ -738,7 +818,7 @@ class Rig {
     // brows
     const browY = g('browY') - (eyeS - 1)*sh.ry*.9, btilt = g('browTilt'), arch = g('browArch'), basym = g('browAsym');
     this.brows.forEach((p, i) => {
-      const side = i === 0 ? -1 : 1, [ex] = sh.eyes[i];
+      const side = i === 0 ? -1 : 1, ex = sh.eyes[i][0] + side*spread;
       const yy = sh.brow.y + browY + (i === 1 ? -basym : basym*.3);
       const hw = sh.brow.hw, c = -sh.brow.arch * arch;
       p.setAttribute('d', `M${f2(-hw)} 0Q0 ${f2(c)} ${f2(hw)} 0`);
@@ -759,7 +839,8 @@ class Rig {
     const blush = clamp(g('blush'), 0, 1);
     this.cheeks.forEach((c, i) => {
       c.setAttribute('opacity', f2(blush));
-      c.setAttribute('transform', `translate(${sh.cheeks[i][0]} ${f2(sh.cheeks[i][1] - lower*4)}) scale(${f2(.6 + .4*blush)}) translate(${-sh.cheeks[i][0]} ${-sh.cheeks[i][1]})`);
+      const cx = sh.cheeks[i][0] + (i === 0 ? -1 : 1)*spread*.6;
+      c.setAttribute('transform', `translate(${f2(cx)} ${f2(sh.cheeks[i][1] - lower*4)}) scale(${f2(.6 + .4*blush)}) translate(${-sh.cheeks[i][0]} ${-sh.cheeks[i][1]})`);
     });
 
     // signature trait
@@ -770,6 +851,14 @@ class Rig {
     } else if (sh.trait === 'fin') {
       const r = -22 + (hair >= 0 ? hair*20 : hair*55) - lag*.8;
       this.traitG.setAttribute('transform', `translate(108.6 ${f2(102.9 + lag*.25)}) rotate(${f2(r)})`);
+    } else if (sh.trait === 'dot') {
+      // rests on the rounded apex; lifts clear of it when perky, rolls over the tip and down the right slope when low
+      const ax = 170, ay = 40.8, rr = 13.6 + 12.5, s = clamp(-hair, 0, 1.2);
+      const th = Math.min(1, s/.35) * 61.05 * Math.PI/180, travel = Math.max(0, s - .35)/.65 * 92;
+      let cx = ax + rr*Math.sin(th) + .4837*travel, cy = ay - rr*Math.cos(th) + .8753*travel;
+      if (hair > 0) cy -= hair*18;
+      cy += lag*(s > .35 ? .3 : 1);
+      this.traitG.setAttribute('transform', `translate(${f2(cx)} ${f2(cy)}) scale(${f2(1 + Math.max(0, hair)*.1)})`);
     } else {
       const ang = (-55 - hair*14 - (hair < 0 ? hair*-21 : 0) + lag*.9) * Math.PI/180;
       const s = 1 + Math.max(0, hair)*.1;
@@ -780,7 +869,7 @@ class Rig {
 }
 
 /* ---------- app ---------- */
-const app = { shape:'diamond', state:'normal', playing:true, mode:'idle', riso:true, container:'ink', poked:null, reactAt:0, reactIx:0, clock:0 };
+const app = { shape:'diamond', state:'normal', playing:true, mode:'live', riso:true, container:'ink', poked:null, pokeTag:null, drift:null, name:null, persona:null, reactAt:0, reactIx:0, clock:0 };
 
 const stageRig = new Rig(document.getElementById('stage'), { shape:app.shape });
 const thumbRigs = [];
@@ -827,29 +916,34 @@ function seg(host, items, current, on) {
   });
 }
 const mark = (host, v) => document.querySelectorAll(`#${host} .pill`).forEach(b => b.setAttribute('aria-pressed', b.dataset.v === String(v)));
-seg('mode', [['idle','IDLE'],['reaction','REACTION']], app.mode, v => setMode(v));
+seg('mode', [['live','LIVE'],['idle','IDLE'],['reaction','REACTION']], app.mode, v => setMode(v));
 seg('print', [['on','RISO'],['off','CLEAN']], 'on', v => setRiso(v === 'on'));
 seg('container', [['ink','INK'],['bone','BONE'],['paper','PAPER']], app.container, v => setContainer(v));
 
-function setShape(k) {
+function setShape(k, { fromName = false } = {}) {
+  // picking a face by hand means no name: back to the plain default face
+  if (!fromName && app.name) clearName({ keepShape:true });
+  if (k === app.shape) { syncFaceButtons(); updateText(); return; }
   app.shape = k;
-  FOLLOW_SHAPE.forEach(r => { r.setShape(k); r.setState(app.poked || app.state, { restart:true }); });
-  document.querySelectorAll('.face').forEach(b => b.setAttribute('aria-pressed', b.dataset.shape === k));
+  FOLLOW_SHAPE.forEach(r => { r.setShape(k); r.setState(app.poked || app.drift || app.state, { restart:true }); });
+  syncFaceButtons();
   updateText();
 }
+function syncFaceButtons() { document.querySelectorAll('.face').forEach(b => b.setAttribute('aria-pressed', b.dataset.shape === app.shape)); }
 function setState(k, { transient = false } = {}) {
-  if (!transient) app.state = k;
+  if (!transient) { app.state = k; app.drift = null; }
   ALL.forEach(r => r.setState(k));
   document.querySelectorAll('#states .pill').forEach(b => b.setAttribute('aria-pressed', b.dataset.state === app.state));
   if (!transient && PRESET_POS[k]) syncAdjust(PRESET_POS[k]);
   updateText(k);
 }
 function setMode(m) {
+  if (m !== 'live' && app.drift) wake(true);
   app.mode = m; mark('mode', m);
   if (m === 'reaction') { app.reactIx = Math.max(0, SEQ.findIndex(s => s[0] === app.state)); app.reactAt = app.clock + .2; }
 }
-function setRiso(on) { app.riso = on; ALL.forEach(r => r.setRiso(on)); mark('print', on ? 'on' : 'off'); }
-function setContainer(c) { app.container = c; ALL.forEach(r => r.setContainer(c)); mark('container', c); }
+function setRiso(on) { app.riso = on; [...ALL, ...DEMOS].forEach(r => r.setRiso(on)); mark('print', on ? 'on' : 'off'); }
+function setContainer(c) { app.container = c; [...ALL, ...DEMOS].forEach(r => r.setContainer(c)); mark('container', c); }
 function setPlaying(p) {
   app.playing = p;
   const b = document.getElementById('play');
@@ -988,7 +1082,8 @@ function makePad(host) {
 function onAdjust(key, v) {
   if (key === 'gaze') { pos.gx = v[0]; pos.gy = v[1]; } else pos[key] = v;
   if (app.mode === 'reaction') setMode('idle');
-  if (app.poked) { app.poked = null; clearTimeout(poke.t); }
+  if (app.poked) { app.poked = null; app.pokeTag = null; clearTimeout(flash.t); }
+  app.drift = null;
   app.state = 'custom';
   STATES.custom = composeCustom();
   ALL.forEach(r => r.setCustom(STATES.custom));
@@ -1007,50 +1102,160 @@ for (const k in sliders) sliders[k].set(pos[k]);
 gazePad.set(0, 0);
 STATES.custom = composeCustom();
 
-function updateText(shown = app.poked || app.state) {
+const esc = s => s.replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[c]);
+function updateText(shown = app.poked || app.drift || app.state) {
   const sh = SHAPES[app.shape];
-  document.getElementById('ro-state').textContent = `${sh.label} · ${shown.toUpperCase()}${app.poked ? ' · STARTLED' : ''}`;
-  document.getElementById('note').innerHTML = `<em>${shown.toUpperCase()}</em>${NOTES[shown]}`;
+  const tag = app.poked ? app.pokeTag : app.drift ? 'LEFT ALONE' : '';
+  document.getElementById('ro-state').textContent = `${app.name ? app.name.toUpperCase() + ' · ' : ''}${sh.label} · ${shown.toUpperCase()}${tag ? ' · ' + tag : ''}`;
+  const why = app.drift ? ' Nobody has touched anything for a while. Move the pointer to wake it.' : '';
+  document.getElementById('note').innerHTML = `<em>${shown.toUpperCase()}${tag ? ' · ' + esc(tag) : ''}</em>${NOTES[shown]}${why}`;
   document.getElementById('trait').innerHTML = `<b>${sh.traitName}</b>${sh.traitText}`;
+  document.getElementById('stage').setAttribute('aria-label', `${app.name ? app.name + ', a ' : 'A '}${sh.label.toLowerCase()} avatar, ${shown}. Press to startle it.`);
 }
+
+/* ---------- names: same name in, same face out ---------- */
+// fnv1a over the UTF-8 bytes of the tidied name; slot = h % 4 picks the shape, the rest seeds the habits
+function fnv1a(str) {
+  let h = 0x811c9dc5;
+  for (const b of new TextEncoder().encode(str)) { h ^= b; h = Math.imul(h, 0x01000193) >>> 0; }
+  return h >>> 0;
+}
+function mulberry32(a) { return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+const tidy = s => s.normalize('NFC').trim().replace(/\s+/g, ' ').toLowerCase();
+function faceFor(raw) {
+  const key = tidy(raw); if (!key) return null;
+  const h = fnv1a(key), rnd = mulberry32(h ^ 0x9E3779B9), r = (a, b) => Math.round((a + rnd()*(b - a))*100)/100;
+  const persona = {
+    spread:r(-7, 7), blink:r(.75, 1.4),
+    add:{ browY:r(-4, 4), browTilt:r(-5, 5), browArch:r(-.2, .3), rot:r(-3, 3), hair:r(-.2, .35), gx:r(-.12, .12), my:r(-2, 3) },
+    mul:{ eyeS:r(.92, 1.08), pupil:r(.9, 1.12), browW:r(.85, 1.2), mw:r(.85, 1.18) },
+  };
+  return { key, h, slot:h % SHAPE_KEYS.length, shape:SHAPE_KEYS[h % SHAPE_KEYS.length], persona };
+}
+const nameEl = document.getElementById('name'), nameClear = document.getElementById('name-clear'), metaEl = document.getElementById('namemeta');
+function updateMeta(f) {
+  if (!f) { metaEl.innerHTML = `NO NAME · DEFAULT ${SHAPES[app.shape].label}<br>THE HASH PICKS ONE OF 4 SHAPES, THEN THE EYES, BROWS, MOUTH AND LEAN.`; return; }
+  const p = f.persona, pm = v => (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(1);
+  metaEl.innerHTML = `<b>#${f.h.toString(16).toUpperCase().padStart(8, '0')}</b> · SLOT ${f.slot} → <b>${SHAPES[f.shape].label}</b><br>`
+    + `EYES ×${p.mul.eyeS.toFixed(2)} · GAP ${pm(p.spread)} · BROW ${pm(p.add.browTilt)}° · MOUTH ×${p.mul.mw.toFixed(2)} · LEAN ${pm(p.add.rot)}° · BLINK ×${p.blink.toFixed(2)}`;
+}
+function applyName(raw, { greet = false } = {}) {
+  const f = faceFor(raw);
+  if (!f) { clearName({ keepInput:true }); return; }
+  app.name = raw.trim().replace(/\s+/g, ' '); app.persona = f.persona;
+  FOLLOW_SHAPE.forEach(r => r.setPersona(f.persona));
+  if (f.shape !== app.shape) setShape(f.shape, { fromName:true }); else updateText();
+  updateMeta(f);
+  try { history.replaceState(null, '', '#name=' + encodeURIComponent(app.name)); } catch (e) {}
+  clearTimeout(applyName.greet);
+  if (greet && app.mode === 'live') applyName.greet = setTimeout(() => flash('happy', 1600, 'HELLO, ' + app.name.toUpperCase()), 650);
+}
+function clearName({ keepInput = false } = {}) {
+  app.name = null; app.persona = null;
+  FOLLOW_SHAPE.forEach(r => r.setPersona(null));
+  if (!keepInput) nameEl.value = '';
+  nameClear.hidden = !nameEl.value;
+  clearTimeout(applyName.greet);
+  try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+  updateMeta(null); updateText();
+}
+function caretPoint() {
+  const r = nameEl.getBoundingClientRect(), cs = getComputedStyle(nameEl);
+  const ctx = (caretPoint.c ||= document.createElement('canvas').getContext('2d'));
+  ctx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+  const w = ctx.measureText(nameEl.value.slice(0, nameEl.selectionStart ?? nameEl.value.length)).width;
+  return [Math.min(r.right, r.left + w - nameEl.scrollLeft), r.top + r.height/2];
+}
+nameEl.addEventListener('input', () => {
+  activity();
+  nameClear.hidden = !nameEl.value;
+  LOOK.pt = caretPoint(); LOOK.src = 'TYPING';
+  if (app.mode === 'live' && nameEl.value) flash('attentive', 1500, 'WATCHING YOU TYPE');
+  clearTimeout(nameEl.t);
+  nameEl.t = setTimeout(() => applyName(nameEl.value, { greet:true }), 220);
+});
+nameEl.addEventListener('keydown', e => { if (e.key === 'Escape') { clearName(); } });
+nameClear.addEventListener('click', () => { clearName(); nameEl.focus(); });
+const namesEl = document.getElementById('names');
+['Linh', 'Minh', 'Đoàn', 'Nam', 'Quang', 'An'].forEach(n => {
+  const b = document.createElement('button');
+  b.className = 'pill'; b.type = 'button'; b.innerHTML = `<i class="rd"></i>${n.toUpperCase()}`;
+  b.addEventListener('click', () => { nameEl.value = n; nameClear.hidden = false; applyName(n, { greet:true }); });
+  namesEl.appendChild(b);
+});
 
 /* reaction mode: a short loop through the vocabulary */
 const SEQ = [['normal',2.4],['curious',4.2],['attentive',2.6],['surprised',2],['happy',2.6],['excited',2.8],['normal',1.8],['confused',3],['angry',2.4],['sad',3.2],['bored',3.6],['sleepy',6]];
 
-/* pointer: eyes follow inside the stage */
+/* watching: every face on the page looks at the pointer, the caret, or whatever control has focus */
 const stageEl = document.getElementById('stage');
-function toFrame(ev) {
-  const r = stageEl.getBoundingClientRect();
-  return [VB[0] + (ev.clientX - r.left)/r.width*VB[2], VB[1] + (ev.clientY - r.top)/r.height*VB[3]];
-}
-stageEl.addEventListener('pointermove', e => { stageRig.pointer = toFrame(e); });
-stageEl.addEventListener('pointerleave', () => { stageRig.pointer = null; });
-function poke() {
+document.addEventListener('pointermove', e => { LOOK.pt = [e.clientX, e.clientY]; LOOK.src = 'POINTER'; activity(); }, { passive:true });
+document.addEventListener('pointerdown', e => { LOOK.pt = [e.clientX, e.clientY]; LOOK.src = 'POINTER'; activity(); }, { passive:true });
+document.documentElement.addEventListener('pointerleave', () => { LOOK.pt = null; });
+document.addEventListener('focusin', e => {
+  const t = e.target; if (!t || t === document.body || t === stageEl || t === nameEl) return;
+  const r = t.getBoundingClientRect(); if (!r.width) return;
+  LOOK.pt = [r.left + r.width/2, r.top + r.height/2]; LOOK.src = 'FOCUS';
+});
+nameEl.addEventListener('focus', () => { LOOK.pt = caretPoint(); LOOK.src = 'TYPING'; });
+addEventListener('scroll', activity, { passive:true });
+
+/* transient reactions on the stage face: it shows a state for a moment, then goes back to the chosen one */
+function flash(state, ms, tag, { force = false } = {}) {
   if (!app.playing) setPlaying(true);
-  const back = app.state;
-  app.poked = 'surprised';
-  stageRig.setState('surprised', { restart:true });
-  updateText('surprised');
-  clearTimeout(poke.t);
-  poke.t = setTimeout(() => { app.poked = null; stageRig.setState(back, { restart:true }); updateText(); }, 1300);
+  const same = app.poked === state;
+  app.poked = state; app.pokeTag = tag;
+  if (!same || force) stageRig.setState(state, { restart:true });
+  updateText();
+  clearTimeout(flash.t);
+  flash.t = setTimeout(() => { app.poked = null; app.pokeTag = null; stageRig.setState(app.drift || app.state, { restart:true }); updateText(); }, ms);
 }
+const poke = () => flash('surprised', 1300, 'STARTLED', { force:true });
+
+/* live mode: left alone, every face gets bored, then dozes off. Any input wakes them */
+let lastAct = performance.now();
+const BORED_AFTER = 14, SLEEP_AFTER = 30;
+function drift(s) {
+  app.drift = s;
+  ALL.forEach(r => r.setState(s));
+  if (!app.poked) updateText();
+}
+function wake(silent) {
+  const was = app.drift; app.drift = null;
+  ALL.forEach(r => r.setState(app.state, { restart:true }));
+  if (silent) { updateText(); return; }
+  if (was === 'sleepy') flash('surprised', 1200, 'WOKEN UP', { force:true });
+  else flash('attentive', 900, 'OH, HI', { force:true });
+}
+function activity() {
+  lastAct = performance.now();
+  if (app.drift) wake(false);
+}
+function checkIdle(now) {
+  if (app.mode !== 'live' || app.poked || REDUCED) return;
+  const idle = (now - lastAct)/1000;
+  if (!app.drift && idle > BORED_AFTER && !['sleepy','bored'].includes(app.state)) drift('bored');
+  else if (app.drift === 'bored' && idle > SLEEP_AFTER) drift('sleepy');
+}
+
 stageEl.addEventListener('click', poke);
 stageEl.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); poke(); } });
 
 document.addEventListener('keydown', e => {
+  activity();
   if (e.target.closest && e.target.closest('input,textarea,[role=slider]')) return;
   const i = STATE_KEYS.indexOf(app.state);
   if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
     e.preventDefault(); if (app.mode === 'reaction') setMode('idle');
     setState(STATE_KEYS[(i + (e.key === 'ArrowRight' ? 1 : -1) + STATE_KEYS.length) % STATE_KEYS.length]);
   } else if (e.key === ' ' && e.target === document.body) { e.preventDefault(); setPlaying(!app.playing); }
-  else if (['1','2','3'].includes(e.key)) setShape(SHAPE_KEYS[+e.key - 1]);
+  else if (['1','2','3','4'].includes(e.key)) setShape(SHAPE_KEYS[+e.key - 1]);
   else if (e.key === 'r' || e.key === 'R') setRiso(!app.riso);
 });
 
 /* palette */
 const palEl = document.getElementById('palette');
-[['ink',null],['bone',null],['lav','lav'],['fog','fog'],['clay','clay'],['signal',null]].forEach(([k, pair]) => {
+[['ink',null],['bone',null],['lav','lav'],['fog','fog'],['clay','clay'],['mint','mint'],['signal',null]].forEach(([k, pair]) => {
   const c = INK[k];
   const d = document.createElement('div'); d.className = 'sw';
   const edge = k === 'bone' ? 'box-shadow:inset 0 -1px 0 var(--line2)' : '';
@@ -1058,6 +1263,36 @@ const palEl = document.getElementById('palette');
     <div class="meta"><b>${c.code} ${c.name}</b><span>${c.hex}${pair ? ' · ' + c.deep : ''}</span>${c.role}${pair ? ' · deep for cheeks, trait' : ''}</div>`;
   palEl.appendChild(d);
 });
+
+/* ---------- story demos: one small face per idea ---------- */
+const mk = (id, shape, o = {}) => { const r = new Rig(document.getElementById(id), Object.assign({ shape }, o)); r.setContainer(app.container); return r; };
+const dMood = mk('demo-mood', 'diamond'), dGaze = mk('demo-gaze', 'semicircle', { watch:false }), dWatch = mk('demo-watch', 'circle'), dReact = mk('demo-react', 'triangle');
+const DEMOS = [dMood, dGaze, dWatch, dReact];
+const dLabel = id => document.getElementById(id);
+const MOOD_LOOP = [['happy',2.4],['sad',3],['surprised',1.8],['angry',2.2],['curious',3.6],['excited',2.6],['sleepy',4.6],['confused',2.6]];
+const GAZE_LOOP = [[[-.95,0],'←'],[[0,-.9],'↑'],[[.9,-.55],'↗'],[[.95,.2],'→'],[[.2,.95],'↓'],[[-.8,.75],'↙'],[[0,0],'·']];
+const demo = { moodIx:-1, moodAt:0, gazeIx:-1, gazeAt:0, react:{ hover:false, last:0, flashT:0 } };
+dWatch.setState('attentive');
+function reactTo(s) { dReact.setState(s); dLabel('demo-react-s').textContent = s.toUpperCase(); }
+const reactEl = document.getElementById('demo-react');
+reactEl.addEventListener('pointerenter', () => { demo.react.hover = true; demo.react.last = app.clock; if (app.clock > demo.react.flashT) reactTo('excited'); });
+reactEl.addEventListener('pointerleave', () => { demo.react.hover = false; demo.react.last = app.clock; if (app.clock > demo.react.flashT) reactTo('normal'); });
+const reactPoke = () => { demo.react.last = app.clock; demo.react.flashT = app.clock + 1.2; dReact.setState('surprised', { restart:true }); dLabel('demo-react-s').textContent = 'SURPRISED'; };
+reactEl.addEventListener('click', reactPoke);
+reactEl.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); reactPoke(); } });
+function updateDemos() {
+  const t = app.clock;
+  if (t >= demo.moodAt) { demo.moodIx = (demo.moodIx + 1) % MOOD_LOOP.length; const [s, d] = MOOD_LOOP[demo.moodIx]; dMood.setState(s); dLabel('demo-mood-s').textContent = s.toUpperCase(); demo.moodAt = t + d; }
+  if (t >= demo.gazeAt) { demo.gazeIx = (demo.gazeIx + 1) % GAZE_LOOP.length; const [p, a] = GAZE_LOOP[demo.gazeIx]; dGaze.gazeOverride = p; dLabel('demo-gaze-s').textContent = a; demo.gazeAt = t + 1.15; }
+  dLabel('demo-watch-s').textContent = LOOK.pt ? LOOK.src : 'NOTHING';
+  const R = demo.react;
+  if (R.flashT && t > R.flashT) { R.flashT = 0; reactTo(R.hover ? 'excited' : 'normal'); }
+  const idle = t - R.last;
+  if (!R.hover && !R.flashT) {
+    if (idle > 16 && dReact.state !== 'sleepy') reactTo('sleepy');
+    else if (idle > 8 && idle <= 16 && dReact.state !== 'bored') reactTo('bored');
+  }
+}
 
 /* telemetry */
 const tele = document.getElementById('ro-tele'), clockEl = document.getElementById('clock');
@@ -1079,12 +1314,21 @@ function frame(now) {
       const [s, dur] = SEQ[app.reactIx % SEQ.length];
       setState(s); app.reactAt = app.clock + dur; app.reactIx++;
     }
+    checkIdle(now);
+    updateDemos();
     for (const r of ALL) r.update(dt);
+    for (const r of DEMOS) r.update(dt);
   }
   if (now - teleAt > 90) { telemetry(); teleAt = now; }
   requestAnimationFrame(frame);
 }
+updateMeta(null);
 updateText();
+// a shared link like #name=Minh opens on that face
+try {
+  const m = location.hash.match(/name=([^&]+)/);
+  if (m) { const n = decodeURIComponent(m[1]).slice(0, 32); nameEl.value = n; nameClear.hidden = !n; applyName(n); }
+} catch (e) {}
 telemetry();
 requestAnimationFrame(frame);
 })();

@@ -1,0 +1,7 @@
+{
+  "extends": "@peek/typescript-config/react.json",
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "compilerOptions": {
+    "types": ["bun"]
+  }
+}

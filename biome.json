@@ -11,7 +11,7 @@
       "!!**/.nitro",
       "!!**/.tanstack",
       "!!**/routeTree.gen.ts",
-      "!!doan-labs-avatar-studio.html"
+      "!!peek.html"
     ]
   },
   "assist": { "actions": { "source": { "organizeImports": "on" } } },

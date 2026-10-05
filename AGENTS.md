@@ -21,12 +21,18 @@ real file.
 
 ## Where it is
 
-`/` is the coming soon page, the teaser's last frame made live. No library
-package. The creature rig in `apps/web/src/lib/rig.ts` is transcribed from
-the Avatar Studio sketch (v1.1); "Avatar Studio" was a mockup name, the
+`/` is the coming soon page, the teaser's last frame made live. The library
+is `packages/peek` (`@doanlabs/peek`, unpublished); `docs/variants.md` is its
+model. `/docs` is sidebar docs from one source, `apps/web/src/lib/docs.ts`, which
+also builds `/llms.txt`, `/llms-full.txt` and each page's copy prompt. Edit
+content there, never in the components. `/studio` is the full
+playground, held back until release: never list it in the prerender pages
+or link to it. The creature rig in `apps/web/src/lib/rig.ts` is transcribed
+from the Avatar Studio sketch (v1.1); "Avatar Studio" was a mockup name, the
 product is **Peek**.
-Deploys to Cloudflare Workers as static assets: every route prerenders, and
-the root `wrangler.jsonc` serves `apps/web/dist/client`.
+Deploys to Cloudflare Workers as static assets: only the pages listed in
+`vite.config.ts` prerender and ship, and the root `wrangler.jsonc` serves
+`apps/web/dist/client`.
 `../avatars-poc/engine.js` is the prior sketch of the idea: string hash,
 seeded rng, palettes, pure SVG.
 
