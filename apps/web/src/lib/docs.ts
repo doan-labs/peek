@@ -47,7 +47,7 @@ export type FigureId =
 export type DocPage = {
   slug: string
   /** The sidebar heading it sits under. */
-  group: 'Get started' | 'Concepts' | 'Usage'
+  group: 'Get started' | 'Concepts' | 'Usage' | 'Project'
   title: string
   blurb: string
   /** What the copied prompt asks an agent to do. */
@@ -236,6 +236,28 @@ const svg = toSvg('Linh', { size: 96, frame: 'bone' })`,
         lang: 'ts',
       },
       { figure: 'data-uri' },
+    ],
+  },
+  {
+    slug: 'changelog',
+    group: 'Project',
+    title: 'Changelog',
+    blurb: 'What changed in each release of `@doan-labs/peek`.',
+    task: 'Upgrade @doan-labs/peek in this project to the latest release.',
+    blocks: [
+      'Any change that would move an existing face ships as a new style version, so a pinned `version` keeps your faces across upgrades. See Identity.',
+      { h: '1.0.0 · October 5, 2026' },
+      'The first stable release.',
+      {
+        list: [
+          '`<Peek>` for React 19, with expressions, gaze and `animate`.',
+          '`toSvg` and `identify`, with no runtime dependencies.',
+          `${EXPR.length} expressions and style version \`peek@${LATEST}\`.`,
+          'Licensed MIT.',
+        ],
+      },
+      { h: '0.1.0 · October 5, 2026' },
+      'The first publish to npm, the same library without a license. Use 1.0.0.',
     ],
   },
 ]
