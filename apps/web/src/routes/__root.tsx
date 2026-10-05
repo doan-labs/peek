@@ -15,8 +15,9 @@ const SITE = 'https://peek.doan-labs.com'
 /* Dev points the card at the local server, which has the file; the build
  * needs the live origin, since scrapers drop a relative URL. */
 const CARD = `${import.meta.env.DEV ? '' : SITE}/og.png`
-const TITLE = 'Peek · Coming soon'
-const DESCRIPTION = 'Peek, from Doan Labs. Coming soon.'
+const TITLE = 'Peek · A name in, a face out'
+const DESCRIPTION =
+  'Peek, from Doan Labs: a name in, a face out. Deterministic avatars as pure SVG, for React or any JavaScript runtime.'
 const CARD_ALT =
   'Peek, icons from a string: a happy diamond, a curious semicircle, a surprised circle and an excited triangle, each in its own ink frame.'
 

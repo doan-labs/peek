@@ -68,7 +68,7 @@ export const PAGES: DocPage[] = [
     task: 'Add Peek avatars to this app wherever a person or account is shown without a photo.',
     lede: 'Peek turns a name into a face. The same name gives the same face, on the server and in the browser, as plain SVG.',
     blocks: [
-      { code: `<Peek name="Ada Lovelace" />`, lang: 'tsx' },
+      { code: `<Peek name="Linh" />`, lang: 'tsx' },
       { figure: 'intro-numbers' },
       { h: 'Same name, same face' },
       'Nothing is stored and nothing is fetched. The face is worked out from the name every time, so the server and the browser draw the same one:',
@@ -80,7 +80,7 @@ export const PAGES: DocPage[] = [
           `State on top: ${EXPR.length} expressions, gaze, and optional animation.`,
         ],
       },
-      `Status: coming soon. Not on npm yet. Current style version: \`peek@${LATEST}\`.`,
+      `Install with \`npm install @doanlabs/peek\`. Current style version: \`peek@${LATEST}\`.`,
     ],
   },
   {
@@ -90,7 +90,7 @@ export const PAGES: DocPage[] = [
     blurb: 'One package, no runtime dependencies.',
     task: 'Set up @doanlabs/peek in this project.',
     blocks: [
-      '`@doanlabs/peek` is not published yet. Once it is:',
+      '`@doanlabs/peek` is one package. Add it with your package manager:',
       { figure: 'install', md: '```bash\nnpm install @doanlabs/peek\n```' },
       {
         list: [
@@ -108,7 +108,7 @@ export const PAGES: DocPage[] = [
     blurb: 'What a face is. Hashed from the name.',
     task: 'Use Peek identity in this app: pick stable avatars per user and override axes where the design needs it.',
     blocks: [
-      'The name is tidied first (trimmed, spaces collapsed, lowercased), so `Ada` and ` ada ` are the same face. Each axis hashes on its own seed and picks from its list:',
+      'The name is tidied first (trimmed, spaces collapsed, lowercased), so `Linh` and ` linh ` are the same face. Each axis hashes on its own seed and picks from its list:',
       {
         figure: 'hash-machine',
         md: table([
@@ -121,14 +121,14 @@ export const PAGES: DocPage[] = [
       { h: 'Override an axis' },
       'Pass any axis and it wins. Every other axis stays as the name made it.',
       {
-        code: `<Peek name="Ada Lovelace" face="circle" color="mint" />`,
+        code: `<Peek name="Linh" face="circle" color="mint" />`,
         lang: 'tsx',
       },
       { h: 'Read it' },
       {
         code: `import { identify } from '@doanlabs/peek'
 
-identify('Ada Lovelace') // { face, color, eyes, brows, mouth, cheeks, trait, â€¦ }`,
+identify('Linh') // { face, color, eyes, brows, mouth, cheeks, trait, â€¦ }`,
         lang: 'ts',
       },
       { h: 'Versions' },
@@ -147,7 +147,7 @@ identify('Ada Lovelace') // { face, color, eyes, brows, mouth, cheeks, trait, â€
       `One of: ${one(EXPR)}. Default \`normal\`.`,
       {
         figure: 'expressions',
-        md: "```tsx\n<Peek name=\"Ada Lovelace\" expression={online ? 'happy' : 'sleepy'} animate />\n```",
+        md: "```tsx\n<Peek name=\"Linh\" expression={online ? 'happy' : 'sleepy'} animate />\n```",
       },
       { h: 'Gaze' },
       '`[x, y]` with each value in -1..1, where `[0, 0]` looks ahead. With `animate`, `gaze="pointer"` follows the pointer.',
@@ -169,9 +169,9 @@ identify('Ada Lovelace') // { face, color, eyes, brows, mouth, cheeks, trait, â€
         md: `\`\`\`tsx
 import { Peek } from '@doanlabs/peek'
 
-<Peek name="Ada Lovelace" />
-<Peek name="Ada Lovelace" size={96} expression="happy" />
-<Peek name="Ada Lovelace" animate gaze="pointer" />
+<Peek name="Linh" />
+<Peek name="Linh" size={96} expression="happy" />
+<Peek name="Linh" animate gaze="pointer" />
 \`\`\``,
       },
       { h: 'Server and client' },
@@ -208,7 +208,7 @@ import { Peek } from '@doanlabs/peek'
       {
         code: `import { toSvg } from '@doanlabs/peek'
 
-const svg = toSvg('Ada Lovelace', { size: 96, frame: 'bone' })`,
+const svg = toSvg('Linh', { size: 96, frame: 'bone' })`,
         lang: 'ts',
       },
       'Same input, same bytes, on any machine. It takes the same options as `<Peek>`, minus `animate`, `className`, `style` and the pointer gaze.',

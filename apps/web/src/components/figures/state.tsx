@@ -45,7 +45,7 @@ export function Expressions() {
         <Stage height={250}>
           <div {...stylex.props(s.split)}>
             <Peek
-              name='Ada Lovelace'
+              name='Linh'
               expression={expr}
               animate
               size={160}
@@ -99,7 +99,7 @@ export function Expressions() {
                   {...stylex.props(s.pickFace)}
                 >
                   <Peek
-                    name='Ada Lovelace'
+                    name='Linh'
                     expression={e}
                     size={52}
                     frame='none'
@@ -118,7 +118,7 @@ export function Expressions() {
       <div {...stylex.props(s.code)}>
         <CodeBlock
           live
-          code={`<Peek name="Ada Lovelace" expression="${expr}" animate />`}
+          code={`<Peek name="Linh" expression="${expr}" animate />`}
         />
       </div>
     </Figure>
@@ -126,7 +126,7 @@ export function Expressions() {
 }
 
 type Mode = 'fixed' | 'pointer'
-const LOOKERS = ['Ada Lovelace', 'Grace Hopper', 'Alan Turing', 'Hedy Lamarr']
+const LOOKERS = ['Linh', 'Thanh', 'Alan Turing', 'Hedy Lamarr']
 const SIZES = [116, 76, 76, 60]
 const PAD = 180
 const clamp = (v: number) => Math.max(-1, Math.min(1, v))
@@ -170,8 +170,8 @@ export function GazePad() {
   }
   const follow = mode === 'pointer'
   const code = follow
-    ? '<Peek name="Ada Lovelace" gaze="pointer" animate />'
-    : `<Peek name="Ada Lovelace" gaze={[${g[0]}, ${g[1]}]} animate />`
+    ? '<Peek name="Linh" gaze="pointer" animate />'
+    : `<Peek name="Linh" gaze={[${g[0]}, ${g[1]}]} animate />`
   return (
     <Figure bare>
       <div ref={auto.ref} {...stylex.props(s.gazeRow)}>

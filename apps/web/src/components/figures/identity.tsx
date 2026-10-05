@@ -18,7 +18,7 @@ const HOVER = '@media (hover: hover)'
 
 /* ---------- versions ---------- */
 
-const PEOPLE = ['Ada Lovelace', 'Grace Hopper', 'Alan Turing']
+const PEOPLE = ['Linh', 'Thanh', 'Alan Turing']
 const FACE_LIST = Object.keys(FACES)
 const NOW = VERSIONS[LATEST]!.face
 

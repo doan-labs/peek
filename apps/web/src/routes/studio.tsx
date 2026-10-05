@@ -3,7 +3,7 @@ import { StudioPage } from '@/components/studio-page'
 
 const TITLE = 'Peek · Studio'
 const DESCRIPTION =
-  'Type a name, meet its face. The Peek studio from Doan Labs: every face, color and part, eleven expressions, and the API. Coming soon.'
+  'Type a name, meet its face. The Peek studio from Doan Labs: every face, color and part, eleven expressions, and the API.'
 const PAGE = 'https://peek.doan-labs.com/studio'
 
 export const Route = createFileRoute('/studio')({

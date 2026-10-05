@@ -55,7 +55,7 @@ export function StudioPage() {
           </Link>
           <p {...stylex.props(styles.status)}>
             <i {...stylex.props(styles.dot)} />
-            Coming soon · not published · peek@{who.version}
+            @doanlabs/peek · peek@{who.version}
           </p>
         </header>
 

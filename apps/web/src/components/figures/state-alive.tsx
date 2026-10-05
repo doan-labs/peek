@@ -18,8 +18,8 @@ const CYCLE: Expression[] = [
   'surprised',
   'sleepy',
 ]
-const NAME = 'Ada Lovelace'
-const ROW = ['Grace', 'Alan', 'Katherine', 'Linus', 'Margaret', 'Dennis']
+const NAME = 'Linh'
+const ROW = ['Thanh', 'Alan', 'Katherine', 'Linus', 'Margaret', 'Dennis']
 
 export function Alive() {
   const [i, setI] = useState(1)

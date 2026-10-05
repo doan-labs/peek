@@ -616,6 +616,14 @@ export class Rig {
   gaze: [number, number] | null = null
   /** What a curious creature turns to, in frame units. */
   thing: [number, number] = [330, 20]
+  /** Altitude the page adds on top of the pose, read every frame: below 0
+   * sinks it under the floor without touching its state. */
+  depth = 0
+  /** Squash the page adds, read every frame: above 0 squats, below 0
+   * stretches. */
+  squash = 0
+  /** Altitude out of sight, below the floor, trait and all. */
+  readonly hide: number
 
   private sh: Shape
   private still: boolean
@@ -642,7 +650,6 @@ export class Rig {
   private baseY: number
   private eyeY: number
   private R: number
-  private hide: number
 
   /** The body, the one part that answers the pointer. */
   readonly body: SVGGElement
@@ -905,7 +912,10 @@ export class Rig {
   }
 
   private eyePos(): [number, number] {
-    return [170 + this.val.x, this.eyeY + this.baseY - this.val.alt * this.R]
+    return [
+      170 + this.val.x,
+      this.eyeY + this.baseY - (this.val.alt + this.depth) * this.R,
+    ]
   }
 
   update(dt: number) {
@@ -1070,7 +1080,7 @@ export class Rig {
     this.blinkV = blink
 
     // the trait lags behind the body a little
-    const avY = -(this.val.alt + out.alt) * this.R
+    const avY = -(this.val.alt + out.alt + this.depth) * this.R
     const lom = 10
     const lze = 0.32
     this.lag.v +=
@@ -1093,11 +1103,11 @@ export class Rig {
     const V = this.val
     const O = this.out
     const g = (c: Channel) => V[c] + (O[c] || 0)
-    const alt = g('alt')
+    const alt = g('alt') + this.depth
     const rot = g('rot')
     const x = g('x')
-    const sx = g('sx')
-    const sy = g('sy')
+    const sx = g('sx') * (1 + this.squash * 0.5)
+    const sy = g('sy') * (1 - this.squash)
     const B = sh.bottom
     const ty = this.baseY - alt * this.R
     this.body.setAttribute(

@@ -15,7 +15,7 @@ import { CURVE, LAND, NONE } from '@/lib/motion'
 import { fonts, sheet } from '@/lib/tokens.stylex'
 import { Figure, Micro, useAutoplay } from './kit'
 
-const NAME = 'Ada Lovelace'
+const NAME = 'Linh'
 const SIZE = 84
 // seconds each frame takes the stage, and the whole loop
 const AT = [0, 1.6, 3.2] as const

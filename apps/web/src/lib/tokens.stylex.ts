@@ -14,6 +14,15 @@ export const colors = stylex.defineVars({
   '--lav': '#D8CDF0',
 })
 
+/* The package managers' own colours, for their logos on a picked tab. From
+ * the same icon set as the paths in manager-logo.tsx. */
+export const brands = stylex.defineVars({
+  '--npm': '#E53935',
+  '--bun': '#FFF8E1',
+  '--pnpm': '#FFB300',
+  '--yarn': '#0288D1',
+})
+
 /* The playground at /play, from the v1.2 sheet (peek.html): a white page
  * and an ink fg that swap with the system scheme. Signal is spent on
  * selection only; the edge rings an ink frame on a dark page. */

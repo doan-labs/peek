@@ -42,7 +42,7 @@ function fnv1a(str: string) {
   return (h >>> 0).toString(16).padStart(8, '0')
 }
 
-const NAMES = ['Ada Lovelace', 'Grace Hopper', 'Alan Turing', 'Hedy Lamarr']
+const NAMES = ['Linh', 'Thanh', 'Alan Turing', 'Hedy Lamarr']
 const CELLS = 18
 
 /** A face drawn from a string, through <img>, so it is the bytes rendered. */
@@ -152,11 +152,11 @@ export function SameBytes() {
   )
 }
 
-const CHIPS = ['Ada', 'Grace', 'Alan'] as const
+const CHIPS = ['Linh', 'Thanh', 'Alan'] as const
 
 export function DataUri() {
   const reduce = useReducedMotion()
-  const [name, setName] = useState<(typeof CHIPS)[number]>('Ada')
+  const [name, setName] = useState<(typeof CHIPS)[number]>('Linh')
   const [open, setOpen] = useState(false)
   const [copied, setCopied] = useState(false)
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)

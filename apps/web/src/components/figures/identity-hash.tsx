@@ -300,12 +300,7 @@ function Row({
 
 /* ---------- the machine ---------- */
 
-const NAMES = [
-  'Ada Lovelace',
-  '  GRACE   Hopper',
-  'alan  Turing ',
-  'Hedy Lamarr',
-]
+const NAMES = ['Linh', '  THANH  ', 'alan  Turing ', 'Hedy Lamarr']
 const TYPE = 0.08
 const HOLD = 3.4
 const SPANS = NAMES.map((n) => n.length * TYPE + HOLD)

@@ -2,7 +2,7 @@
  * How to use it. The props table is keyed by PeekProps itself, so a prop
  * added to or dropped from the library breaks this file's types until the
  * table matches; the option lists are read from the library's own tables.
- * The package is not on npm yet, and the page says so.
+ * The install line leads the section.
  *
  * Below 40rem the table stacks: one block per prop, name and default on a
  * line, the type under them, then the note, so nothing scrolls sideways.
@@ -88,8 +88,8 @@ identify(${q}).face // '${face}'`
       <div {...stylex.props(styles.soon)}>
         <i {...stylex.props(styles.dot)} />
         <span>
-          <b {...stylex.props(styles.soonHead)}>Not on npm yet.</b>
-          @doanlabs/peek is coming soon. Below is the API this page runs on.
+          <b {...stylex.props(styles.soonHead)}>Install.</b>
+          npm install @doanlabs/peek
         </span>
       </div>
       <div {...stylex.props(styles.snips)}>

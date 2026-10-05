@@ -68,7 +68,7 @@ function Shapes() {
       {FACE_LIST.map((f) => (
         <Peek
           key={f}
-          name='Ada'
+          name='Linh'
           face={f}
           color='lavender'
           size={30}
@@ -84,7 +84,7 @@ function Inks() {
   return (
     <span {...stylex.props(styles.faces, styles.tight)}>
       {COLOR_LIST.map((c) => (
-        <FaceChip key={c} name='Ada' face='circle' color={c} size={18} />
+        <FaceChip key={c} name='Linh' face='circle' color={c} size={18} />
       ))}
     </span>
   )
@@ -104,7 +104,7 @@ function Moods() {
   return (
     <span ref={ref} {...stylex.props(styles.moods)}>
       <FaceChip
-        name='Ada'
+        name='Linh'
         face='semicircle'
         size={40}
         expression={EXPR_LIST[at]}
@@ -126,7 +126,7 @@ function Moods() {
   )
 }
 
-const NAMES = ['Ada', 'Grace', 'Alan', 'Linus', 'Hedy', 'Edsger', 'Barbara']
+const NAMES = ['Linh', 'Thanh', 'Alan', 'Linus', 'Hedy', 'Edsger', 'Barbara']
 
 /** A slot machine of names: each reel lands on a new face in turn. */
 function Looks() {
@@ -175,7 +175,7 @@ function fnv1a(str: string) {
   return h >>> 0
 }
 
-const TYPED = ['Ada Lovelace', 'Grace Hopper', 'Alan Turing', 'Hedy Lamarr']
+const TYPED = ['Linh', 'Thanh', 'Alan Turing', 'Hedy Lamarr']
 const KEY = 0.09
 const HOLD = 2.2
 

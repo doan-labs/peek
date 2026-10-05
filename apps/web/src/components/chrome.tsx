@@ -73,8 +73,9 @@ export function Chrome() {
 const INSET = 'clamp(16px, 3.3vw, 40px)'
 
 const styles = stylex.create({
+  // pinned to the hero, so they scroll away with it
   corner: {
-    position: 'fixed',
+    position: 'absolute',
     zIndex: 2,
     display: 'inline-flex',
     alignItems: 'center',

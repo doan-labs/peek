@@ -25,8 +25,8 @@ import { Range, Toggle } from './react-controls'
 export { Hydration } from './react-hydration'
 
 const NAMES = [
-  'Ada Lovelace',
-  'Grace Hopper',
+  'Linh',
+  'Thanh',
   'Alan Turing',
   'Hedy Lamarr',
   'Katherine Johnson',
@@ -67,7 +67,7 @@ type Props = {
 }
 
 const DEFAULTS: Props = {
-  name: 'Ada Lovelace',
+  name: 'Linh',
   size: 96,
   expression: 'normal',
   frame: 'ink',

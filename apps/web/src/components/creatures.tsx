@@ -4,6 +4,17 @@
  * server has nothing to draw: every one starts out of sight below the edge)
  * and stepped from one shared loop, never through React state.
  *
+ * The row is fixed to the window's floor for the whole page, so the cast
+ * goes with the reader:
+ * - Scrolling squashes and stretches them, each wobbling at its own rate.
+ * - As the hero goes they duck under the edge in a wave, the last first,
+ *   scrubbed by the scroll: scroll back and they come up again.
+ * - Under the sections they wait out of sight. Stop scrolling and two or
+ *   three peek over the edge until the page moves again.
+ * - On the footer they stand up again, the first first, and cheer once the
+ *   page runs out.
+ * Reduced motion leaves the row on the hero's floor, still.
+ *
  * Life, beyond what a rig does alone:
  * - They peek in one by one, the middle one first, as in the teaser.
  * - Their eyes follow the pointer anywhere on the page. A curious one turns
@@ -11,7 +22,8 @@
  * - Every few seconds each picks a new mood, on its own clock.
  * - Leave the pointer still for a while and they get bored, then sleepy.
  *   Move it and the sleepers wake up, one after another.
- * - Poke one and it jumps.
+ * - Poke one and it jumps. Copy the install line or save a face and the
+ *   whole row cheers.
  * - Easter eggs: type "peek", keep pressing the mark past a full turn
  *   (they rain down; any that hit the line roll off its end), leave the
  *   tab.
@@ -23,12 +35,17 @@ import * as stylex from '@stylexjs/stylex'
 import { useReducedMotion } from 'motion/react'
 import { type RefObject, useEffect, useRef } from 'react'
 import { BEAT } from '@/lib/motion'
-import { Rig, type ShapeKey, type State, VB } from '@/lib/rig'
+import { Rig, type ShapeKey, STATES, type State, VB } from '@/lib/rig'
 
 /* The shower, for the rest of the page: `rain(n)` drops n at once. Set
  * while the cast is mounted. */
 let shower: ((n: number) => void) | null = null
 export const rain = (n: number) => shower?.(n)
+
+/* A cheer for the rest of the page: `cheer()` jumps the row in a wave, the
+ * way the footer's end does. Set while the cast is mounted. */
+let hooray: (() => void) | null = null
+export const cheer = () => hooray?.()
 
 /* Rigs that live elsewhere on the page but step on this loop. `ride`
  * returns the way off. */
@@ -78,7 +95,7 @@ const CAST: Cast[] = [
 ]
 
 /* The moods a creature wanders between, by weight. Angry and sad are left
- * out: nobody is told off on a coming soon page. */
+ * out: nobody is told off on the home page. */
 const MOODS: [State, number][] = [
   ['normal', 3],
   ['happy', 2],
@@ -100,6 +117,27 @@ const pick = (not: State): State => {
 /** Seconds of a still pointer before they lose interest, then drift off. */
 const BORED = 9
 const ASLEEP = 17
+
+/** The tallest frame's height while it waits under the sections, px, so a
+ * peek reads the same size on any screen. */
+const DOCK_PX = 160
+/** Altitude of a peek: eyes and brows over the edge, the rest below. */
+const PEEK = -0.74
+/** Seconds of a still page before a few peek in. */
+const LULL = 1.1
+/** The moods a peeker comes up in. */
+const PEEKS: State[] = ['attentive', 'happy', 'curious', 'excited', 'normal']
+/** The duck under the edge: quick, with one small bounce coming up. */
+const SINK = { w: 9, z: 0.62 }
+/** px/s of scroll for the most squash, and how much that is. */
+const JELLY = 5000
+const SQUASH = 0.14
+
+const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v)
+const ease = (v: number) => {
+  const t = clamp01(v)
+  return t * t * (3 - 2 * t)
+}
 
 /* The shower from the mark: sizes and shapes taken in turn, so only where
  * one falls is left to chance. Capped, since every rig steps every frame. */
@@ -137,6 +175,7 @@ export function Creatures({
   const still = useReducedMotion() ?? false
   const hosts = useRef<(HTMLDivElement | null)[]>([])
   const rain = useRef<HTMLDivElement>(null)
+  const row = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const rigs = CAST.map((c, i) => {
@@ -156,8 +195,12 @@ export function Creatures({
       return rig
     })
 
-    // Where each frame sits, cached: read on resize, used on every pointer move.
+    // Where each frame sits, cached: read on resize and scroll, used on every
+    // pointer move. The page's sizes change only on resize.
     let rects: DOMRect[] = []
+    let heroH = 1
+    let rowH = 1
+    let maxY = 1
     const toFrame = (r: DOMRect, x: number, y: number): [number, number] => [
       VB[0] + ((x - r.left) / r.width) * VB[2],
       VB[1] + ((y - r.top) / r.height) * VB[3],
@@ -165,43 +208,160 @@ export function Creatures({
     const measure = () => {
       rects = hosts.current.map((h) => h!.getBoundingClientRect())
       const m = mark.current?.getBoundingClientRect()
+      if (!m) return
       rigs.forEach((rig, i) => {
-        const r = rects[i]!
-        rig.resize(r.width)
-        if (m)
-          rig.thing = toFrame(r, m.left + m.width / 2, m.top + m.height / 2)
+        rig.thing = toFrame(
+          rects[i]!,
+          m.left + m.width / 2,
+          m.top + m.height / 2,
+        )
       })
     }
-    measure()
-    const ro = new ResizeObserver(measure)
+    const fit = () => {
+      const r = row.current!
+      heroH = r.parentElement!.offsetHeight
+      rowH = r.offsetHeight
+      maxY = document.documentElement.scrollHeight - window.innerHeight
+      measure()
+      rigs.forEach((rig, i) => {
+        rig.resize(hosts.current[i]!.offsetWidth)
+      })
+    }
+    fit()
+    const ro = new ResizeObserver(fit)
     ro.observe(document.documentElement)
 
     let clock = 0
     let movedAt = 0
     let drowsy: 0 | 1 | 2 = 0
-    // Each keeps its own mood clock, first change a while after it is up.
+    // Each keeps its own mood clock, first change a while after it is up,
+    // and a cue that names its next mood instead of leaving it to chance.
     const mood = CAST.map(
       (c) => BEAT.creatures + c.cue * 0.32 + 6 + Math.random() * 6,
     )
+    const cue: (State | null)[] = CAST.map(() => null)
 
-    const move = (e: PointerEvent) => {
-      rigs.forEach((rig, i) => {
-        rig.pointer = toFrame(rects[i]!, e.clientX, e.clientY)
-      })
+    // Any sign of life: the drowsy wake in a ripple from x, not all at once.
+    const stir = (x: number) => {
       if (drowsy) {
-        // woken in a ripple from the nearest, not all at once
         rigs.forEach((rig, i) => {
           if (rig.state !== 'sleepy' && rig.state !== 'bored') return
           const r = rects[i]!
-          const d = Math.abs(e.clientX - (r.left + r.width / 2))
+          const d = Math.abs(x - (r.left + r.width / 2))
           mood[i] = clock + 0.08 + d / 2400
-          wake[i] = true
+          cue[i] = 'attentive'
         })
         drowsy = 0
       }
       movedAt = clock
     }
-    const wake = CAST.map(() => false)
+    const move = (e: PointerEvent) => {
+      rigs.forEach((rig, i) => {
+        rig.pointer = toFrame(rects[i]!, e.clientX, e.clientY)
+      })
+      stir(e.clientX)
+    }
+
+    // The scroll, read once a frame. Each body keeps two springs of its own:
+    // how far it is sunk under the edge, and its jelly.
+    let lastY = window.scrollY
+    let speed = 0
+    let scrolledAt = 0
+    let scale = 1
+    let stale = false
+    let dealt = false
+    let cheered = false
+    let shout = false
+    const bodies = CAST.map((c) => ({
+      sink: 0,
+      sinkV: 0,
+      jelly: 0,
+      jellyV: 0,
+      // the big ones wobble slower
+      jellyW: 15 / Math.sqrt(c.size),
+      // when it comes up to peek; never, while it stays down
+      peek: Number.POSITIVE_INFINITY,
+    }))
+    const scroll = (dt: number) => {
+      const y = window.scrollY
+      const moved = y !== lastY
+      speed +=
+        ((y - lastY) / Math.max(dt, 0.001) - speed) * Math.min(1, dt * 12)
+      lastY = y
+      if (moved || stale) measure()
+      stale = false
+      if (moved) {
+        stir(window.innerWidth / 2)
+        scrolledAt = clock
+        dealt = false
+        for (const b of bodies) b.peek = Number.POSITIVE_INFINITY
+      }
+
+      // 1 while the cast stands, on the hero or on the footer; 0 between.
+      // Down before the sections' type reaches the floor.
+      const end = clamp01(1 - (maxY - y) / (rowH * 1.4))
+      const up = Math.max(
+        1 - clamp01(y / Math.min(heroH * 0.5, rowH * 1.2)),
+        end,
+      )
+      const dock = Math.min(1, DOCK_PX / rowH)
+      const s = dock + (1 - dock) * ease(up / 0.4)
+      if (s !== scale) {
+        scale = s
+        row.current!.style.transform = s === 1 ? '' : `scale(${s.toFixed(4)})`
+        stale = true
+      }
+
+      // a still page under the sections brings two or three up to peek
+      if (up === 0 && !dealt && clock - scrolledAt > LULL) {
+        dealt = true
+        const n = Math.random() < 0.35 ? 3 : 2
+        for (let k = 0; k < n; k++) {
+          const i = Math.floor(Math.random() * bodies.length)
+          const b = bodies[i]!
+          if (b.peek !== Number.POSITIVE_INFINITY) continue
+          b.peek = clock + k * 0.45
+          mood[i] = b.peek
+          cue[i] = PEEKS[Math.floor(Math.random() * PEEKS.length)]!
+        }
+      }
+      // the page runs out: a cheer, in the order they stood up
+      if (end > 0.95 && !cheered) {
+        cheered = true
+        rigs.forEach((_, i) => {
+          mood[i] = clock + 0.1 + i * 0.08
+          cue[i] = 'excited'
+        })
+      } else if (end < 0.3) cheered = false
+      if (shout) {
+        shout = false
+        stir(window.innerWidth / 2)
+        rigs.forEach((_, i) => {
+          mood[i] = clock + 0.05 + i * 0.07
+          cue[i] = 'excited'
+        })
+      }
+
+      const squash = Math.max(-SQUASH, Math.min(SQUASH, -speed / JELLY))
+      for (let i = 0; i < rigs.length; i++) {
+        const rig = rigs[i]!
+        const b = bodies[i]!
+        // the wave: the last ducks first and stands up last
+        const stand = ease((up - (i / (rigs.length - 1)) * 0.5) / 0.5)
+        // a peeker sits at PEEK whatever its mood would do with its height
+        const low =
+          clock >= b.peek ? PEEK - STATES[rig.state].alt : rig.hide - 0.6
+        const { w, z } = SINK
+        b.sinkV +=
+          (w * w * (low * (1 - stand) - b.sink) - 2 * z * w * b.sinkV) * dt
+        b.sink += b.sinkV * dt
+        rig.depth = b.sink
+        const j = b.jellyW
+        b.jellyV += (j * j * (squash - b.jelly) - 0.6 * j * b.jellyV) * dt
+        b.jelly += b.jellyV * dt
+        rig.squash = b.jelly
+      }
+    }
     const leave = (e: PointerEvent) => {
       if (e.relatedTarget) return
       for (const rig of rigs) rig.pointer = null
@@ -319,6 +479,9 @@ export function Creatures({
     const button = mark.current
     button?.addEventListener('click', spin)
     shower = pour
+    hooray = () => {
+      shout = true
+    }
 
     // Leave the tab and it falls asleep; come back and they all jump.
     const icon = document.querySelector<HTMLLinkElement>('link[rel="icon"]')
@@ -356,19 +519,22 @@ export function Creatures({
         if (drowsy < 1 && idle > BORED) drowsy = 1
         if (drowsy < 2 && idle > ASLEEP) drowsy = 2
       }
+      scroll(dt)
       rigs.forEach((rig, i) => {
         if (clock < mood[i]!) return
-        const next: State = wake[i]
-          ? 'attentive'
-          : drowsy === 2
+        const cued = cue[i]
+        const next: State =
+          cued ??
+          (drowsy === 2
             ? 'sleepy'
             : drowsy === 1
               ? rig.state === 'sleepy'
                 ? 'sleepy'
                 : 'bored'
-              : pick(rig.state)
-        wake[i] = false
-        if (next !== rig.state) rig.setState(next)
+              : pick(rig.state))
+        cue[i] = null
+        // a cue plays again even on one already in that mood
+        rig.setState(next, { restart: !!cued })
         // drowsy ones settle in, the rest keep changing their mind
         mood[i] =
           clock + (drowsy ? 2 + Math.random() * 3 : 5 + Math.random() * 7)
@@ -388,6 +554,7 @@ export function Creatures({
       window.removeEventListener('keydown', key)
       button?.removeEventListener('click', spin)
       shower = null
+      hooray = null
       document.removeEventListener('visibilitychange', seen)
       document.title = title
       if (icon) icon.href = '/favicon-semicircle.svg'
@@ -399,7 +566,7 @@ export function Creatures({
   return (
     <>
       <div ref={rain} aria-hidden='true' {...stylex.props(styles.rain)} />
-      <div aria-hidden='true' {...stylex.props(styles.row)}>
+      <div ref={row} aria-hidden='true' {...stylex.props(styles.row)}>
         {CAST.map((c, i) => (
           <div
             key={`${c.shape}-${i}`}
@@ -422,8 +589,15 @@ export function Creatures({
 const U = 'min(18vw, 19svh, 220px)'
 
 const styles = stylex.create({
+  // the window's floor, over the sections and under the hero's type;
+  // reduced motion leaves it on the hero's floor, since it never ducks
   row: {
-    position: 'fixed',
+    position: {
+      default: 'fixed',
+      '@media (prefers-reduced-motion: reduce)': 'absolute',
+    },
+    zIndex: 1,
+    transformOrigin: '50% 100%',
     left: 0,
     right: 0,
     bottom: 0,

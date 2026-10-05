@@ -5,6 +5,7 @@
  * pose: `useReducedMotion()` is null on the server, so gating `initial` on it
  * would render one pose into the HTML and another into the hydration.
  */
+import type { Easing } from 'motion/react'
 
 /** The page's curve: a long, quiet settle. */
 export const CURVE = [0.22, 1, 0.36, 1] as const
@@ -24,6 +25,14 @@ export const TURN = {
   damping: 15,
   mass: 1.1,
 } as const
+
+/** A hop, for keyframes [rest, top, land, rest]: up fast, down under
+ * gravity, a squash on landing. */
+export const HOP: { duration: number; times: number[]; ease: Easing[] } = {
+  duration: 0.6,
+  times: [0, 0.38, 0.72, 1],
+  ease: ['easeOut', 'easeIn', 'easeOut'],
+}
 
 export const NONE = { duration: 0 } as const
 

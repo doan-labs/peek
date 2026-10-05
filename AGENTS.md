@@ -21,13 +21,14 @@ real file.
 
 ## Where it is
 
-`/` is the coming soon page, the teaser's last frame made live. The library
-is `packages/peek` (`@doanlabs/peek`, unpublished); `docs/variants.md` is its
+`/` is the home page: a hero that is the teaser's last frame made live, then
+`home-sections.tsx`. The library
+is `packages/peek` (`@doanlabs/peek`); `docs/variants.md` is its
 model. `/docs` is sidebar docs from one source, `apps/web/src/lib/docs.ts`, which
 also builds `/llms.txt`, `/llms-full.txt` and each page's copy prompt. Edit
 content there, never in the components. `/studio` is the full
-playground, held back until release: never list it in the prerender pages
-or link to it. The creature rig in `apps/web/src/lib/rig.ts` is transcribed
+playground, held back: never list it in the prerender pages or link to
+it. The creature rig in `apps/web/src/lib/rig.ts` is transcribed
 from the Avatar Studio sketch (v1.1); "Avatar Studio" was a mockup name, the
 product is **Peek**.
 Deploys to Cloudflare Workers as static assets: only the pages listed in

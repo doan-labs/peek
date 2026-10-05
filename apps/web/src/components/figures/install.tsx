@@ -1,26 +1,27 @@
 /*
  * The Installation page's figures. Install: a terminal, a tab per package
  * manager, the command typing itself out, and a face peeking over the top
- * that cheers when the line is copied. RunsWhere: no box, one face hopping
- * along a line of runtimes, the same face at every stop.
+ * that cheers when the line is copied. RunsWhere: no box, a face hopping
+ * along a line of runtimes, each stop's name drawn as its own face.
  */
 import { Peek } from '@doanlabs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { motion, useReducedMotion } from 'motion/react'
 import { useEffect, useId, useRef, useState } from 'react'
+import { ManagerLogo } from '@/components/manager-logo'
 import { CURVE, LAND, NONE } from '@/lib/motion'
 import { colors, fonts, sheet } from '@/lib/tokens.stylex'
 import { FaceChip, Figure, useAutoplay } from './kit'
 
-const MANAGERS = ['npm', 'bun', 'pnpm', 'yarn'] as const
-type Manager = (typeof MANAGERS)[number]
+export const MANAGERS = ['npm', 'bun', 'pnpm', 'yarn'] as const
+export type Manager = (typeof MANAGERS)[number]
 const VERB: Record<Manager, string> = {
   npm: 'install',
   bun: 'add',
   pnpm: 'add',
   yarn: 'add',
 }
-const line = (pm: Manager) => `${pm} ${VERB[pm]} @doanlabs/peek`
+export const line = (pm: Manager) => `${pm} ${VERB[pm]} @doanlabs/peek`
 const KEY = 0.035
 
 /* ---------- Install ---------- */
@@ -111,6 +112,7 @@ export function Install() {
                   onClick={() => pick(m)}
                   {...stylex.props(styles.tab, m === pm && styles.tabOn)}
                 >
+                  <ManagerLogo pm={m} on={m === pm} />
                   {m}
                   {m === pm ? (
                     <motion.span
@@ -143,7 +145,7 @@ export function Install() {
             </span>
             {'\n'}
             <span {...stylex.props(styles.comment)}>
-              {happy ? '# copied' : '# not published yet'}
+              {happy ? '# copied' : '# no runtime dependencies'}
             </span>
           </pre>
         </div>
@@ -157,7 +159,7 @@ export function Install() {
 const RUNTIMES = ['Node', 'Bun', 'Deno', 'Edge', 'Browser'] as const
 const at = (i: number) => `${(i / (RUNTIMES.length - 1)) * 100}%`
 
-/** toSvg and identify are plain JavaScript: the face is the same anywhere. */
+/** toSvg and identify are plain JavaScript: same name, same face, anywhere. */
 export function RunsWhere() {
   const [here, setHere] = useState(0)
   const reduce = useReducedMotion()
@@ -182,7 +184,12 @@ export function RunsWhere() {
               transition={reduce ? NONE : { duration: 0.5, ease: CURVE }}
               {...stylex.props(styles.hopFace)}
             >
-              <FaceChip name='Grace' size={40} expression='happy' animate />
+              <FaceChip
+                name={RUNTIMES[here]!}
+                size={40}
+                expression='happy'
+                animate
+              />
             </motion.span>
           </motion.span>
           {RUNTIMES.map((r, i) => (
@@ -212,7 +219,8 @@ export function RunsWhere() {
           ))}
         </fieldset>
         <code {...stylex.props(styles.call)}>
-          toSvg('Grace') <span {...stylex.props(styles.same)}>same bytes</span>
+          toSvg('{RUNTIMES[here]}'){' '}
+          <span {...stylex.props(styles.same)}>same bytes</span>
         </code>
       </div>
     </Figure>
@@ -290,6 +298,9 @@ const styles = stylex.create({
   },
   tab: {
     position: 'relative',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '6px',
     height: '100%',
     paddingInline: '10px',
     borderWidth: 0,

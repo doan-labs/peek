@@ -213,7 +213,7 @@ function PagerCard({ page, back = false }: { page: DocPage; back?: boolean }) {
   )
 }
 
-const CAST = ['Ada Lovelace', 'Linh', 'Kwame', 'Sofia', 'Mateo']
+const CAST = ['Linh', 'Thanh', 'Kwame', 'Sofia', 'Mateo']
 
 /** The intro: a headline, two ways in, and a name to try. */
 function Hero({ page }: { page: DocPage }) {

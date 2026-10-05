@@ -3,7 +3,7 @@
  * its network panel open. The first request for a URL goes to the handler
  * and comes back with the real string; the response says `immutable` for a
  * year, so asking again is answered from the disk cache. Cache keys are the
- * exact URL, the way HTTP keys them, so `Ada` and `ada` are two entries.
+ * exact URL, the way HTTP keys them, so `Linh` and `linh` are two entries.
  */
 import * as stylex from '@stylexjs/stylex'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
@@ -13,8 +13,8 @@ import { fonts, sheet } from '@/lib/tokens.stylex'
 import { FaceChip, Figure, useAutoplay } from './kit'
 import { bytes, draw, Shown } from './svg'
 
-const LOOP = ['Ada', 'Grace', 'Ada', 'Alan', 'Grace', 'Alan'] as const
-const CHIPS = ['Ada', 'Grace', 'Alan'] as const
+const LOOP = ['Linh', 'Thanh', 'Linh', 'Alan', 'Thanh', 'Alan'] as const
+const CHIPS = ['Linh', 'Thanh', 'Alan'] as const
 // seconds a pretend round trip takes
 const TRIP = 0.9
 const ROWS = 4
@@ -23,19 +23,19 @@ type Row = { id: number; name: string; from: 'pending' | 'network' | 'cache' }
 
 const path = (name: string) => `/avatar?name=${encodeURIComponent(name)}`
 
-// the frame at rest: two first visits, then Ada again from the cache
+// the frame at rest: two first visits, then Linh again from the cache
 const REST: Row[] = [
-  { id: 2, name: 'Ada', from: 'cache' },
-  { id: 1, name: 'Grace', from: 'network' },
-  { id: 0, name: 'Ada', from: 'network' },
+  { id: 2, name: 'Linh', from: 'cache' },
+  { id: 1, name: 'Thanh', from: 'network' },
+  { id: 0, name: 'Linh', from: 'network' },
 ]
 
 export function ServeIt() {
   const reduce = useReducedMotion()
-  const [draft, setDraft] = useState('Ada')
-  const [shown, setShown] = useState('Ada')
+  const [draft, setDraft] = useState('Linh')
+  const [shown, setShown] = useState('Linh')
   const [rows, setRows] = useState(REST)
-  const cache = useRef(new Set([path('Ada'), path('Grace')]))
+  const cache = useRef(new Set([path('Linh'), path('Thanh')]))
   const next = useRef(REST.length)
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
   const turn = useRef(-1)

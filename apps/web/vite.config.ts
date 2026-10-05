@@ -61,9 +61,10 @@ export default defineConfig({
      */
     stylex.vite({ aliases: { '@/*': [src], '#/*': [src] } }),
     // Static for now: pages prerender to HTML, which the root
-    // wrangler.jsonc serves as Worker assets. Only listed pages ship. /studio is held back until release: unlisted,
-    // unlinked, so it runs in dev and never reaches the build. Auto
-    // discovery is off, or every static route would prerender anyway.
+    // wrangler.jsonc serves as Worker assets. Only listed pages ship.
+    // /studio is held back: unlisted, unlinked, so it runs in dev and never
+    // reaches the build. Auto discovery is off, or every static route would
+    // prerender anyway.
     tanstackStart({
       prerender: {
         enabled: true,
