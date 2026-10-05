@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-label="Doan Labs">
+  <!-- The Doan Labs mark, copied from doan-labs.com/public/favicon.svg. -->
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .tile { fill: #e9e6df }
+      .fill { fill: #151412 }
+      .line { stroke: #151412 }
+    }
+  </style>
+  <rect class="tile" width="24" height="24" fill="#1b1a17"/>
+  <path class="fill" d="M5.6 3.4A4.1 4.1 0 0 1 5.6 11.6Z" fill="#faf9f6"/>
+  <circle class="line" cx="16.5" cy="7.5" r="3.6" fill="none" stroke="#faf9f6" stroke-width="1.8"/>
+  <polygon class="fill" points="7.5,12.9 3.5,20.1 11.5,20.1" fill="#faf9f6"/>
+  <rect class="line" x="13.9" y="13.9" width="5.2" height="5.2" fill="none" stroke="#faf9f6" stroke-width="1.75" transform="rotate(45 16.5 16.5)"/>
+</svg>
