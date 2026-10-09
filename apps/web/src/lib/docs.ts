@@ -387,12 +387,13 @@ const svg = toSvg('Linh', {
     task: 'Upgrade @doan-labs/peek in this project to the latest release.',
     blocks: [
       'Any change that would move an existing face ships as a new style version, so a pinned `version` keeps your faces across upgrades. See Identity.',
-      { h: 'Unreleased' },
+      { h: '1.1.0 · October 9, 2026' },
       {
         list: [
           'Six accessories in three independent slots: eyewear, headwear and neckwear.',
           'Accessory overrides in React and plain SVG, with every expression and the shared animator.',
           'Existing `peek@1` identities and default SVG bytes stay unchanged; all wardrobe slots default to `none`.',
+          '`draw` and `settle` are exported, for callers that place parts themselves.',
         ],
       },
       { h: '1.0.0 · October 5, 2026' },
