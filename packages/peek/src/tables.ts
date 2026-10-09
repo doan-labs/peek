@@ -184,6 +184,20 @@ export const PARTS = {
   trait: ['square', 'fin', 'ring', 'dot', 'peak'],
 } as const
 
+// The bow's single warm accent, transcribed from the accessory sheet.
+export const ACCESSORY_INK = { knot: '#E5412D' } as const
+
+/** Independent wardrobe slots. peek@1 picks none; callers can dress it. */
+export const ACCESSORIES = {
+  eyewear: ['none', 'glasses', 'sunglasses'],
+  headwear: ['none', 'bow', 'cap', 'sprout'],
+  neckwear: ['none', 'tie'],
+} as const
+export type Eyewear = (typeof ACCESSORIES.eyewear)[number]
+export type Headwear = (typeof ACCESSORIES.headwear)[number]
+export type Neckwear = (typeof ACCESSORIES.neckwear)[number]
+export type AccessorySlot = keyof typeof ACCESSORIES
+
 export type Face = keyof typeof FACES
 export type Color = keyof typeof COLORS
 export type Part = keyof typeof PARTS
@@ -192,11 +206,22 @@ export type Brows = (typeof PARTS.brows)[number]
 export type Mouth = (typeof PARTS.mouth)[number]
 export type Cheeks = (typeof PARTS.cheeks)[number]
 export type Trait = (typeof PARTS.trait)[number]
-export type Axis = 'face' | 'color' | Part
+export type Axis = 'face' | 'color' | Part | AccessorySlot
 
 /** How much of each list a version may pick from. Append-only too. */
 export const VERSIONS: Record<number, Record<Axis, number>> = {
-  1: { face: 4, color: 7, eyes: 3, brows: 4, mouth: 4, cheeks: 3, trait: 5 },
+  1: {
+    face: 4,
+    color: 7,
+    eyes: 3,
+    brows: 4,
+    mouth: 4,
+    cheeks: 3,
+    trait: 5,
+    eyewear: 1,
+    headwear: 1,
+    neckwear: 1,
+  },
 }
 export const LATEST = 1
 

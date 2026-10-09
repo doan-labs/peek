@@ -11,6 +11,7 @@
 
 import type { Axes, Persona } from './identity'
 import {
+  ACCESSORY_INK,
   type Channel,
   type Channels,
   COLORS,
@@ -74,6 +75,10 @@ const f3 = (v: number) => String(Math.round(v * 1000) / 1000)
 const strokeFor = (px: number) =>
   px >= 96 ? 1 : px >= 56 ? 1.25 : px >= 40 ? 1.6 : px >= 30 ? 2 : 2.4
 const RAD = Math.PI / 180
+// the sprout, drawn upward from where it is planted
+const STEM = 'M0 0Q3 -19 0 -36'
+const LEAF0 = 'M0 -33C-24 -30 -38 -52 -25 -53C-12 -54 -2 -43 0 -33Z'
+const LEAF1 = 'M0 -33C5 -54 28 -61 27 -48C26 -36 11 -31 0 -33Z'
 
 /** Where a face rests: the body offset, the eye line, one altitude unit. */
 export function frameOf(face: FaceGeom) {
@@ -760,6 +765,221 @@ export function draw(who: Drawable, pose: Pose, o: DrawOptions): Node {
   }
   const trait = n('g', 'trait', { transform: traitT }, [shape])
 
+  // Wardrobe lives on the same body transform as the face. Glasses grow
+  // around the eye sockets, never around the pupils, so gaze stays free.
+  const wardrobe: Node[] = []
+  // strokes follow the same ramp as the face, capped so small hats stay hats
+  const w = (px: number) => f2(px * Math.min(st, 1.6))
+  const line = {
+    fill: 'none',
+    stroke: INK.ink,
+    'stroke-width': w(5.25),
+    'stroke-linecap': 'round',
+    'stroke-linejoin': 'round',
+  }
+  if (who.eyewear !== 'none') {
+    const lx = sh.eyes[0][0] - spread
+    const rr = sh.eyes[1][0] + spread
+    const ey = sh.eyes[0][1]
+    const gap = rr - lx
+    const erx = Math.min(rx + 9, (gap - 15) / 2)
+    const ery = ry + 9
+    const glasses = who.eyewear === 'glasses'
+    const lensX = glasses ? erx : Math.min(rx + 11, (gap - 12) / 2)
+    const top = glasses ? ey - 4 : ey - ry - 2
+    const frames: Node[] = [
+      n('path', 'eyewear.bridge', {
+        ...line,
+        d: `M${f2(lx + lensX)} ${f2(top)}Q${f2((lx + rr) / 2)} ${f2(top - (glasses ? 13 : 0))} ${f2(rr - lensX)} ${f2(top)}`,
+      }),
+    ]
+    for (const [i, cx] of [lx, rr].entries()) {
+      const key = `eyewear.lens${i}`
+      frames.push(
+        n('path', `${key}.arm`, {
+          ...line,
+          d:
+            i === 0
+              ? `M${f2(cx - lensX - 9)} ${f2(top + 2)}L${f2(cx - lensX)} ${f2(top)}`
+              : `M${f2(cx + lensX)} ${f2(top)}L${f2(cx + lensX + 9)} ${f2(top + 2)}`,
+        }),
+      )
+      if (glasses) {
+        frames.push(
+          n('ellipse', key, {
+            ...line,
+            cx: f2(cx),
+            cy: ey,
+            rx: f2(erx),
+            ry: f2(ery),
+          }),
+        )
+        frames.push(
+          n('path', `${key}.glint`, {
+            ...line,
+            stroke: INK.paper,
+            'stroke-width': w(3),
+            d: `M${f2(cx - erx * 0.65)} ${f2(ey - ery * 0.45)}Q${f2(cx - erx * 0.5)} ${f2(ey - ery * 0.8)} ${f2(cx - erx * 0.2)} ${f2(ey - ery * 0.86)}`,
+          }),
+        )
+      } else {
+        const h = ry * 2 + 9
+        frames.push(
+          n('path', key, {
+            d: `M${f2(cx - lensX)} ${f2(top)}H${f2(cx + lensX)}V${f2(top + h * 0.55)}Q${f2(cx + lensX)} ${f2(top + h)} ${f2(cx)} ${f2(top + h)}Q${f2(cx - lensX)} ${f2(top + h)} ${f2(cx - lensX)} ${f2(top + h * 0.55)}Z`,
+            fill: INK.ink,
+            stroke: INK.ink,
+            'stroke-width': w(3),
+            'stroke-linejoin': 'round',
+          }),
+        )
+        frames.push(
+          n('path', `${key}.glint`, {
+            ...line,
+            stroke: INK.paper,
+            'stroke-width': w(4),
+            d: `M${f2(cx - lensX * 0.58)} ${f2(top + 19)}l8 -8m-1 15 6 -6`,
+          }),
+          n('circle', `${key}.pin`, {
+            cx: f2(cx + lensX * 0.55),
+            cy: f2(top + h - 9),
+            r: 1.7,
+            fill: INK.paper,
+          }),
+        )
+      }
+    }
+    wardrobe.push(n('g', 'eyewear', {}, frames))
+  }
+  if (who.headwear !== 'none') {
+    // Reserve the side opposite the crest. The seat stays fixed through
+    // expressions, so a moving crest never makes a hat switch sides.
+    const side = who.trait === 'ring' || who.trait === 'dot' ? -1 : 1
+    const cap = who.headwear === 'cap'
+    const sprout = who.headwear === 'sprout'
+    // The sheet measures placement across the crown, not along its arc.
+    // Solve that horizontal offset so low, round faces keep the brim above
+    // their brows instead of walking the hat down the side of the body.
+    const inset = sprout ? -6 : cap ? -8 : 0
+    const offset = sprout ? 34 : 40
+    let lo = 0
+    let hi = 160
+    for (let i = 0; i < 16; i++) {
+      const mid = (lo + hi) / 2
+      const p = seat(sh.crown, inset, side * mid)
+      if (side * (p.x - 170) < offset) lo = mid
+      else hi = mid
+    }
+    const anchor = seat(sh.crown, inset, (side * (lo + hi)) / 2)
+    const angle = clamp(anchor.a, -40, 40)
+    const parts: Node[] = []
+    if (cap) {
+      parts.push(
+        n('path', 'headwear.crown', {
+          ...line,
+          fill: INK.paper,
+          d: 'M-33 0C-35 -20 -20 -39 0 -39C20 -39 35 -20 33 0Z',
+        }),
+        n('path', 'headwear.seam', {
+          ...line,
+          'stroke-width': w(3.5),
+          d: 'M-4 -38Q9 -24 8 -1',
+        }),
+        n('path', 'headwear.brim', {
+          ...line,
+          'stroke-width': w(7),
+          d: side > 0 ? 'M-35 1Q8 4 52 3' : 'M-52 3Q-8 4 35 1',
+        }),
+        n('circle', 'headwear.button', {
+          cx: 0,
+          cy: -40,
+          r: 3.5,
+          fill: INK.ink,
+        }),
+      )
+    } else if (sprout) {
+      parts.push(
+        // a body-colored halo keeps the ink stem off an ink ground
+        n('path', 'headwear.halo', {
+          ...line,
+          stroke: fill,
+          'stroke-width': w(11),
+          d: `${STEM}${LEAF0}${LEAF1}`,
+        }),
+        n('path', 'headwear.stem', {
+          ...line,
+          'stroke-width': w(4.5),
+          d: STEM,
+        }),
+        n('path', 'headwear.leaf0', {
+          ...line,
+          'stroke-width': w(4),
+          fill: COLORS.mint.body,
+          d: LEAF0,
+        }),
+        n('path', 'headwear.leaf1', {
+          ...line,
+          'stroke-width': w(4),
+          fill: COLORS.mint.deep,
+          d: LEAF1,
+        }),
+      )
+    } else {
+      parts.push(
+        n('path', 'headwear.wings', {
+          d: 'M-3 0C-13 -16 -28 -23 -29 -10C-31 2 -26 19 -16 13L-3 4L3 4L16 13C26 19 31 2 29 -10C28 -23 13 -16 3 0Z',
+          fill: INK.ink,
+          // the same halo, painted under the fill
+          stroke: fill,
+          'stroke-width': w(6),
+          'stroke-linejoin': 'round',
+          'paint-order': 'stroke',
+        }),
+        n('ellipse', 'headwear.knot', {
+          cx: 0,
+          cy: 1,
+          rx: 6,
+          ry: 8,
+          fill: ACCESSORY_INK.knot,
+        }),
+      )
+    }
+    wardrobe.push(
+      n(
+        'g',
+        'headwear',
+        {
+          transform: `translate(${f2(anchor.x)} ${f2(anchor.y)}) rotate(${f2(sprout ? angle * 0.5 : angle)})`,
+        },
+        parts,
+      ),
+    )
+  }
+  if (who.neckwear === 'tie') {
+    // The knot follows the mouth's lowest edge, including its skew. The
+    // floor clips the blade, just as it clips the creature itself.
+    const skew = Math.abs(Math.sin(g('mk') * RAD)) * mw
+    const bottom = Math.max(0, mt * kb, mb * kb) + skew + m.sw * st
+    wardrobe.push(
+      n(
+        'g',
+        'neckwear',
+        {
+          transform: `translate(${m.x} ${f2(m.y + g('my') + bottom + 8)})`,
+          fill: INK.ink,
+        },
+        [
+          n('path', 'neckwear.knot', {
+            d: 'M-9 0Q-11 0 -9 4L-5 11Q0 15 5 11L9 4Q11 0 9 0Z',
+          }),
+          n('path', 'neckwear.blade', {
+            d: 'M-4 15L-13 63Q-14 66 -11 69L0 79L11 69Q14 66 13 63L4 15Z',
+          }),
+        ],
+      ),
+    )
+  }
+
   // the plates sit a hair out of register at large sizes
   const off = (dx: number, dy: number) =>
     riso ? `translate(${f2(dx * k * upp)} ${f2(dy * k * upp)})` : undefined
@@ -787,7 +1007,7 @@ export function draw(who: Drawable, pose: Pose, o: DrawOptions): Node {
           transform: off(0.6, -0.5),
           filter: riso ? `url(#${id}-pB)` : undefined,
         },
-        [...eyes, ...brows, mouth],
+        [...eyes, ...brows, mouth, ...wardrobe],
       ),
     ],
   )

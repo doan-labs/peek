@@ -9,16 +9,20 @@
  */
 
 import {
+  ACCESSORIES,
   type Axis,
   type Brows,
   type Cheeks,
   COLORS,
   type Color,
   type Eyes,
+  type Eyewear,
   FACES,
   type Face,
+  type Headwear,
   LATEST,
   type Mouth,
+  type Neckwear,
   PARTS,
   type Trait,
   VERSIONS,
@@ -74,6 +78,9 @@ export type Axes = {
   mouth: Mouth
   cheeks: Cheeks
   trait: Trait
+  eyewear: Eyewear
+  headwear: Headwear
+  neckwear: Neckwear
 }
 
 export type Identity = Axes & {
@@ -90,6 +97,7 @@ export const LISTS: { readonly [A in Axis]: readonly Axes[A][] } = {
   face: Object.keys(FACES) as Face[],
   color: Object.keys(COLORS) as Color[],
   ...PARTS,
+  ...ACCESSORIES,
 }
 /** The axes in readout order. */
 export const AXES = Object.keys(LISTS) as Axis[]
@@ -142,6 +150,9 @@ export function identify(
     mouth: pick('mouth'),
     cheeks: pick('cheeks'),
     trait: pick('trait'),
+    eyewear: pick('eyewear'),
+    headwear: pick('headwear'),
+    neckwear: pick('neckwear'),
     persona,
   }
 }

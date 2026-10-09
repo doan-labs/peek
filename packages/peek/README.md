@@ -19,6 +19,21 @@ import { Peek } from '@doan-labs/peek'
 Use `animate` for blinking and expression transitions, and
 `gaze='pointer'` to follow the pointer. Animation respects reduced motion.
 
+## Accessories
+
+Dress a face with three independent slots:
+
+```tsx
+<Peek name='Linh' eyewear='glasses' headwear='bow' />
+<Peek name='Linh' eyewear='sunglasses' headwear='sprout' />
+<Peek name='Linh' headwear='cap' neckwear='tie' animate />
+```
+
+Eyewear: `none`, `glasses`, `sunglasses`. Headwear: `none`, `bow`, `cap`,
+`sprout`. Neckwear: `none`, `tie`. All default to `none` at `peek@1`, so
+existing avatars stay unchanged. Slots combine and work with every
+expression, gaze and frame. The same options work with `toSvg`.
+
 ## Plain SVG, without React
 
 The SVG and identity entry points have no runtime dependencies:
