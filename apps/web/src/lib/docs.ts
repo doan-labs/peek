@@ -386,28 +386,43 @@ const svg = toSvg('Linh', {
     blurb: 'What changed in each release of `@doan-labs/peek`.',
     task: 'Upgrade @doan-labs/peek in this project to the latest release.',
     blocks: [
-      'Any change that would move an existing face ships as a new style version, so a pinned `version` keeps your faces across upgrades. See Identity.',
+      'A pinned `version` keeps every face the same across upgrades.',
       { h: '1.1.0 · October 9, 2026' },
+      'Faces get dressed.',
+      {
+        faces: [
+          { name: 'Linh', eyewear: 'glasses', label: 'glasses' },
+          { name: 'Bao', eyewear: 'sunglasses', label: 'sunglasses' },
+          { name: 'Mai', headwear: 'bow', label: 'bow' },
+          { name: 'Khoa', headwear: 'cap', label: 'cap' },
+          { name: 'An', headwear: 'sprout', label: 'sprout' },
+          { name: 'Duc', neckwear: 'tie', label: 'tie' },
+        ],
+      },
       {
         list: [
-          'Six accessories in three independent slots: eyewear, headwear and neckwear.',
-          'Accessory overrides in React and plain SVG, with every expression and the shared animator.',
-          'Existing `peek@1` identities and default SVG bytes stay unchanged; all wardrobe slots default to `none`.',
-          '`draw` and `settle` are exported, for callers that place parts themselves.',
+          'Three slots: `eyewear`, `headwear`, `neckwear`. All default to `none`, so old faces stay put.',
+          '`draw` and `settle` are exported.',
         ],
       },
       { h: '1.0.0 · October 5, 2026' },
-      'The first stable release.',
+      'Stable. Faces got feelings.',
+      {
+        faces: [
+          { name: 'Linh', expression: 'happy', label: 'happy' },
+          { name: 'Bao', expression: 'surprised', label: 'surprised' },
+          { name: 'Mai', expression: 'sleepy', label: 'sleepy' },
+          { name: 'Khoa', expression: 'angry', label: 'angry' },
+        ],
+      },
       {
         list: [
-          '`<Peek>` for React 19, with expressions, gaze and `animate`.',
-          '`toSvg` and `identify`, with no runtime dependencies.',
-          `${EXPR.length} expressions and style version \`peek@${LATEST}\`.`,
-          'Licensed MIT.',
+          '`<Peek>` for React 19 and `toSvg` for plain SVG, no runtime deps.',
+          `${EXPR.length} expressions, style \`peek@${LATEST}\`, MIT.`,
         ],
       },
       { h: '0.1.0 · October 5, 2026' },
-      'The first publish to npm, the same library without a license. Use 1.0.0.',
+      'First npm publish, no license. Use 1.0.0.',
     ],
   },
 ]

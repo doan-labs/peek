@@ -364,6 +364,13 @@ function Footer() {
           <Link to='/docs' {...stylex.props(styles.baseLink)}>
             Docs
           </Link>
+          <Link
+            to='/docs/$slug'
+            params={{ slug: 'changelog' }}
+            {...stylex.props(styles.baseLink)}
+          >
+            Changelog
+          </Link>
           <a href='/llms.txt' {...stylex.props(styles.baseLink)}>
             llms.txt
           </a>
