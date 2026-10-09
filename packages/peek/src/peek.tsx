@@ -3,7 +3,7 @@
  * come from useId, so the server and the client agree.
  *
  * A name decides identity unless the caller overrides an axis: pass `face`,
- * `color`, `eyes`, `brows`, `mouth`, `cheeks` or `trait` and that axis wins
+ * `color`, a part, or a wardrobe slot and that axis wins
  * over the hash while every other axis stays as the name made it.
  *
  * With `animate`, the first paint (server and hydration) is still the static

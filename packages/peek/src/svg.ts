@@ -13,7 +13,7 @@ import {
   restPose,
 } from './draw'
 import { type Axes, fnv1a, type Identity, identify } from './identity'
-import type { Expression } from './tables'
+import { ACCESSORIES, type AccessorySlot, type Expression } from './tables'
 
 export type PeekOptions = Partial<Axes> & {
   /** px. Drives the stroke ramp (thicker below 96) and the riso print. */
@@ -35,6 +35,12 @@ export type PeekOptions = Partial<Axes> & {
   id?: string
 }
 
+// an unknown item from untyped callers keeps what the name picked
+const wear = <S extends AccessorySlot>(o: PeekOptions, base: Identity, s: S) =>
+  (ACCESSORIES[s] as readonly string[]).includes(o[s] as string)
+    ? (o[s] as Identity[S])
+    : base[s]
+
 /**
  * A name decides identity unless the caller overrides an axis: an explicit
  * face, color or part wins over the hash, and every other axis stays put.
@@ -54,6 +60,9 @@ export function settle(
     mouth: o.mouth ?? base.mouth,
     cheeks: o.cheeks ?? base.cheeks,
     trait: o.trait ?? base.trait,
+    eyewear: wear(o, base, 'eyewear'),
+    headwear: wear(o, base, 'headwear'),
+    neckwear: wear(o, base, 'neckwear'),
   }
   const pose = restPose(who, o.expression ?? 'normal', o.gaze)
   const look = {
@@ -63,8 +72,13 @@ export function settle(
     riso: o.riso ?? false,
     live,
   }
+  // Keep the byte-level peek@1 contract for faces without accessories.
+  const { eyewear, headwear, neckwear, ...legacy } = who
+  const wardrobe =
+    eyewear !== 'none' || headwear !== 'none' || neckwear !== 'none'
   const id =
-    o.id ?? `peek-${fnv1a(JSON.stringify([who, pose, look])).toString(36)}`
+    o.id ??
+    `peek-${fnv1a(JSON.stringify([wardrobe ? who : legacy, pose, look])).toString(36)}`
   return { who, pose, opts: { ...look, id, title: o.title ?? name } }
 }
 

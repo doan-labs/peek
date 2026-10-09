@@ -1,18 +1,25 @@
 /*
  * What /studio shares between its parts: the look every avatar on the page
  * wears (set from the control bar), the cast on the wall, and the snippet
- * a visitor copies. Identity always comes from the name; the look is state.
+ * a visitor copies. The name seeds identity; the look carries state and
+ * explicit wardrobe overrides.
  */
 import {
   EXPRESSIONS,
   type Expression,
+  type Eyewear,
   type Frame,
+  type Headwear,
   LATEST,
+  type Neckwear,
   type PeekOptions,
   VERSIONS,
 } from '@doan-labs/peek'
 
 export type Look = {
+  eyewear: Eyewear
+  headwear: Headwear
+  neckwear: Neckwear
   expression: Expression
   frame: Frame
   square: boolean
@@ -24,6 +31,9 @@ export type Look = {
 }
 
 export const LOOK: Look = {
+  eyewear: 'none',
+  headwear: 'none',
+  neckwear: 'none',
   expression: 'normal',
   frame: 'ink',
   square: true,
@@ -98,6 +108,9 @@ export const NAMES = [
 
 /** The props a Peek gets from the look, minus size and name. */
 export const lookProps = (look: Look) => ({
+  eyewear: look.eyewear,
+  headwear: look.headwear,
+  neckwear: look.neckwear,
   expression: look.expression,
   frame: look.frame,
   square: look.square,
@@ -108,6 +121,9 @@ export const lookProps = (look: Look) => ({
 
 /** The same look as toSvg options, for the copy and download actions. */
 export const svgOptions = (look: Look, size: number): PeekOptions => ({
+  eyewear: look.eyewear,
+  headwear: look.headwear,
+  neckwear: look.neckwear,
   expression: look.expression,
   frame: look.frame,
   square: look.square,
@@ -120,6 +136,8 @@ const q = (s: string) => JSON.stringify(s)
 /** The JSX for one avatar in this look: only what differs from a default. */
 export function jsxFor(name: string, look: Look, size: number) {
   const a = [`name=${q(name)}`]
+  for (const axis of ['eyewear', 'headwear', 'neckwear'] as const)
+    if (look[axis] !== 'none') a.push(`${axis}=${q(look[axis])}`)
   if (size !== 64) a.push(`size={${size}}`)
   if (look.expression !== 'normal') a.push(`expression=${q(look.expression)}`)
   if (look.frame !== 'ink') a.push(`frame=${q(look.frame)}`)

@@ -15,7 +15,7 @@
  * title settles. Letters sit inside a span per word, so a phone breaks the
  * line between words and never inside one.
  */
-import { Peek, toSvg } from '@doan-labs/peek'
+import { toSvg } from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { motion, useReducedMotion } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
@@ -26,10 +26,12 @@ import {
   HomeSections,
   InstallPill,
 } from '@/components/home-sections'
+import { Peek } from '@/components/peek'
 import { PeekMark } from '@/components/peek-mark'
 import { BEAT, CURVE, NONE } from '@/lib/motion'
 import { playSound } from '@/lib/sound'
 import { colors, fonts } from '@/lib/tokens.stylex'
+import { wardrobeFor } from '@/lib/wardrobe'
 
 const LINE = 'A name in, a face out'
 const NAME = 'Thanh'
@@ -64,7 +66,9 @@ export function HomePage() {
   // profile picture
   const save = () => {
     const url = URL.createObjectURL(
-      new Blob([toSvg(name, { size: 512 })], { type: 'image/svg+xml' }),
+      new Blob([toSvg(name, { size: 512, ...wardrobeFor(name) })], {
+        type: 'image/svg+xml',
+      }),
     )
     const a = document.createElement('a')
     a.href = url

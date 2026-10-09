@@ -7,15 +7,27 @@
  * on navigation (never on first paint, so the prerendered HTML shows), and
  * copy buttons swap their icon in place.
  */
-import { Peek } from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
-import { Link, Outlet, useLocation } from '@tanstack/react-router'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
-import { type ComponentProps, useState } from 'react'
-import { BrandMark } from '@/components/brand-mark'
+import { Link, Outlet, useLocation, useNavigate } from '@tanstack/react-router'
+import {
+  AnimatePresence,
+  motion,
+  useInView,
+  useReducedMotion,
+} from 'motion/react'
+import {
+  type ComponentProps,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
+import { flushSync } from 'react-dom'
 import { CodeBlock } from '@/components/code-block'
 import { FIGURES } from '@/components/figures'
 import { FaceChip } from '@/components/figures/kit'
+import { Peek } from '@/components/peek'
+import { PeekMark } from '@/components/peek-mark'
 import {
   type Block,
   type DocPage,
@@ -27,6 +39,7 @@ import {
 } from '@/lib/docs'
 import { CURVE, LAND, NONE } from '@/lib/motion'
 import { fonts, sheet } from '@/lib/tokens.stylex'
+import { wardrobeJsx } from '@/lib/wardrobe'
 
 export const docsHead = (p: DocPage) => {
   const title = `Peek · ${p.title}`
@@ -59,83 +72,159 @@ function DocLink({
   )
 }
 
+/*
+ * The nav pill glides on the compositor (WAAPI), not on the main thread, so
+ * mounting the next page cannot stall it. A click moves it at once, before
+ * the router renders anything; pager links and history move it on arrival.
+ */
+function useGlide(active: string, reduce: boolean | null) {
+  const nav = useRef<HTMLElement>(null)
+  const pill = useRef<HTMLSpanElement>(null)
+  const last = useRef<{ x: number; y: number; w: number } | null>(null)
+  useLayoutEffect(() => {
+    const n = nav.current
+    const el = pill.current
+    if (!n || !el) return
+    // measured against the nav's scroll box, so scrolling between visits
+    // never reads as travel
+    const box = n.getBoundingClientRect()
+    const r = el.getBoundingClientRect()
+    const at = {
+      x: r.left - box.left + n.scrollLeft,
+      y: r.top - box.top + n.scrollTop,
+      w: r.width,
+    }
+    const from = last.current
+    last.current = at
+    if (!from || reduce) return
+    const dx = from.x - at.x
+    const dy = from.y - at.y
+    if (!dx && !dy) return
+    el.animate(
+      [
+        {
+          transform: `translate(${dx}px, ${dy}px) scaleX(${from.w / at.w})`,
+          transformOrigin: 'left',
+        },
+        { transform: 'none', transformOrigin: 'left' },
+      ],
+      { duration: 380, easing: `cubic-bezier(${CURVE.join(',')})` },
+    )
+  }, [active, reduce])
+  return { nav, pill }
+}
+
+/* Its own component, so a click re-renders the nav and never the page. */
+function DocsNav() {
+  const path = useLocation({ select: (l) => l.pathname.replace(/\/$/, '') })
+  const reduce = useReducedMotion()
+  // the path a click is heading to, until the router gets there
+  const [heading, setHeading] = useState<string | null>(null)
+  useEffect(() => setHeading(null), [path])
+  const active = heading ?? path
+  const glide = useGlide(active, reduce)
+  const navigate = useNavigate()
+  return (
+    <nav ref={glide.nav} aria-label='Docs' {...stylex.props(styles.nav)}>
+      {GROUPS.map((group) => (
+        <div key={group} {...stylex.props(styles.group)}>
+          <p {...stylex.props(styles.groupHead)}>{group}</p>
+          <ul {...stylex.props(styles.navList)}>
+            {PAGES.filter((p) => p.group === group).map((p) => {
+              const on = active === pathOf(p)
+              return (
+                <li key={p.slug} {...stylex.props(styles.navItem)}>
+                  {on ? (
+                    <span ref={glide.pill} {...stylex.props(styles.pill)}>
+                      <span {...stylex.props(styles.pillFace)}>
+                        <Peek
+                          name={p.title}
+                          size={26}
+                          frame='none'
+                          title={false}
+                          expression='happy'
+                        />
+                      </span>
+                    </span>
+                  ) : null}
+                  <DocLink
+                    page={p}
+                    onClick={(e) => {
+                      // a plain click only: modified ones open elsewhere
+                      if (e.metaKey || e.ctrlKey || e.shiftKey) return
+                      if (on) return
+                      // paint the pill on its way first, then let the
+                      // router build the page behind it
+                      e.preventDefault()
+                      flushSync(() => setHeading(pathOf(p)))
+                      requestAnimationFrame(() =>
+                        requestAnimationFrame(() =>
+                          navigate(
+                            p.slug
+                              ? {
+                                  to: '/docs/$slug',
+                                  params: { slug: p.slug },
+                                }
+                              : { to: '/docs' },
+                          ),
+                        ),
+                      )
+                    }}
+                    aria-current={on ? 'page' : undefined}
+                    {...stylex.props(styles.navLink, on && styles.navOn)}
+                  >
+                    {p.title}
+                  </DocLink>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      ))}
+      <div {...stylex.props(styles.group)}>
+        <p {...stylex.props(styles.groupHead)}>For agents</p>
+        <ul {...stylex.props(styles.navList)}>
+          {['/llms.txt', '/llms-full.txt'].map((href) => (
+            <li key={href} {...stylex.props(styles.navItem)}>
+              <a href={href} {...stylex.props(styles.navLink)}>
+                {href.slice(1)}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div {...stylex.props(styles.group)}>
+        <p {...stylex.props(styles.groupHead)}>Source</p>
+        <ul {...stylex.props(styles.navList)}>
+          <li {...stylex.props(styles.navItem)}>
+            <a
+              href={REPO}
+              target='_blank'
+              rel='noopener'
+              {...stylex.props(styles.navLink)}
+            >
+              GitHub ↗
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  )
+}
+
 export function DocsLayout() {
   const path = useLocation({ select: (l) => l.pathname.replace(/\/$/, '') })
   const reduce = useReducedMotion()
   return (
     <div data-sheet {...stylex.props(styles.page)}>
       <aside {...stylex.props(styles.side)}>
-        <Link to='/' {...stylex.props(styles.brand)}>
-          <BrandMark />
-          Peek
-        </Link>
-        <nav aria-label='Docs' {...stylex.props(styles.nav)}>
-          {GROUPS.map((group) => (
-            <div key={group} {...stylex.props(styles.group)}>
-              <p {...stylex.props(styles.groupHead)}>{group}</p>
-              <ul {...stylex.props(styles.navList)}>
-                {PAGES.filter((p) => p.group === group).map((p) => {
-                  const on = path === pathOf(p)
-                  return (
-                    <li key={p.slug} {...stylex.props(styles.navItem)}>
-                      {on ? (
-                        <motion.span
-                          layoutId='docs-nav'
-                          transition={reduce ? NONE : LAND}
-                          {...stylex.props(styles.pill)}
-                        >
-                          <span {...stylex.props(styles.pillFace)}>
-                            <Peek
-                              name={p.title}
-                              size={26}
-                              frame='none'
-                              title={false}
-                              expression='happy'
-                            />
-                          </span>
-                        </motion.span>
-                      ) : null}
-                      <DocLink
-                        page={p}
-                        aria-current={on ? 'page' : undefined}
-                        {...stylex.props(styles.navLink, on && styles.navOn)}
-                      >
-                        {p.title}
-                      </DocLink>
-                    </li>
-                  )
-                })}
-              </ul>
-            </div>
-          ))}
-          <div {...stylex.props(styles.group)}>
-            <p {...stylex.props(styles.groupHead)}>For agents</p>
-            <ul {...stylex.props(styles.navList)}>
-              {['/llms.txt', '/llms-full.txt'].map((href) => (
-                <li key={href} {...stylex.props(styles.navItem)}>
-                  <a href={href} {...stylex.props(styles.navLink)}>
-                    {href.slice(1)}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div {...stylex.props(styles.group)}>
-            <p {...stylex.props(styles.groupHead)}>Source</p>
-            <ul {...stylex.props(styles.navList)}>
-              <li {...stylex.props(styles.navItem)}>
-                <a
-                  href={REPO}
-                  target='_blank'
-                  rel='noopener'
-                  {...stylex.props(styles.navLink)}
-                >
-                  GitHub ↗
-                </a>
-              </li>
-            </ul>
-          </div>
-        </nav>
+        <div {...stylex.props(styles.brand)}>
+          <PeekMark compact />
+          <Link to='/' {...stylex.props(styles.brandLink)}>
+            Peek
+          </Link>
+        </div>
+        <DocsNav />
       </aside>
       <main {...stylex.props(styles.main)}>
         <AnimatePresence mode='wait' initial={false}>
@@ -288,10 +377,17 @@ function Hero({ page }: { page: DocPage }) {
           </motion.button>
         ))}
       </div>
-      <CodeBlock code={`<Peek name=${JSON.stringify(name)} />`} />
+      <CodeBlock
+        code={`<Peek name=${JSON.stringify(name)} ${wardrobeJsx(name)} />`}
+      />
     </>
   )
 }
+
+// a gallery that names an accessory shows exactly that, nothing the name adds
+const BARE = { eyewear: 'none', headwear: 'none', neckwear: 'none' } as const
+const dresses = (p: object) =>
+  'eyewear' in p || 'headwear' in p || 'neckwear' in p
 
 function BlockView({ block: b }: { block: Block }) {
   if (typeof b === 'string')
@@ -361,21 +457,58 @@ function BlockView({ block: b }: { block: Block }) {
       </div>
     )
   }
+  return <Faces block={b} />
+}
+
+const WALK = [
+  ...['Linh', 'Bao', 'Mai', 'Khoa', 'An', 'Duc'],
+  ...['Thanh', 'Alan', 'Hedy', 'Linus', 'Ada', 'Grace'],
+]
+
+/** A gallery; with `cycle`, the faces come alive and, one at a time and
+ * forever, a new name steps into each look. */
+function Faces({ block: b }: { block: Extract<Block, { faces: unknown }> }) {
+  const [turn, setTurn] = useState(0)
+  const ref = useRef<HTMLUListElement>(null)
+  const live = useInView(ref, { amount: 0.4 })
+  const still = useReducedMotion()
+  const n = b.faces.length
+  useEffect(() => {
+    if (!b.cycle || !live || still) return
+    const t = setInterval(() => setTurn((k) => k + 1), 900)
+    return () => clearInterval(t)
+  }, [b.cycle, live, still])
   return (
-    <ul {...stylex.props(styles.faces)}>
-      {b.faces.map(({ label, ...props }) => (
-        <li key={label ?? props.name} {...stylex.props(styles.face)}>
-          <Peek
-            size={96}
-            frame='none'
-            {...props}
-            {...stylex.props(styles.fill)}
-          />
-          {label ? (
-            <span {...stylex.props(styles.faceLabel)}>{label}</span>
-          ) : null}
-        </li>
-      ))}
+    <ul ref={ref} {...stylex.props(styles.faces)}>
+      {b.faces.map(({ label, ...props }, i) => {
+        // face i steps every n-th turn; 7 walks all 12 names of the cast
+        const k = Math.floor((turn + n - 1 - i) / n)
+        const name = k ? WALK[(i * 5 + k * 7) % WALK.length]! : props.name
+        return (
+          <li key={label ?? props.name} {...stylex.props(styles.face)}>
+            <motion.span
+              key={name}
+              initial={k ? { scale: 0.6, opacity: 0 } : false}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={still ? NONE : LAND}
+              {...stylex.props(styles.pop)}
+            >
+              <Peek
+                size={96}
+                frame='none'
+                animate={b.cycle}
+                {...(dresses(props) ? BARE : {})}
+                {...props}
+                name={name}
+                {...stylex.props(styles.fill)}
+              />
+            </motion.span>
+            {label ? (
+              <span {...stylex.props(styles.faceLabel)}>{label}</span>
+            ) : null}
+          </li>
+        )
+      })}
     </ul>
   )
 }
@@ -523,6 +656,7 @@ const styles = stylex.create({
     fontWeight: 500,
     letterSpacing: '-0.02em',
   },
+  brandLink: { color: 'inherit', textDecoration: 'none' },
   nav: {
     display: 'flex',
     flexDirection: { default: 'row', [WIDE]: 'column' },
@@ -791,6 +925,7 @@ const styles = stylex.create({
   },
   faceLabel: { fontSize: '13px', color: sheet['--quiet'] },
   fill: { width: '100%', maxWidth: '96px', height: 'auto', aspectRatio: '1' },
+  pop: { display: 'block', width: '100%', maxWidth: '96px' },
   pager: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',

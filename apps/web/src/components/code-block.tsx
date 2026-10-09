@@ -12,11 +12,12 @@
  * Live snippets (a figure's code, rewritten as the reader plays) flash each
  * line that just changed. Copy always takes the plain text.
  */
-import { AXES, Peek, type PeekProps } from '@doan-labs/peek'
+import { AXES, type PeekProps } from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { Fragment, type ReactNode, useEffect, useRef, useState } from 'react'
 import { FaceChip } from '@/components/figures/kit'
+import { Peek } from '@/components/peek'
 import { CURVE, LAND, NONE } from '@/lib/motion'
 import { fonts, sheet } from '@/lib/tokens.stylex'
 
@@ -74,9 +75,11 @@ type Axes = Partial<PeekProps>
 
 /** The axis props a snippet sets (`face="circle"`), so its inline faces
  * wear them too. One set per snippet: they all describe one Peek. */
+const CALL = /<Peek\b|\bname=|\b(toSvg|identify)\(/
+
 function axesIn(code: string): Axes {
   const out: Record<string, string> = {}
-  for (const [, k, v] of code.matchAll(/\b(\w+)=["']([\w-]+)["']/g))
+  for (const [, k, v] of code.matchAll(/\b(\w+)\s*[=:]\s*["']([\w-]+)["']/g))
     if (k && v && (AXES as string[]).includes(k)) out[k] = v
   return out as Axes
 }
@@ -135,7 +138,14 @@ function Line({ code, lang, axes }: { code: string; lang: Lang; axes: Axes }) {
 function NameFace({ name, axes }: { name: string; axes: Axes }) {
   return (
     <span {...stylex.props(styles.nameFace)}>
-      <FaceChip {...axes} name={name} />
+      {/* it draws exactly the line it sits in, outfit and all */}
+      <FaceChip
+        eyewear='none'
+        headwear='none'
+        neckwear='none'
+        {...axes}
+        name={name}
+      />
     </span>
   )
 }
@@ -165,7 +175,14 @@ export function CodeBlock({
   const lines = code.split('\n')
   const fresh = useFresh(lines, live)
   const many = lines.length > 1
-  const axes = axesIn(code)
+  // each call keeps its own options: a call runs from a line that starts
+  // one to the next, so three faces in one block draw three outfits
+  const starts = lines.flatMap((l, i) => (i === 0 || CALL.test(l) ? [i] : []))
+  const axesAt = (i: number) => {
+    const from = Math.max(...starts.filter((s) => s <= i))
+    const to = starts.find((s) => s > i) ?? lines.length
+    return axesIn(lines.slice(from, to).join('\n'))
+  }
   return (
     <div {...stylex.props(styles.box)}>
       <div {...stylex.props(styles.head)}>
@@ -196,7 +213,7 @@ export function CodeBlock({
                 </span>
               ) : null}
               <span {...stylex.props(styles.text)}>
-                <Line code={line} lang={lang} axes={axes} />
+                <Line code={line} lang={lang} axes={axesAt(i)} />
                 {'\n'}
               </span>
             </span>

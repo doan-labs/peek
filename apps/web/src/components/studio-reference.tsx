@@ -28,6 +28,10 @@ const NOTES: Record<Axis, string> = {
   mouth: 'Width, curve and skew move with the state. Shown happy.',
   cheeks: 'Deep ink, and only there when the face warms up. Shown happy.',
   trait: 'Rides the crown outline, lifts and sinks with the mood.',
+  eyewear:
+    'Fits the eye sockets. The face keeps looking and blinking underneath.',
+  headwear: 'Sits on the crown, on the side away from the crest.',
+  neckwear: 'Hangs below the mouth. The floor clips the blade.',
 }
 
 const lengths = VERSIONS[LATEST]!
@@ -44,6 +48,7 @@ export function StudioAnatomy({ name, look }: { name: string; look: Look }) {
         <>
           Every axis hashes on its own seed. The dot marks what {name} drew; the
           rest is what the same name looks like with one axis overridden.
+          Accessories default to none in peek@1.
         </>
       }
     >
@@ -63,7 +68,7 @@ export function StudioAnatomy({ name, look }: { name: string; look: Look }) {
               <h3 {...stylex.props(styles.h3)}>
                 {axis}
                 <span aria-hidden='true' {...stylex.props(styles.n)}>
-                  {lengths[axis]}
+                  {LISTS[axis].length}
                 </span>
               </h3>
               <p {...stylex.props(styles.rowNote)}>{NOTES[axis]}</p>

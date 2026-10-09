@@ -2,12 +2,14 @@
  * Two corner labels from the teaser, the page's file stamp. The clock fades
  * in first; the maker's lockup waits for the line. Then both stay quiet:
  * the clock counts, nothing else moves. The top left one is the maker's
- * lockup and a link, the top right one the source on GitHub; the clock is
+ * lockup and a link, the top right one the changelog and the source on
+ * GitHub; the clock is
  * decoration.
  *
  * The clock writes its own text node every frame; React renders it once.
  */
 import * as stylex from '@stylexjs/stylex'
+import { Link } from '@tanstack/react-router'
 import { motion, useReducedMotion } from 'motion/react'
 import { type ReactNode, useEffect, useRef } from 'react'
 import { DoanMark } from '@/components/doan-mark'
@@ -67,16 +69,27 @@ export function Chrome() {
           Doan Labs
         </span>
       </motion.a>
-      <motion.a
-        href={REPO}
-        target='_blank'
-        rel='noopener'
+      <motion.span
         {...rise(0, BEAT.maker)}
-        {...stylex.props(styles.corner, styles.tr, styles.maker, styles.repo)}
+        {...stylex.props(styles.corner, styles.tr, styles.links)}
       >
-        GitHub
-        <span aria-hidden='true'>↗</span>
-      </motion.a>
+        <Link
+          to='/docs/$slug'
+          params={{ slug: 'changelog' }}
+          {...stylex.props(styles.item, styles.maker, styles.repo, styles.wide)}
+        >
+          Changelog
+        </Link>
+        <a
+          href={REPO}
+          target='_blank'
+          rel='noopener'
+          {...stylex.props(styles.item, styles.maker, styles.repo)}
+        >
+          GitHub
+          <span aria-hidden='true'>↗</span>
+        </a>
+      </motion.span>
       {corner(1, styles.br, <span ref={clock}>T 00.0 S</span>)}
     </>
   )
@@ -104,6 +117,12 @@ const styles = stylex.create({
   },
   tl: { top: INSET, left: INSET },
   tr: { top: INSET, right: INSET },
+  links: { gap: '24px', userSelect: null },
+  item: { display: 'inline-flex', alignItems: 'center' },
+  // no room beside the maker on a phone; the footer links it there
+  wide: {
+    display: { default: 'inline-flex', '@media (max-width: 640px)': 'none' },
+  },
   // as tall as the maker's mark, so the two labels share a centre line
   repo: {
     gap: '6px',

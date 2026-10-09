@@ -31,6 +31,7 @@
  * The frame is transparent and only a body answers the pointer, so a poke
  * on the empty corner of one frame lands on the creature behind it.
  */
+import type { Headwear } from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { useReducedMotion } from 'motion/react'
 import { type RefObject, useEffect, useRef } from 'react'
@@ -67,11 +68,19 @@ type Cast = {
   /** Its mood once it is up. */
   mood: State
   front?: boolean
+  headwear?: Headwear
 }
 
 /* Left to right, transcribed from the teaser's full-cast frame. */
 const CAST: Cast[] = [
-  { shape: 'semicircle', size: 1.5, overlap: 0, cue: 2, mood: 'happy' },
+  {
+    shape: 'semicircle',
+    size: 1.5,
+    overlap: 0,
+    cue: 2,
+    mood: 'happy',
+    headwear: 'cap',
+  },
   {
     shape: 'semicircle',
     size: 0.78,
@@ -79,8 +88,16 @@ const CAST: Cast[] = [
     cue: 4,
     mood: 'sleepy',
     front: true,
+    headwear: 'sprout',
   },
-  { shape: 'circle', size: 1.3, overlap: 0.36, cue: 0, mood: 'curious' },
+  {
+    shape: 'circle',
+    size: 1.3,
+    overlap: 0.36,
+    cue: 0,
+    mood: 'curious',
+    headwear: 'bow',
+  },
   {
     shape: 'diamond',
     size: 0.72,
@@ -88,11 +105,33 @@ const CAST: Cast[] = [
     cue: 5,
     mood: 'attentive',
     front: true,
+    headwear: 'cap',
   },
-  { shape: 'diamond', size: 1.55, overlap: 0.46, cue: 1, mood: 'normal' },
-  { shape: 'circle', size: 0.74, overlap: 0.24, cue: 3, mood: 'happy' },
+  {
+    shape: 'diamond',
+    size: 1.55,
+    overlap: 0.46,
+    cue: 1,
+    mood: 'normal',
+    headwear: 'bow',
+  },
+  {
+    shape: 'circle',
+    size: 0.74,
+    overlap: 0.24,
+    cue: 3,
+    mood: 'happy',
+    headwear: 'cap',
+  },
   /* Peek v1.2's new face, not in the teaser: it peeks in last. */
-  { shape: 'triangle', size: 1.2, overlap: 0.18, cue: 6, mood: 'excited' },
+  {
+    shape: 'triangle',
+    size: 1.2,
+    overlap: 0.18,
+    cue: 6,
+    mood: 'excited',
+    headwear: 'sprout',
+  },
 ]
 
 /* The moods a creature wanders between, by weight. Angry and sad are left
@@ -181,7 +220,7 @@ export function Creatures({
   useEffect(() => {
     const rigs = CAST.map((c, i) => {
       const host = hosts.current[i]!
-      const rig = new Rig(host, c.shape, still)
+      const rig = new Rig(host, c.shape, still, c.headwear)
       rig.svg.setAttribute('width', '100%')
       rig.svg.setAttribute('height', '100%')
       rig.svg.style.pointerEvents = 'none'

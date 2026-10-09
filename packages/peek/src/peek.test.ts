@@ -5,7 +5,16 @@ import { depth, draw, type Node, restPose } from './draw'
 import { fnv1a, identify, seed, tidy } from './identity'
 import { Peek } from './peek'
 import { settle, toSvg } from './svg'
-import { COLORS, EXPRESSIONS, type Expression, FACES, PARTS } from './tables'
+import {
+  ACCESSORIES,
+  type AccessorySlot,
+  COLORS,
+  EXPRESSIONS,
+  type Expression,
+  FACES,
+  type Face,
+  PARTS,
+} from './tables'
 
 const NAMES = [
   'Ada Lovelace',
@@ -358,3 +367,92 @@ function args(name: string, o: object) {
   const { who, pose, opts } = settle(name, { id: 'p', ...o })
   return [who, pose, opts] as const
 }
+
+describe('accessories', () => {
+  test('wardrobe slots default to none at peek@1 and override independently', () => {
+    const base = identify('Linh', { version: 1 })
+    expect([base.eyewear, base.headwear, base.neckwear]).toEqual([
+      'none',
+      'none',
+      'none',
+    ])
+    for (const [slot, list] of Object.entries(ACCESSORIES)) {
+      for (const item of list) {
+        const dressed = settle('Linh', { [slot]: item, version: 1 }).who
+        expect({ ...dressed, [slot]: base[slot as AccessorySlot] }).toEqual(
+          base,
+        )
+      }
+    }
+    expect(toSvg('Linh')).toBe(
+      toSvg('Linh', { eyewear: 'none', headwear: 'none', neckwear: 'none' }),
+    )
+    expect(toSvg('Linh')).toBe(
+      toSvg('Linh', { eyewear: 'glass', headwear: 'hat' } as never),
+    )
+    expect(toSvg('Linh', { eyewear: 'glasses' })).not.toBe(
+      toSvg('Linh', { eyewear: 'sunglasses' }),
+    )
+  })
+
+  test('every wardrobe combination fits a finite, stable live tree on every face and trait', () => {
+    const keys = (node: Node): string[] => [
+      node.key,
+      ...node.children.flatMap(keys),
+    ]
+    for (const face of Object.keys(FACES) as Face[]) {
+      for (const trait of PARTS.trait) {
+        for (const eyewear of ACCESSORIES.eyewear) {
+          for (const headwear of ACCESSORIES.headwear) {
+            for (const neckwear of ACCESSORIES.neckwear) {
+              const { who, opts } = settle(
+                'Linh',
+                { face, trait, eyewear, headwear, neckwear },
+                true,
+              )
+              const reference = keys(draw(who, restPose(who, 'normal'), opts))
+              for (const expression of Object.keys(
+                EXPRESSIONS,
+              ) as Expression[]) {
+                const tree = draw(who, restPose(who, expression, [-1, 1]), opts)
+                expect(keys(tree)).toEqual(reference)
+                expect(
+                  /NaN|Infinity|undefined/.test(JSON.stringify(tree)),
+                ).toBe(false)
+              }
+            }
+          }
+        }
+      }
+    }
+  })
+
+  test('accessories are deterministic with frames, riso, gaze and React SSR', () => {
+    for (const frame of ['ink', 'bone', 'paper', 'none'] as const) {
+      for (const square of [true, false]) {
+        for (const eyes of PARTS.eyes) {
+          const o = {
+            frame,
+            square,
+            eyes,
+            eyewear: 'glasses',
+            headwear: 'sprout',
+            neckwear: 'tie',
+            expression: 'surprised',
+            gaze: [1, -1],
+            riso: true,
+            size: 300,
+          } as const
+          const svg = toSvg('Linh', o)
+          expect(toSvg('Linh', o)).toBe(svg)
+          expect(svg).toContain('M-4 15L-13 63')
+          const el = createElement(Peek, { name: 'Linh', ...o, animate: true })
+          const react = renderToString(el)
+          expect(renderToString(el)).toBe(react)
+          expect(react).toContain('M-4 15L-13 63')
+          expect(react).toContain('aria-label="Linh"')
+        }
+      }
+    }
+  })
+})

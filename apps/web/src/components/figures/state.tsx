@@ -18,6 +18,7 @@ import { type KeyboardEvent, type PointerEvent, useState } from 'react'
 import { CodeBlock } from '@/components/code-block'
 import { LAND, NONE } from '@/lib/motion'
 import { fonts, sheet } from '@/lib/tokens.stylex'
+import { wardrobeFor, wardrobeJsx } from '@/lib/wardrobe'
 import { Figure, Micro, Segmented, Stage, useAutoplay } from './kit'
 
 export { Alive } from './state-alive'
@@ -46,6 +47,7 @@ export function Expressions() {
           <div {...stylex.props(s.split)}>
             <Peek
               name='Linh'
+              {...wardrobeFor('Linh')}
               expression={expr}
               animate
               size={160}
@@ -100,6 +102,7 @@ export function Expressions() {
                 >
                   <Peek
                     name='Linh'
+                    {...wardrobeFor('Linh')}
                     expression={e}
                     size={52}
                     frame='none'
@@ -118,7 +121,7 @@ export function Expressions() {
       <div {...stylex.props(s.code)}>
         <CodeBlock
           live
-          code={`<Peek name="Linh" expression="${expr}" animate />`}
+          code={`<Peek name="Linh" ${wardrobeJsx('Linh')} expression="${expr}" animate />`}
         />
       </div>
     </Figure>
@@ -170,8 +173,8 @@ export function GazePad() {
   }
   const follow = mode === 'pointer'
   const code = follow
-    ? '<Peek name="Linh" gaze="pointer" animate />'
-    : `<Peek name="Linh" gaze={[${g[0]}, ${g[1]}]} animate />`
+    ? `<Peek name="Linh" ${wardrobeJsx('Linh')} gaze="pointer" animate />`
+    : `<Peek name="Linh" ${wardrobeJsx('Linh')} gaze={[${g[0]}, ${g[1]}]} animate />`
   return (
     <Figure bare>
       <div ref={auto.ref} {...stylex.props(s.gazeRow)}>
@@ -238,6 +241,7 @@ export function GazePad() {
               >
                 <Peek
                   name={n}
+                  {...wardrobeFor(n)}
                   gaze={follow ? 'pointer' : g}
                   expression={happy ? 'happy' : 'normal'}
                   animate

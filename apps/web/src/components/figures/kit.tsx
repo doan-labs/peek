@@ -6,7 +6,7 @@
  * Ported from Duo's blog figures, retuned to the sheet: thin rules, mono
  * micro labels, signal red spent on selection only.
  */
-import { Peek, type PeekProps } from '@doan-labs/peek'
+import { identify, type PeekProps } from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import {
   AnimatePresence,
@@ -15,8 +15,10 @@ import {
   useReducedMotion,
 } from 'motion/react'
 import { type ReactNode, useEffect, useId, useRef, useState } from 'react'
+import { Peek } from '@/components/peek'
 import { CURVE, LAND, NONE } from '@/lib/motion'
 import { fonts, sheet } from '@/lib/tokens.stylex'
+import { wardrobeFor } from '@/lib/wardrobe'
 
 /**
  * A figure plays itself while it is on screen, until the reader touches it:
@@ -231,9 +233,18 @@ export function Segmented<T extends string>({
 export function FaceChip({
   size = 20,
   round = true,
+  full = false,
   ...peek
-}: Omit<PeekProps, 'size' | 'frame'> & { size?: number; round?: boolean }) {
-  const big = Math.round(size * 1.9)
+}: Omit<PeekProps, 'size' | 'frame'> & {
+  size?: number
+  round?: boolean
+  full?: boolean
+}) {
+  // a hat on a tall face sits above the usual crop: zoom out to keep it
+  const hat =
+    (peek.headwear ?? wardrobeFor(peek.name).headwear) !== 'none' &&
+    (peek.face ?? identify(peek.name).face) !== 'semicircle'
+  const big = full ? size : Math.round(size * (hat ? 1.5 : 1.9))
   return (
     <span
       aria-hidden={peek.title === undefined || peek.title === false}
@@ -244,7 +255,10 @@ export function FaceChip({
         title={peek.title ?? false}
         size={big}
         frame='none'
-        {...stylex.props(styles.chipSvg(big, size))}
+        {...stylex.props(
+          styles.chipSvg(big, size, hat ? 0.32 : 0.85),
+          full && styles.fullSvg,
+        )}
       />
     </span>
   )
@@ -462,13 +476,14 @@ export const styles = stylex.create({
     height: `${px}px`,
     borderRadius: round ? '50%' : `${Math.round(px * 0.28)}px`,
   }),
-  chipSvg: (big: number, px: number) => ({
+  chipSvg: (big: number, px: number, lift: number) => ({
     position: 'absolute',
     left: `${-(big - px) / 2}px`,
-    top: `${-px * 0.85}px`,
+    top: `${-px * lift}px`,
     width: `${big}px`,
     height: `${big}px`,
   }),
+  fullSvg: { top: 0 },
   rollRow: { display: 'inline-flex', fontVariantNumeric: 'tabular-nums' },
   rollSlot: {
     position: 'relative',

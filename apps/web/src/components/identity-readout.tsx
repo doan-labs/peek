@@ -6,6 +6,7 @@
  */
 import {
   AXES,
+  type Axes,
   COLORS,
   type Identity,
   identify,
@@ -33,11 +34,14 @@ const hex = (h: number) => `0x${h.toString(16).toUpperCase().padStart(8, '0')}`
 export function IdentityReadout({
   name,
   compact = false,
+  overrides = {},
 }: {
   name: string
   compact?: boolean
+  overrides?: Partial<Axes>
 }) {
-  const who = identify(name)
+  const base = identify(name)
+  const who = { ...base, ...overrides }
   const lengths = VERSIONS[who.version]!
   return (
     <div {...stylex.props(styles.root)}>
@@ -81,7 +85,9 @@ export function IdentityReadout({
                 ) : null}
                 {value}
                 <span {...stylex.props(styles.of)}>
-                  {at + 1}/{lengths[axis]}
+                  {value !== base[axis]
+                    ? 'override'
+                    : `${at + 1}/${lengths[axis]}`}
                 </span>
               </dd>
             </div>

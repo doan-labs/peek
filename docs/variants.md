@@ -10,7 +10,7 @@ style            peek · pixel · bauhaus …          picked by the caller
 ├─ identity      hashed from the name, any axis overridable
 │  ├─ face       the body silhouette
 │  ├─ color      a body ink and its deep partner
-│  └─ anatomy    discrete parts + continuous proportions
+│  └─ anatomy    discrete parts + continuous proportions + accessories
 └─ state         passed in by the caller or driven by the rig, never hashed
    ├─ expression one shared vocabulary, 11 states
    └─ gaze       x, y in -1..1
@@ -56,7 +56,7 @@ list a version picks from.
 ### Overrides
 
 A name decides identity unless the caller overrides an axis. An explicit
-`face`, `color`, `eyes`, `brows`, `mouth`, `cheeks` or `trait` wins over the
+`face`, `color`, `eyes`, `brows`, `mouth`, `cheeks`, `trait`, `eyewear`, `headwear` or `neckwear` wins over the
 hash, and every other axis stays as the name made it. The persona cannot be
 overridden.
 
@@ -107,6 +107,34 @@ part.
 Each trait keeps its v1.2 motion, measured from a seat on the crown outline:
 a distance from the outline and a walk along it from the top. That is why any
 trait fits any face. On its own v1.2 face each trait lands where it did.
+
+### Anatomy: accessories
+
+Three independent wardrobe slots, each individually overridable:
+
+| Slot | Types, in list order |
+| --- | --- |
+| eyewear | `none`, `glasses`, `sunglasses` |
+| headwear | `none`, `bow`, `cap`, `sprout` |
+| neckwear | `none`, `tie` |
+
+At `peek@1` the version pins each accessory list to its first entry, `none`.
+Explicit overrides can use the full lists. Existing names and default SVG
+bytes remain unchanged; automatically picking non-empty accessories would
+require a new style version.
+
+Glasses surround the eye sockets, and sunglasses cover the eyes without
+removing them. Both track eye proportions and keep gaze and blinking intact.
+Headwear sits on the crown outline, on the side away from the trait. The
+cap is paper and ink, the bow has one red knot, and the sprout uses mint
+and deep mint. The tie follows the mouth's lowest edge and is clipped by
+the same floor as the body. All accessories share the body's transform.
+
+The six accessories are transcribed from the Phụ kiện reference sheet;
+placement adapts to the library's independent traits and seeded persona.
+
+The explicit wardrobe has 3 × 4 × 2 = 24 combinations per identity. This
+does not change the count of name-selected looks at `peek@1`.
 
 ### Anatomy: proportions
 
