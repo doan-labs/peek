@@ -13,6 +13,15 @@
  * curious creature looks at is `thing`, set by the page to the mark.
  */
 
+import {
+  COLORS,
+  type Color,
+  draw,
+  type Headwear,
+  type Node,
+  settle,
+} from '@doan-labs/peek'
+
 const NS = 'http://www.w3.org/2000/svg'
 
 export const INK = {
@@ -662,7 +671,12 @@ export class Rig {
   private traitG: SVGGElement
   private traitEl: SVGElement
 
-  constructor(host: Element, shape: ShapeKey, still: boolean) {
+  constructor(
+    host: Element,
+    shape: ShapeKey,
+    still: boolean,
+    headwear: Headwear = 'none',
+  ) {
     this.sh = SHAPES[shape]
     this.still = still
     const sh = this.sh
@@ -802,6 +816,28 @@ export class Rig {
       },
       this.body,
     )
+
+    if (headwear !== 'none') {
+      // Reuse the library's crown placement inside the rig's moving body.
+      const { who, pose, opts } = settle(`hero-${shape}`, {
+        face: shape,
+        trait: sh.trait,
+        // the hat's halo matches the body it sits on
+        color: (Object.keys(COLORS) as Color[]).find(
+          (c) => COLORS[c].body === sh.fill,
+        ),
+        headwear,
+        size: 340,
+      })
+      const find = (node: Node): Node | undefined =>
+        node.key === 'headwear' ? node : node.children.map(find).find(Boolean)
+      const mount = (node: Node, parent: Element) => {
+        const kid = el(node.tag as 'g', node.attrs, parent)
+        for (const c of node.children) mount(c, kid)
+      }
+      const hat = find(draw(who, pose, opts))
+      if (hat) mount(hat, this.body)
+    }
 
     host.appendChild(svg)
     this.resize(host.getBoundingClientRect().width || 400)

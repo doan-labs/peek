@@ -12,11 +12,12 @@
  * Live snippets (a figure's code, rewritten as the reader plays) flash each
  * line that just changed. Copy always takes the plain text.
  */
-import { AXES, Peek, type PeekProps } from '@doan-labs/peek'
+import { AXES, type PeekProps } from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { Fragment, type ReactNode, useEffect, useRef, useState } from 'react'
 import { FaceChip } from '@/components/figures/kit'
+import { Peek } from '@/components/peek'
 import { CURVE, LAND, NONE } from '@/lib/motion'
 import { fonts, sheet } from '@/lib/tokens.stylex'
 
@@ -135,7 +136,14 @@ function Line({ code, lang, axes }: { code: string; lang: Lang; axes: Axes }) {
 function NameFace({ name, axes }: { name: string; axes: Axes }) {
   return (
     <span {...stylex.props(styles.nameFace)}>
-      <FaceChip {...axes} name={name} />
+      {/* it draws exactly the line it sits in, outfit and all */}
+      <FaceChip
+        eyewear='none'
+        headwear='none'
+        neckwear='none'
+        {...axes}
+        name={name}
+      />
     </span>
   )
 }

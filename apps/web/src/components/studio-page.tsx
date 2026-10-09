@@ -133,7 +133,7 @@ export function StudioPage() {
                   </div>
                 ))}
               </dl>
-              <IdentityReadout name={name} />
+              <IdentityReadout name={name} overrides={lookProps(look)} />
               <p {...stylex.props(styles.formula)}>
                 seed(axis) = fnv1a("peek@{who.version}:" + axis + ":{who.key}")
                 <br />

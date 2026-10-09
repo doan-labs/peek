@@ -13,15 +13,16 @@ import {
   FACES,
   type Face,
   LATEST,
-  Peek,
   toSvg,
   VERSIONS,
 } from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { motion, useInView, useReducedMotion } from 'motion/react'
 import { type ReactNode, useEffect, useRef, useState } from 'react'
+import { Peek } from '@/components/peek'
 import { LAND, NONE } from '@/lib/motion'
 import { fonts, sheet } from '@/lib/tokens.stylex'
+import { type Wardrobe, wardrobeFor } from '@/lib/wardrobe'
 import { Controls, FaceChip, Figure, Micro, Stage, useAutoplay } from './kit'
 
 const FACE_LIST = Object.keys(FACES) as Face[]
@@ -61,17 +62,38 @@ export function IntroNumbers() {
 
 const tiny = { frame: 'none', title: false } as const
 
+/* One outfit per face in a row, so the counts show off the wardrobe too. */
+const OUTFITS = (
+  [
+    { eyewear: 'glasses' },
+    { headwear: 'cap' },
+    { eyewear: 'sunglasses' },
+    { headwear: 'bow' },
+    { neckwear: 'tie' },
+    { headwear: 'sprout' },
+    { eyewear: 'glasses', headwear: 'bow' },
+  ] as Partial<Wardrobe>[]
+).map(
+  (o): Wardrobe => ({
+    eyewear: 'none',
+    headwear: 'none',
+    neckwear: 'none',
+    ...o,
+  }),
+)
+
 /** The four face shapes, one name. */
 function Shapes() {
   return (
     <span {...stylex.props(styles.faces)}>
-      {FACE_LIST.map((f) => (
+      {FACE_LIST.map((f, i) => (
         <Peek
           key={f}
           name='Linh'
           face={f}
           color='lavender'
           size={30}
+          {...OUTFITS[i]}
           {...tiny}
         />
       ))}
@@ -83,8 +105,15 @@ function Shapes() {
 function Inks() {
   return (
     <span {...stylex.props(styles.faces, styles.tight)}>
-      {COLOR_LIST.map((c) => (
-        <FaceChip key={c} name='Linh' face='circle' color={c} size={18} />
+      {COLOR_LIST.map((c, i) => (
+        <FaceChip
+          key={c}
+          name='Linh'
+          face='circle'
+          color={c}
+          size={18}
+          {...OUTFITS[i]}
+        />
       ))}
     </span>
   )
@@ -203,7 +232,7 @@ export function SameFace() {
     const t = setTimeout(() => setSettled(true), 700)
     return () => clearTimeout(t)
   }, [name])
-  const svg = toSvg(name)
+  const svg = toSvg(name, wardrobeFor(name))
   const bytes = new TextEncoder().encode(svg).length
   const hash = fnv1a(svg).toString(16).padStart(8, '0')
   return (

@@ -9,6 +9,7 @@
  */
 import * as peek from '@doan-labs/peek'
 import {
+  ACCESSORIES,
   COLORS,
   EXPRESSIONS,
   FACES,
@@ -48,6 +49,9 @@ const PROPS: Record<keyof PeekProps, Row> = {
   mouth: [one(PARTS.mouth), 'hashed', 'Overrides one axis.'],
   cheeks: [one(PARTS.cheeks), 'hashed', 'Overrides one axis.'],
   trait: [one(PARTS.trait), 'hashed', 'Overrides one axis.'],
+  eyewear: [one(ACCESSORIES.eyewear), "'none'", 'Independent eyewear slot.'],
+  headwear: [one(ACCESSORIES.headwear), "'none'", 'Independent headwear slot.'],
+  neckwear: [one(ACCESSORIES.neckwear), "'none'", 'Independent neckwear slot.'],
   className: ['string', 'none', 'On the svg.'],
   style: ['CSSProperties', 'none', 'On the svg.'],
 }

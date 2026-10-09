@@ -9,6 +9,7 @@ import * as stylex from '@stylexjs/stylex'
 import { motion } from 'motion/react'
 import { useState } from 'react'
 import { fonts, sheet } from '@/lib/tokens.stylex'
+import { wardrobeFor } from '@/lib/wardrobe'
 import { Micro, Roll, useAutoplay } from './kit'
 
 const CYCLE: Expression[] = [
@@ -58,6 +59,7 @@ export function Alive() {
                 </span>
                 <Peek
                   name={NAME}
+                  {...wardrobeFor(NAME)}
                   expression={expr}
                   animate={live}
                   size={128}
@@ -70,6 +72,7 @@ export function Alive() {
                       <Peek
                         key={n}
                         name={n}
+                        {...wardrobeFor(n)}
                         expression={expr}
                         animate
                         size={30}

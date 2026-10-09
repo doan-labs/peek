@@ -7,10 +7,14 @@
  * control and the face glances at it for a beat.
  */
 import {
+  ACCESSORIES,
   EXPRESSIONS,
   type Expression,
+  type Eyewear,
   type Frame,
   type Gaze,
+  type Headwear,
+  type Neckwear,
   Peek,
 } from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
@@ -19,6 +23,7 @@ import { type SyntheticEvent, useEffect, useRef, useState } from 'react'
 import { CodeBlock } from '@/components/code-block'
 import { LAND, NONE } from '@/lib/motion'
 import { fonts, sheet } from '@/lib/tokens.stylex'
+import { wardrobeFor } from '@/lib/wardrobe'
 import { FaceChip, Figure, Micro, Roll, Segmented, Stage } from './kit'
 import { Range, Toggle } from './react-controls'
 
@@ -57,6 +62,9 @@ const RISO_FROM = 120
 
 type Props = {
   name: string
+  eyewear: Eyewear
+  headwear: Headwear
+  neckwear: Neckwear
   size: number
   expression: Expression
   frame: Frame
@@ -68,6 +76,7 @@ type Props = {
 
 const DEFAULTS: Props = {
   name: 'Linh',
+  ...wardrobeFor('Linh'),
   size: 96,
   expression: 'normal',
   frame: 'ink',
@@ -83,6 +92,8 @@ function jsx(p: Props) {
     ? `{${JSON.stringify(p.name)}}`
     : `"${p.name}"`
   const lines = [`  name=${name}`]
+  for (const slot of ['eyewear', 'headwear', 'neckwear'] as const)
+    if (p[slot] !== 'none') lines.push(`  ${slot}="${p[slot]}"`)
   if (p.size !== 64) lines.push(`  size={${p.size}}`)
   if (p.expression !== 'normal') lines.push(`  expression="${p.expression}"`)
   if (p.frame !== 'ink') lines.push(`  frame="${p.frame}"`)
@@ -137,6 +148,9 @@ export function PropsPlayground() {
           >
             <Peek
               name={p.name}
+              eyewear={p.eyewear}
+              headwear={p.headwear}
+              neckwear={p.neckwear}
               size={p.size}
               expression={p.expression}
               frame={p.frame}
@@ -201,10 +215,43 @@ export function PropsPlayground() {
                   onClick={() => set({ expression: x })}
                   {...stylex.props(s.chip, x === p.expression && s.chipOn)}
                 >
-                  <FaceChip name={p.name} size={26} expression={x} />
+                  <FaceChip
+                    name={p.name}
+                    size={32}
+                    round={false}
+                    full
+                    expression={x}
+                    eyewear={p.eyewear}
+                    headwear={p.headwear}
+                    neckwear={p.neckwear}
+                  />
                 </motion.button>
               ))}
             </fieldset>
+          </Row>
+          <Row label='eyewear'>
+            <Segmented
+              label='Eyewear'
+              options={ACCESSORIES.eyewear}
+              value={p.eyewear}
+              onChange={(eyewear) => set({ eyewear })}
+            />
+          </Row>
+          <Row label='headwear'>
+            <Segmented
+              label='Headwear'
+              options={ACCESSORIES.headwear}
+              value={p.headwear}
+              onChange={(headwear) => set({ headwear })}
+            />
+          </Row>
+          <Row label='neckwear'>
+            <Segmented
+              label='Neckwear'
+              options={ACCESSORIES.neckwear}
+              value={p.neckwear}
+              onChange={(neckwear) => set({ neckwear })}
+            />
           </Row>
           <Row label='frame'>
             <Segmented

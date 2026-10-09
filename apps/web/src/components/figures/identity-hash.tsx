@@ -14,7 +14,6 @@ import {
   COLORS,
   LATEST,
   LISTS,
-  Peek,
   tidy,
   VERSIONS,
 } from '@doan-labs/peek'
@@ -22,8 +21,10 @@ import * as stylex from '@stylexjs/stylex'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { useEffect, useId, useRef, useState } from 'react'
 import { CodeBlock } from '@/components/code-block'
+import { Peek } from '@/components/peek'
 import { LAND, NONE } from '@/lib/motion'
 import { fonts, sheet } from '@/lib/tokens.stylex'
+import { wardrobeFor } from '@/lib/wardrobe'
 import { Figure, styles as kit, Micro, useAutoplay } from './kit'
 
 /** FNV-1a over the UTF-8 bytes, as in identity.ts. */
@@ -360,10 +361,13 @@ export function HashMachine() {
     })
   }
   const props = pins as Partial<Axes>
-  const attrs = AXES.filter((a) => pins[a])
-    .map((a) => ` ${a}="${pins[a]}"`)
+  const pinned = AXES.some((a) => pins[a])
+  // the printed code carries the outfit the site's Peek puts on, too
+  const outfit: Partial<Record<Axis, string>> = wardrobeFor(key)
+  const attrs = AXES.map((a) => [a, pins[a] ?? outfit[a]] as const)
+    .filter(([, v]) => v && v !== 'none')
+    .map(([a, v]) => ` ${a}="${v}"`)
     .join('')
-  const pinned = attrs !== ''
 
   return (
     <Figure>

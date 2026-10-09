@@ -11,6 +11,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
 import { CURVE, LAND, NONE } from '@/lib/motion'
 import { fonts, sheet } from '@/lib/tokens.stylex'
+import { wardrobeFor, wardrobeTs } from '@/lib/wardrobe'
 import {
   FaceChip,
   Figure,
@@ -25,7 +26,8 @@ import {
 export { ServeIt } from './svg-serve'
 
 /** The call the page's first snippet makes. */
-export const draw = (name: string) => toSvg(name, { size: 96, frame: 'bone' })
+export const draw = (name: string) =>
+  toSvg(name, { size: 96, frame: 'bone', ...wardrobeFor(name) })
 
 export const uri = (svg: string) =>
   `data:image/svg+xml,${encodeURIComponent(svg)}`
@@ -140,7 +142,9 @@ export function SameBytes() {
             spellCheck={false}
             {...stylex.props(styles.field, styles.chars(name.length))}
           />
-          <span {...stylex.props(styles.punct)}>&apos;)</span>
+          <span {...stylex.props(styles.punct)}>
+            &apos;, {wardrobeTs(name)})
+          </span>
         </label>
         <div {...stylex.props(styles.pair)}>
           <Run label='Run 1' svg={a} />

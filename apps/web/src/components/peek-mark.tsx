@@ -110,7 +110,13 @@ const SLIDE = 2.2
 const LEAN = 2.6
 const GAZE = { stiffness: 160, damping: 18, mass: 0.6 }
 
-export function PeekMark({ ref }: { ref?: Ref<HTMLButtonElement> }) {
+export function PeekMark({
+  ref,
+  compact = false,
+}: {
+  ref?: Ref<HTMLButtonElement>
+  compact?: boolean
+}) {
   const still = useReducedMotion() ?? false
   const [turns, setTurns] = useState(1)
   // the sleepers open their eyes for the pointer, a press, or a look of
@@ -173,7 +179,7 @@ export function PeekMark({ ref }: { ref?: Ref<HTMLButtonElement> }) {
       <svg
         viewBox='74 72 260 260'
         aria-hidden='true'
-        {...stylex.props(styles.svg)}
+        {...stylex.props(styles.svg, compact && styles.compact)}
       >
         <motion.g
           initial={{ rotate: 0 }}
@@ -428,6 +434,7 @@ const styles = stylex.create({
     height: 'auto',
     overflow: 'visible',
   },
+  compact: { width: '32px', height: '32px', flexShrink: 0 },
   center: {
     transformBox: 'fill-box',
     transformOrigin: 'center',

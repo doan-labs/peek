@@ -4,13 +4,15 @@
  * that cheers when the line is copied. RunsWhere: no box, a face hopping
  * along a line of runtimes, each stop's name drawn as its own face.
  */
-import { Peek } from '@doan-labs/peek'
+
 import * as stylex from '@stylexjs/stylex'
 import { motion, useReducedMotion } from 'motion/react'
 import { useEffect, useId, useRef, useState } from 'react'
 import { ManagerLogo } from '@/components/manager-logo'
+import { Peek } from '@/components/peek'
 import { CURVE, LAND, NONE } from '@/lib/motion'
 import { colors, fonts, sheet } from '@/lib/tokens.stylex'
+import { wardrobeTs } from '@/lib/wardrobe'
 import { FaceChip, Figure, useAutoplay } from './kit'
 
 export const MANAGERS = ['npm', 'bun', 'pnpm', 'yarn'] as const
@@ -187,6 +189,8 @@ export function RunsWhere() {
               <FaceChip
                 name={RUNTIMES[here]!}
                 size={40}
+                round={false}
+                full
                 expression='happy'
                 animate
               />
@@ -219,7 +223,7 @@ export function RunsWhere() {
           ))}
         </fieldset>
         <code {...stylex.props(styles.call)}>
-          toSvg('{RUNTIMES[here]}'){' '}
+          toSvg('{RUNTIMES[here]}', {wardrobeTs(RUNTIMES[here]!)}){' '}
           <span {...stylex.props(styles.same)}>same bytes</span>
         </code>
       </div>

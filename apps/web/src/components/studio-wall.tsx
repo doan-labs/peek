@@ -6,11 +6,12 @@
  * Every live face steps from the library's one shared loop and pauses when
  * it scrolls away, so the wall costs what is on screen.
  */
-import { LATEST, Peek, toSvg } from '@doan-labs/peek'
+import { LATEST, toSvg } from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { motion, useReducedMotion } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
 import { IdentityReadout } from '@/components/identity-readout'
+import { Peek } from '@/components/peek'
 import { LAND, NONE } from '@/lib/motion'
 import {
   jsxFor,
@@ -192,7 +193,11 @@ export function StudioSheet({
             </div>
             <div {...stylex.props(styles.side)}>
               <h3 {...stylex.props(styles.h3)}>{name}</h3>
-              <IdentityReadout name={name} compact />
+              <IdentityReadout
+                name={name}
+                overrides={lookProps(look)}
+                compact
+              />
             </div>
             <div {...stylex.props(styles.take)}>
               <pre {...stylex.props(styles.code)}>

@@ -2,10 +2,11 @@
  * The identity page's versions figure. The hash machine lives in its own
  * file, identity-hash.tsx.
  */
-import { FACES, LATEST, Peek, tidy, VERSIONS } from '@doan-labs/peek'
+import { FACES, LATEST, tidy, VERSIONS } from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { useState } from 'react'
+import { Peek } from '@/components/peek'
 import { LAND, NONE } from '@/lib/motion'
 import { fonts, sheet } from '@/lib/tokens.stylex'
 import { fnv1a, work } from './identity-hash'

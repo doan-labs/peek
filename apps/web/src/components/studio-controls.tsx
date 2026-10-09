@@ -1,16 +1,16 @@
 /*
- * The sticky control bar: the state every avatar on the page wears. One
+ * The sticky control bar: appearance and wardrobe for every avatar. One
  * signal dot per group leads the chosen pill, as in the v1.2 sheet, and
  * springs between pills when it changes.
  *
- * Two rows at every width: the expression, then frame, tile, size and life.
+ * Three rows: expression, wardrobe, then frame, tile, size and life.
  * A row that does not fit scrolls sideways inside itself, fading at its
  * right edge, so the page never does and no group hides behind another.
  *
  * Style is a label, not a control: there is one style. The layer is built
  * to grow; the bar does not pretend it has.
  */
-import { LATEST } from '@doan-labs/peek'
+import { ACCESSORIES, LATEST } from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { motion, useReducedMotion } from 'motion/react'
 import { LAND, NONE } from '@/lib/motion'
@@ -115,6 +115,29 @@ export function StudioControls({
             options={EXPRESSION_LIST}
             value={look.expression}
             onChange={(expression) => set({ expression })}
+          />
+        </div>
+        <div {...stylex.props(styles.row)}>
+          <Pills
+            id='eyewear'
+            label='Eyewear'
+            options={ACCESSORIES.eyewear}
+            value={look.eyewear}
+            onChange={(eyewear) => set({ eyewear })}
+          />
+          <Pills
+            id='headwear'
+            label='Headwear'
+            options={ACCESSORIES.headwear}
+            value={look.headwear}
+            onChange={(headwear) => set({ headwear })}
+          />
+          <Pills
+            id='neckwear'
+            label='Neckwear'
+            options={ACCESSORIES.neckwear}
+            value={look.neckwear}
+            onChange={(neckwear) => set({ neckwear })}
           />
         </div>
         <div {...stylex.props(styles.row)}>

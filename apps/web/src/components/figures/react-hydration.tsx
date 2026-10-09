@@ -7,15 +7,18 @@
  * The hashes are real: the server one is the string rendered into the
  * HTML, the client one is computed again in an effect in the browser.
  */
-import { Peek, toSvg } from '@doan-labs/peek'
+import { toSvg } from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { useEffect, useState } from 'react'
+import { Peek } from '@/components/peek'
 import { CURVE, LAND, NONE } from '@/lib/motion'
 import { fonts, sheet } from '@/lib/tokens.stylex'
+import { wardrobeFor } from '@/lib/wardrobe'
 import { Figure, Micro, useAutoplay } from './kit'
 
 const NAME = 'Linh'
+const OUTFIT = wardrobeFor(NAME)
 const SIZE = 84
 // seconds each frame takes the stage, and the whole loop
 const AT = [0, 1.6, 3.2] as const
@@ -33,10 +36,10 @@ function fnv1a(str: string) {
 
 export function Hydration() {
   const reduce = useReducedMotion()
-  const markup = toSvg(NAME)
+  const markup = toSvg(NAME, OUTFIT)
   const [server] = useState(() => fnv1a(markup))
   const [client, setClient] = useState<string | null>(null)
-  useEffect(() => setClient(fnv1a(toSvg(NAME))), [])
+  useEffect(() => setClient(fnv1a(toSvg(NAME, OUTFIT))), [])
 
   // the frame reached; at rest, the last one, so the whole story shows
   const [step, setStep] = useState(2)

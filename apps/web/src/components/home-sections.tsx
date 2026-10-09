@@ -29,6 +29,7 @@ import { playSound } from '@/lib/sound'
 import { COMBOS, EXPRESSION_LIST, NAMES } from '@/lib/studio'
 import { inkSheet } from '@/lib/theme'
 import { colors, fonts } from '@/lib/tokens.stylex'
+import { wardrobeFor, wardrobeJsx, wardrobeTs } from '@/lib/wardrobe'
 
 /* The package manager: one pick for every install line on the page. */
 let picked: Manager = 'npm'
@@ -188,7 +189,8 @@ function Wall() {
     <section {...stylex.props(styles.section)}>
       <Head n='01' label='Same name, same face' title='Everyone gets a face'>
         Nothing is stored and nothing is fetched. Each face is worked out from
-        the name, so it is the same one every time, everywhere.
+        the name, so it is the same one every time, everywhere. Outfits are
+        props; this wall dresses each name the same way every visit.
       </Head>
       <ul {...stylex.props(styles.wall)}>
         {WALL.map((name, i) => (
@@ -200,6 +202,7 @@ function Wall() {
           >
             <Peek
               name={name}
+              {...wardrobeFor(name)}
               size={88}
               expression={on === i ? 'excited' : 'normal'}
               gaze='pointer'
@@ -216,20 +219,22 @@ function Wall() {
 /* ---------- 02 · The three calls ---------- */
 
 const SAMPLE = 'Linh'
-const svg = toSvg(SAMPLE)
+const outfit = wardrobeFor(SAMPLE)
+const outfitJsx = wardrobeJsx(SAMPLE)
+const svg = toSvg(SAMPLE, outfit)
 const who = identify(SAMPLE)
 
 const CALLS: { title: string; note: string; code: string; lang: Lang }[] = [
   {
     title: 'React',
     note: 'A component. Server rendered, hydrates to the same face.',
-    code: `<Peek name="${SAMPLE}" animate />`,
+    code: `<Peek name="${SAMPLE}" ${outfitJsx} animate />`,
     lang: 'tsx',
   },
   {
     title: 'Any runtime',
     note: 'A string of SVG. Node, Bun, Deno, the edge, the browser.',
-    code: `toSvg('${SAMPLE}')\n// '${svg.slice(0, 28)}…'\n// ${svg.length.toLocaleString('en-US')} bytes, every time`,
+    code: `toSvg('${SAMPLE}', ${wardrobeTs(SAMPLE)})\n// '${svg.slice(0, 28)}…'\n// ${svg.length.toLocaleString('en-US')} bytes, every time`,
     lang: 'ts',
   },
   {
@@ -254,6 +259,7 @@ function Calls() {
               <h3 {...stylex.props(styles.h3)}>{c.title}</h3>
               <Peek
                 name={SAMPLE}
+                {...(c.title !== 'Just the identity' ? outfit : {})}
                 size={40}
                 frame='none'
                 title={false}
@@ -292,7 +298,7 @@ function Moods() {
         title={`${EXPRESSION_LIST.length} expressions, one face`}
       >
         The name decides who it is. Expression, gaze and motion are yours to
-        set, and the face stays itself.
+        set. Add an outfit, then change its mood. The face stays itself.
       </Head>
       {/* the docs' playground, pinned to its dark scheme on the ink ground */}
       <div {...stylex.props(inkSheet)}>
