@@ -75,9 +75,11 @@ type Axes = Partial<PeekProps>
 
 /** The axis props a snippet sets (`face="circle"`), so its inline faces
  * wear them too. One set per snippet: they all describe one Peek. */
+const CALL = /<Peek\b|\bname=|\b(toSvg|identify)\(/
+
 function axesIn(code: string): Axes {
   const out: Record<string, string> = {}
-  for (const [, k, v] of code.matchAll(/\b(\w+)=["']([\w-]+)["']/g))
+  for (const [, k, v] of code.matchAll(/\b(\w+)\s*[=:]\s*["']([\w-]+)["']/g))
     if (k && v && (AXES as string[]).includes(k)) out[k] = v
   return out as Axes
 }
@@ -173,7 +175,14 @@ export function CodeBlock({
   const lines = code.split('\n')
   const fresh = useFresh(lines, live)
   const many = lines.length > 1
-  const axes = axesIn(code)
+  // each call keeps its own options: a call runs from a line that starts
+  // one to the next, so three faces in one block draw three outfits
+  const starts = lines.flatMap((l, i) => (i === 0 || CALL.test(l) ? [i] : []))
+  const axesAt = (i: number) => {
+    const from = Math.max(...starts.filter((s) => s <= i))
+    const to = starts.find((s) => s > i) ?? lines.length
+    return axesIn(lines.slice(from, to).join('\n'))
+  }
   return (
     <div {...stylex.props(styles.box)}>
       <div {...stylex.props(styles.head)}>
@@ -204,7 +213,7 @@ export function CodeBlock({
                 </span>
               ) : null}
               <span {...stylex.props(styles.text)}>
-                <Line code={line} lang={lang} axes={axes} />
+                <Line code={line} lang={lang} axes={axesAt(i)} />
                 {'\n'}
               </span>
             </span>

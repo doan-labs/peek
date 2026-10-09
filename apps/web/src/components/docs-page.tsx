@@ -379,6 +379,11 @@ function Hero({ page }: { page: DocPage }) {
   )
 }
 
+// a gallery that names an accessory shows exactly that, nothing the name adds
+const BARE = { eyewear: 'none', headwear: 'none', neckwear: 'none' } as const
+const dresses = (p: object) =>
+  'eyewear' in p || 'headwear' in p || 'neckwear' in p
+
 function BlockView({ block: b }: { block: Block }) {
   if (typeof b === 'string')
     return (
@@ -454,6 +459,7 @@ function BlockView({ block: b }: { block: Block }) {
           <Peek
             size={96}
             frame='none'
+            {...(dresses(props) ? BARE : {})}
             {...props}
             {...stylex.props(styles.fill)}
           />
