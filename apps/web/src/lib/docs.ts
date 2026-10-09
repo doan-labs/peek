@@ -24,7 +24,7 @@ export type Block =
   | { list: string[] }
   | { rows: string[][] }
   /** Live faces on the page; Markdown skips them. */
-  | { faces: (PeekProps & { label?: string })[] }
+  | { faces: (PeekProps & { label?: string })[]; cycle?: true }
   /** An interactive figure from components/figures. Markdown skips it, or
    * prints `md` when the figure carries content the text needs. */
   | { figure: FigureId; md?: string }
@@ -398,6 +398,7 @@ const svg = toSvg('Linh', {
           { name: 'An', headwear: 'sprout', label: 'sprout' },
           { name: 'Duc', neckwear: 'tie', label: 'tie' },
         ],
+        cycle: true,
       },
       {
         list: [
@@ -414,6 +415,7 @@ const svg = toSvg('Linh', {
           { name: 'Mai', expression: 'sleepy', label: 'sleepy' },
           { name: 'Khoa', expression: 'angry', label: 'angry' },
         ],
+        cycle: true,
       },
       {
         list: [

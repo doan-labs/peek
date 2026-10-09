@@ -9,7 +9,12 @@
  */
 import * as stylex from '@stylexjs/stylex'
 import { Link, Outlet, useLocation, useNavigate } from '@tanstack/react-router'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import {
+  AnimatePresence,
+  motion,
+  useInView,
+  useReducedMotion,
+} from 'motion/react'
 import {
   type ComponentProps,
   useEffect,
@@ -32,7 +37,7 @@ import {
   toMarkdown,
   toPrompt,
 } from '@/lib/docs'
-import { CURVE, NONE } from '@/lib/motion'
+import { CURVE, LAND, NONE } from '@/lib/motion'
 import { fonts, sheet } from '@/lib/tokens.stylex'
 import { wardrobeJsx } from '@/lib/wardrobe'
 
@@ -452,22 +457,58 @@ function BlockView({ block: b }: { block: Block }) {
       </div>
     )
   }
+  return <Faces block={b} />
+}
+
+const WALK = [
+  ...['Linh', 'Bao', 'Mai', 'Khoa', 'An', 'Duc'],
+  ...['Thanh', 'Alan', 'Hedy', 'Linus', 'Ada', 'Grace'],
+]
+
+/** A gallery; with `cycle`, the faces come alive and, one at a time and
+ * forever, a new name steps into each look. */
+function Faces({ block: b }: { block: Extract<Block, { faces: unknown }> }) {
+  const [turn, setTurn] = useState(0)
+  const ref = useRef<HTMLUListElement>(null)
+  const live = useInView(ref, { amount: 0.4 })
+  const still = useReducedMotion()
+  const n = b.faces.length
+  useEffect(() => {
+    if (!b.cycle || !live || still) return
+    const t = setInterval(() => setTurn((k) => k + 1), 900)
+    return () => clearInterval(t)
+  }, [b.cycle, live, still])
   return (
-    <ul {...stylex.props(styles.faces)}>
-      {b.faces.map(({ label, ...props }) => (
-        <li key={label ?? props.name} {...stylex.props(styles.face)}>
-          <Peek
-            size={96}
-            frame='none'
-            {...(dresses(props) ? BARE : {})}
-            {...props}
-            {...stylex.props(styles.fill)}
-          />
-          {label ? (
-            <span {...stylex.props(styles.faceLabel)}>{label}</span>
-          ) : null}
-        </li>
-      ))}
+    <ul ref={ref} {...stylex.props(styles.faces)}>
+      {b.faces.map(({ label, ...props }, i) => {
+        // face i steps every n-th turn; 7 walks all 12 names of the cast
+        const k = Math.floor((turn + n - 1 - i) / n)
+        const name = k ? WALK[(i * 5 + k * 7) % WALK.length]! : props.name
+        return (
+          <li key={label ?? props.name} {...stylex.props(styles.face)}>
+            <motion.span
+              key={name}
+              initial={k ? { scale: 0.6, opacity: 0 } : false}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={still ? NONE : LAND}
+              {...stylex.props(styles.pop)}
+            >
+              <Peek
+                size={96}
+                frame='none'
+                animate={b.cycle}
+                {...(dresses(props) ? BARE : {})}
+                {...props}
+                name={name}
+                {...stylex.props(styles.fill)}
+              />
+            </motion.span>
+            {label ? (
+              <span {...stylex.props(styles.faceLabel)}>{label}</span>
+            ) : null}
+          </li>
+        )
+      })}
     </ul>
   )
 }
@@ -884,6 +925,7 @@ const styles = stylex.create({
   },
   faceLabel: { fontSize: '13px', color: sheet['--quiet'] },
   fill: { width: '100%', maxWidth: '96px', height: 'auto', aspectRatio: '1' },
+  pop: { display: 'block', width: '100%', maxWidth: '96px' },
   pager: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
