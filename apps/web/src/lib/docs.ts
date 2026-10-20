@@ -48,6 +48,7 @@ export type FigureId =
   | 'expressions'
   | 'gaze-pad'
   | 'alive'
+  | 'variant-trio'
 
 export type DocPage = {
   slug: string
@@ -80,6 +81,12 @@ export const PAGES: DocPage[] = [
       'Six accessories fit every shape: glasses, sunglasses, bow, cap, sprout and tie. Pick one per slot, or combine eyewear, headwear and neckwear. Accessories are identity overrides; changing an expression keeps the outfit.',
       {
         code: '<Peek name="Linh" eyewear="glasses" headwear="sprout" animate />',
+        lang: 'tsx',
+      },
+      { h: 'Draw it another way' },
+      'Three variants draw the same face: `peek`, the default; `haze`, the body in soft color; and `bloc`, flat geometry with two tones and one bar. A variant never changes who the face is.',
+      {
+        code: '<Peek name="Linh" variant="haze" />\n<Peek name="Linh" variant="bloc" animate />',
         lang: 'tsx',
       },
       { h: 'Same name, same face' },
@@ -301,13 +308,10 @@ identify('Linh').headwear // 'none' at peek@1`,
     blocks: [
       `A variant changes the drawing and keeps the identity. The same name gets the same face, color, parts and persona in every variant, so a user stays recognizable when you switch. One of: ${one(VARIANTS)}. Default \`peek\`.`,
       {
-        faces: VARIANTS.flatMap((variant) =>
-          ['Linh', 'Kwame', 'Thu Hà'].map((name) => ({
-            name,
-            variant,
-            label: `${name} · ${variant}`,
-          })),
-        ),
+        figure: 'variant-trio',
+        md: `\`\`\`tsx\n${VARIANTS.map(
+          (v) => `<Peek name="Linh"${v === 'peek' ? '' : ` variant="${v}"`} />`,
+        ).join('\n')}\n\`\`\``,
       },
       {
         code: `<Peek name="Linh" variant="haze" />
