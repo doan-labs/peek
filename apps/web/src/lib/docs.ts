@@ -5,12 +5,16 @@
  */
 import {
   ACCESSORIES,
+  BLOC,
   COLORS,
   EXPRESSIONS,
   FACES,
+  HAZE,
   LATEST,
   PARTS,
   type PeekProps,
+  VARIANTS,
+  WHEEL,
 } from '@doan-labs/peek'
 
 export const SITE = 'https://peek.doan-labs.com'
@@ -118,7 +122,7 @@ export const PAGES: DocPage[] = [
     blocks: [
       { h: 'Two layers' },
       {
-        code: `style: peek (the currently implemented style)
+        code: `variant: peek · haze · bloc (how it is drawn, never who)
 ├─ identity: face, color, anatomy
 │  ├─ parts: eyes, brows, mouth, cheeks, trait
 │  ├─ proportions: seeded persona
@@ -289,6 +293,63 @@ identify('Linh').headwear // 'none' at peek@1`,
     ],
   },
   {
+    slug: 'variants',
+    group: 'Concepts',
+    title: 'Variants',
+    blurb: 'How a face is drawn. Never who it is.',
+    task: 'Draw the Peek avatars in this app in a variant: haze for soft color, bloc for flat geometry.',
+    blocks: [
+      `A variant changes the drawing and keeps the identity. The same name gets the same face, color, parts and persona in every variant, so a user stays recognizable when you switch. One of: ${one(VARIANTS)}. Default \`peek\`.`,
+      {
+        faces: VARIANTS.flatMap((variant) =>
+          ['Linh', 'Kwame', 'Thu Hà'].map((name) => ({
+            name,
+            variant,
+            label: `${name} · ${variant}`,
+          })),
+        ),
+      },
+      {
+        code: `<Peek name="Linh" variant="haze" />
+<Peek name="Linh" variant="bloc" expression="angry" animate />
+toSvg('Linh', { variant: 'bloc', frame: 'bone' })`,
+        lang: 'tsx',
+      },
+      { h: 'Haze' },
+      'The body is filled with soft color: its own ink, a deeper blob at the bottom, a glow at the top, and a tint from one of its two neighbors on the hue wheel. The name picks the neighbor and where each blob sits, so two faces of one color haze apart. The face on top is unchanged. Below 32px the haze steps down to a lighter level, so small avatars stay clean.',
+      {
+        rows: [
+          ['Ink', 'Tint (warm · cool)', 'Glow'],
+          ...WHEEL.map((c, i) => {
+            const near = (d: number) =>
+              WHEEL[(i + d + WHEEL.length) % WHEEL.length]!
+            return [
+              `\`${c}\``,
+              `\`${near(-1)}\` ${HAZE[near(-1)].tint} · \`${near(1)}\` ${HAZE[near(1)].tint}`,
+              HAZE[c].glow,
+            ]
+          }),
+        ],
+      },
+      { h: 'Bloc' },
+      'Every face rebuilt from a square, a circle and a bar. The four silhouettes stay, the body is cut in two down the middle, both brows become one ink bar, and the trait sits as a block on the upper right outline. No round corners, no gradients, no outlines.',
+      {
+        list: [
+          'The left half is a strong ink of the face color. The right half is the body ink on dark frames and the deep ink on `bone` and `paper`, so the face never sinks into a light page.',
+          'Eyes are paper discs with a pupil, solid beads or rings. Expressions cut them: from below when smiling, from above when drowsy, at a slant when angry, sad or confused, where the bar also breaks into a V or a caret.',
+          'Cheeks and accessories are not drawn in Bloc. The identity still carries them, so switching back to `peek` shows them again.',
+        ],
+      },
+      {
+        rows: [
+          ['Ink', 'Strong'],
+          ...Object.entries(BLOC).map(([c, hex]) => [`\`${c}\``, hex]),
+        ],
+      },
+      'Every variant draws all 11 expressions, any gaze, every frame and the riso print, and animates with `animate`.',
+    ],
+  },
+  {
     slug: 'react',
     group: 'Usage',
     title: 'React',
@@ -322,6 +383,7 @@ import { Peek } from '@doan-labs/peek'
           ['`title`', '`string`, or `false` to hide it', 'the name'],
           ['`riso`', '`boolean`, print grain from 120px', '`false`'],
           ['`version`', '`number`', `\`${LATEST}\``],
+          ['`variant`', one(VARIANTS), '`peek`'],
           ['`face` `color` `eyes` …', 'see Identity', 'hashed'],
           ['`eyewear`', one(ACCESSORIES.eyewear), '`none`'],
           ['`headwear`', one(ACCESSORIES.headwear), '`none`'],
@@ -387,6 +449,23 @@ const svg = toSvg('Linh', {
     task: 'Upgrade @doan-labs/peek in this project to the latest release.',
     blocks: [
       'A pinned `version` keeps every face the same across upgrades.',
+      { h: '1.2.0 · October 20, 2026' },
+      'Two new ways to draw the same face.',
+      {
+        faces: [
+          { name: 'Linh', variant: 'haze', label: 'haze' },
+          { name: 'Linh', variant: 'bloc', label: 'bloc' },
+          { name: 'Thu Hà', variant: 'haze', label: 'haze' },
+          { name: 'Thu Hà', variant: 'bloc', label: 'bloc' },
+        ],
+        cycle: true,
+      },
+      {
+        list: [
+          '`variant`: `peek`, `haze` or `bloc`. Default `peek`, so every existing face renders byte for byte as before.',
+          'A variant never changes identity: the same name keeps its face, color, parts and persona.',
+        ],
+      },
       { h: '1.1.0 · October 9, 2026' },
       'Faces get dressed.',
       {

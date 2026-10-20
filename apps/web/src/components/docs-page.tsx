@@ -513,7 +513,7 @@ function Faces({ block: b }: { block: Extract<Block, { faces: unknown }> }) {
   )
 }
 
-/** Backticks become code, everything else stays text. */
+/** Backticks become code, a hex color gets its swatch, the rest is text. */
 function Inline({ text }: { text: string }) {
   return text.split('`').map((s, i) =>
     i % 2 ? (
@@ -521,7 +521,19 @@ function Inline({ text }: { text: string }) {
         {s}
       </code>
     ) : (
-      s
+      s.split(/(#[0-9A-Fa-f]{6}\b)/).map((t, j) =>
+        j % 2 ? (
+          <span key={`${i}.${j}`} {...stylex.props(styles.hex)}>
+            <span
+              aria-hidden
+              {...stylex.props(styles.swatch, styles.paint(t))}
+            />
+            {t}
+          </span>
+        ) : (
+          t
+        ),
+      )
     ),
   )
 }
@@ -872,6 +884,23 @@ const styles = stylex.create({
   },
   ul: { marginTop: '18px', marginBottom: 0, paddingLeft: '20px' },
   li: { fontSize: '16px', lineHeight: 1.75, paddingLeft: '4px' },
+  hex: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '6px',
+    whiteSpace: 'nowrap',
+  },
+  swatch: {
+    width: '0.9em',
+    height: '0.9em',
+    flexShrink: 0,
+    boxSizing: 'border-box',
+    borderRadius: '3px',
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    borderColor: sheet['--rule'],
+  },
+  paint: (c: string) => ({ backgroundColor: c }),
   code: {
     fontFamily: fonts['--mono'],
     fontSize: '0.84em',

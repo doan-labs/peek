@@ -10,7 +10,7 @@
  * Style is a label, not a control: there is one style. The layer is built
  * to grow; the bar does not pretend it has.
  */
-import { ACCESSORIES, LATEST } from '@doan-labs/peek'
+import { ACCESSORIES, LATEST, VARIANTS } from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { motion, useReducedMotion } from 'motion/react'
 import { LAND, NONE } from '@/lib/motion'
@@ -109,6 +109,13 @@ export function StudioControls({
             Style
             <span {...stylex.props(styles.fixed)}>peek@{LATEST}</span>
           </p>
+          <Pills
+            id='variant'
+            label='Variant'
+            options={VARIANTS}
+            value={look.variant}
+            onChange={(variant) => set({ variant })}
+          />
           <Pills
             id='expression'
             label='Expression'
