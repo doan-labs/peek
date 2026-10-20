@@ -6,7 +6,7 @@ hold for every style. Each style fills in its own tables.
 ## Two layers
 
 ```
-style            peek · pixel · bauhaus …          picked by the caller
+variant          peek · haze · bloc                picked by the caller
 ├─ identity      hashed from the name, any axis overridable
 │  ├─ face       the body silhouette
 │  ├─ color      a body ink and its deep partner
@@ -16,17 +16,21 @@ style            peek · pixel · bauhaus …          picked by the caller
    └─ gaze       x, y in -1..1
 ```
 
+- **A variant is how a face is drawn, never who it is.** Every variant
+  reads the same `peek@1` identity, so the seeds below never include the
+  variant and a name keeps its face, color, parts and persona in all of
+  them. `peek` is the default and its bytes never move.
 - **Identity is what a face is. State is what it does.** A name decides
   identity and nothing else. The caller picks the state, and may override
   single identity axes by name (see Overrides); the rest stays hashed.
 - **Every identity axis is independent.** Any face can wear any color, part
   and trait. No axis looks at another axis when it picks.
-- **State is a contract across styles.** Every style draws all 11
-  expressions and any gaze. A style may draw two states alike (Bauhaus may
-  fold 11 into 3), but it never rejects one.
-- **Static first.** Every style renders a static SVG from (identity, state)
-  with no runtime deps. Animation is the rig tweening state over time, not
-  a separate style.
+- **State is a contract across variants.** Every variant draws all 11
+  expressions and any gaze. A variant may draw two states alike (Bloc reads
+  11 through 3 moulds), but it never rejects one.
+- **Static first.** Every variant renders a static SVG from (identity,
+  state) with no runtime deps. Animation is the rig tweening state over
+  time, not a separate variant.
 
 ## The hash
 
@@ -147,3 +151,47 @@ state, so they shift every expression the same way.
 
 4 faces x 7 colors x 3 eyes x 4 brows x 4 mouths x 3 cheeks x 5 traits =
 20,160 looks at `peek@1`, before the persona.
+
+## Variants
+
+`variant` picks the drawing: `peek` (default), `haze` or `bloc`. Tables in
+`packages/peek/src/tables.ts` (`HAZE`, `WHEEL`, `BLOC`); Haze is drawn in
+`draw.ts`, Bloc in `bloc.ts`. Both share the frame, riso, dim filter and
+body transform with `peek`, so every expression, gaze and frame works.
+
+### Haze
+
+Transcribed from the Haze sheet, level Vừa. The body is its ink plus three
+radial blobs cut to the outline: deep at the bottom, a tint low on the outer
+edge, a glow at the top, on the side away from the tint. The tint is the
+`HAZE` tint of a neighbor on `WHEEL`: warm is the entry before, cool the
+one after.
+
+```
+rnd  = mulberry32(fnv1a('haze:' + tidy(name)))
+warm = rnd() < .5       left = rnd() < .5       t = rnd()
+tint at (.04 + .174t, .649 + .202t) of the body box, from its own side
+glow inset .38 - .12 rnd(), height .12 + .099 rnd()
+deep inset .251 - .151 rnd()
+tint angle 90 - 180 rnd()
+```
+
+The seed and draw order are the sheet's own, fitted to its 12 names: never
+reorder them. Below 32px the blobs drop to level Nhẹ. The lids paint the
+same hazed body, so they never read as flat patches.
+
+### Bloc
+
+Transcribed from the Bloc sheet, direction A, palette P2. The four
+silhouettes stay; the triangle's round joins are cut sharp and it fills the
+300 box. The body is split down x = 170: the `BLOC` strong ink left, the
+light ink right (body on `ink` and `none` frames, deep on `bone` and
+`paper`). One ink bar replaces both brows, eyes are discs, beads or rings,
+mouths are a turned square, a half disc, a bar or a block, and the trait is
+a block on the upper right outline. Cheeks and accessories are not drawn.
+
+Expressions read the same channels as `peek` through three moulds: round
+eyes and a whole bar at rest; a level cut from below (`lower`) or above
+(`lid`); a tilted cut (`lidTilt`) with the bar broken into a V or a caret
+(`browTilt`). The bar is always two halves and never leaves the body. Lines
+thicken 2.6x below 30px, eyes and trait grow 12 to 25%.

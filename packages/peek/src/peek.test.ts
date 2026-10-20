@@ -14,6 +14,7 @@ import {
   FACES,
   type Face,
   PARTS,
+  VARIANTS,
 } from './tables'
 
 const NAMES = [
@@ -360,6 +361,147 @@ test('a live tree keeps its structure across poses', () => {
   const ref = keys('normal')
   for (const e of Object.keys(EXPRESSIONS) as Expression[])
     expect(keys(e)).toEqual(ref)
+})
+
+describe('variants', () => {
+  const SHEET = [
+    'Linh',
+    'Thanh',
+    'Minh Anh',
+    'Kwame',
+    'Trợ lý',
+    'Lan',
+    'Sofia',
+    'Viết code',
+    'Bạn học',
+    'Thu Hà',
+    'Nam',
+    'Diego',
+  ]
+
+  test('a variant changes how a face is drawn, never who it is', () => {
+    for (const name of SHEET)
+      for (const variant of VARIANTS)
+        expect(settle(name, { variant }).who).toEqual(settle(name, {}).who)
+    // peek is the default, and an unknown variant draws peek
+    expect(toSvg('Linh', { variant: 'peek' })).toBe(toSvg('Linh'))
+    expect(toSvg('Linh', { variant: 'mist' } as never)).toBe(toSvg('Linh'))
+    const id = (s: string) => s.match(/clipPath id="([^"]+)"/)![1]
+    const ids = new Set(
+      VARIANTS.map((variant) => id(toSvg('Ada', { variant }))),
+    )
+    expect(ids.size).toBe(VARIANTS.length)
+  })
+
+  test('haze tints each sheet name with the neighbor the sheet shows', () => {
+    const tint = (name: string) =>
+      toSvg(name, { variant: 'haze' }).match(
+        /-ht"[^>]*><stop offset="0" stop-color="(#\w+)"/,
+      )![1]
+    expect(SHEET.map(tint)).toEqual([
+      '#C8B1F5',
+      '#85D3DC',
+      '#A3DAB5',
+      '#C8B1F5',
+      '#E1CC7A',
+      '#9EC3F2',
+      '#C8B1F5',
+      '#E1CC7A',
+      '#F0A9C4',
+      '#E1CC7A',
+      '#F0A9C4',
+      '#F0A9C4',
+    ])
+  })
+
+  test('every variant x face x part x expression draws a clean, stable live tree', () => {
+    const bad = /NaN|undefined|Infinity/
+    for (const variant of ['haze', 'bloc'] as const)
+      for (const face of Object.keys(FACES) as Face[])
+        for (const part of Object.keys(PARTS) as (keyof typeof PARTS)[])
+          for (const type of PARTS[part]) {
+            const o = { variant, face, [part]: type, riso: true, size: 300 }
+            const { who, opts } = settle('Ada', o, true)
+            const ref = [
+              ...flat(draw(who, restPose(who, 'normal'), opts)).keys(),
+            ]
+            for (const expression of Object.keys(EXPRESSIONS) as Expression[]) {
+              expect(bad.test(toSvg('Ada', { ...o, expression }))).toBe(false)
+              const tree = draw(who, restPose(who, expression, [-1, 1]), opts)
+              expect(bad.test(JSON.stringify(tree))).toBe(false)
+              expect([...flat(tree).keys()]).toEqual(ref)
+            }
+          }
+  })
+
+  test("bloc's bar never leaves the body, even raised on the widest persona", () => {
+    const find = (node: Node, key: string): Node | undefined =>
+      node.key === key
+        ? node
+        : node.children.map((c) => find(c, key)).find(Boolean)
+    for (const face of Object.keys(FACES) as Face[])
+      for (const size of [16, 300])
+        for (const expression of Object.keys(EXPRESSIONS) as Expression[]) {
+          const { who, opts } = settle('x', { face, variant: 'bloc', size })
+          const p = who.persona
+          // past the persona's own ranges, as a spring overshoot can go
+          who.persona = {
+            ...p,
+            spread: 10,
+            add: { ...p.add, browY: -10, browTilt: -15 },
+            mul: { ...p.mul, eyeS: 1.2, browW: 1.5 },
+          }
+          const tree = draw(who, restPose(who, expression), opts)
+          // the triangle is cut sharp for bloc, so test against its own outline
+          const crown =
+            face === 'triangle'
+              ? {
+                  poly: [
+                    [170, 12.8],
+                    [320, 312.8],
+                    [20, 312.8],
+                  ] as const,
+                  r: 0,
+                }
+              : FACES[face].crown
+          for (const key of ['bar0', 'bar1'])
+            for (const [x, y] of find(tree, key)!
+              .attrs.d!.slice(1, -1)
+              .split('L')
+              .map((p) => p.split(' ').map(Number)))
+              expect(depth(crown, x!, y!)).toBeLessThan(0)
+        }
+  })
+
+  test('variants are deterministic in frames and React SSR', () => {
+    for (const variant of ['haze', 'bloc'] as const)
+      for (const frame of ['ink', 'bone', 'paper', 'none'] as const) {
+        const o = { variant, frame, expression: 'happy', riso: true } as const
+        expect(toSvg('Linh', o)).toBe(toSvg('Linh', o))
+        const el = createElement(Peek, { name: 'Linh', ...o, animate: true })
+        expect(renderToString(el)).toBe(renderToString(el))
+      }
+  })
+
+  // the variants' stability contract: a change here has to be on purpose
+  test('golden svg per variant', () => {
+    const sums = Object.fromEntries(
+      (['haze', 'bloc'] as const).map((variant) => {
+        let all = ''
+        for (const name of SHEET)
+          for (const expression of Object.keys(EXPRESSIONS) as Expression[])
+            for (const size of [24, 300])
+              all += toSvg(name, { variant, expression, size })
+        return [variant, fnv1a(all).toString(36)]
+      }),
+    )
+    expect(sums).toMatchInlineSnapshot(`
+      {
+        "bloc": "je3kdc",
+        "haze": "ib4gkm",
+      }
+    `)
+  })
 })
 
 function args(name: string, o: object) {

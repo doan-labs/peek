@@ -175,6 +175,53 @@ export const COLORS = {
   aqua: { body: '#BDE1E5', deep: '#8FC7D1' },
 } as const
 
+/*
+ * Variants: how a face is drawn, never who it is. Every variant reads the
+ * same identity, so a name keeps its face, color and parts in all of them.
+ */
+export const VARIANTS = ['peek', 'haze', 'bloc'] as const
+export type Variant = (typeof VARIANTS)[number]
+
+/**
+ * Haze, transcribed from the Haze sheet (01.3). Each ink has a glow and a
+ * tint; a body is hazed by the tint of one of its two neighbors on the hue
+ * wheel, so the tint is never picked by hand.
+ */
+export const HAZE = {
+  lavender: { tint: '#C8B1F5', glow: '#F2EDFD' },
+  fog: { tint: '#9EC3F2', glow: '#E6F1FF' },
+  clay: { tint: '#F4AE93', glow: '#FEECE5' },
+  mint: { tint: '#A3DAB5', glow: '#E5F5EA' },
+  butter: { tint: '#E1CC7A', glow: '#F4F0E0' },
+  rose: { tint: '#F0A9C4', glow: '#FDEAF1' },
+  aqua: { tint: '#85D3DC', glow: '#E0F5F7' },
+} as const satisfies Record<keyof typeof COLORS, unknown>
+/** The hue wheel, warm to cool: a body's warm side is the entry before it. */
+export const WHEEL = [
+  'clay',
+  'butter',
+  'mint',
+  'aqua',
+  'fog',
+  'lavender',
+  'rose',
+] as const satisfies readonly (keyof typeof COLORS)[]
+
+/**
+ * Bloc's strong inks, palette P2 of the Bloc sheet (02.4): the same hue at
+ * OKLCH L 0.72 and C 0.12, butter, mint and aqua held lighter so none goes
+ * olive. The strong ink fills the dark half and the trait.
+ */
+export const BLOC = {
+  lavender: '#B093E5',
+  fog: '#7BA8DF',
+  clay: '#E38A66',
+  mint: '#82CB9B',
+  butter: '#E2CA6A',
+  rose: '#DF84A8',
+  aqua: '#5EC3CD',
+} as const satisfies Record<keyof typeof COLORS, string>
+
 /** Discrete anatomy. Each part reads every channel its feature owns. */
 export const PARTS = {
   eyes: ['oval', 'bead', 'ring'],
