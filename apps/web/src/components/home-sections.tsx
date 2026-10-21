@@ -287,14 +287,15 @@ function Calls() {
           <article key={c.title} {...stylex.props(styles.call)}>
             <div {...stylex.props(styles.callTop)}>
               <h3 {...stylex.props(styles.h3, styles.callHead)}>
-                {c.title}
-                {c.title === 'React, Vue, Svelte' ? (
-                  <span aria-hidden='true' {...stylex.props(styles.callLogos)}>
-                    <FrameworkLogo fw='react' />
-                    <FrameworkLogo fw='vue' />
-                    <FrameworkLogo fw='svelte' />
-                  </span>
-                ) : null}
+                {c.title === 'React, Vue, Svelte'
+                  ? (['react', 'vue', 'svelte'] as const).map((fw, i) => (
+                      <span key={fw} {...stylex.props(styles.callFw)}>
+                        <FrameworkLogo fw={fw} />
+                        {FRAMEWORK_NAME[fw]}
+                        {i < 2 ? ',' : ''}
+                      </span>
+                    ))
+                  : c.title}
               </h3>
               <Peek
                 name={SAMPLE}
@@ -714,8 +715,14 @@ const styles = stylex.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  callHead: { display: 'flex', alignItems: 'center', gap: '12px' },
-  callLogos: { display: 'flex', gap: '8px' },
+  callHead: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    columnGap: '10px',
+    rowGap: '4px',
+  },
+  callFw: { display: 'inline-flex', alignItems: 'center', gap: '6px' },
   h3: {
     margin: 0,
     fontSize: '20px',
@@ -733,9 +740,13 @@ const styles = stylex.create({
     fontFamily: fonts['--mono'],
     fontSize: '13px',
     lineHeight: 1.7,
-    overflowX: 'auto',
   },
-  codeLine: { display: 'block', whiteSpace: 'pre' },
+  // a long call wraps inside the card, never scrolls
+  codeLine: {
+    display: 'block',
+    whiteSpace: 'pre-wrap',
+    overflowWrap: 'anywhere',
+  },
   k_key: { color: colors['--signal'] },
   k_str: { color: colors['--clay'] },
   k_tag: { color: colors['--lav'] },

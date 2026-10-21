@@ -17,6 +17,7 @@ import {
   type Headwear,
   type Neckwear,
   Peek,
+  toSvg,
   VARIANTS,
   type Variant,
 } from '@doan-labs/peek'
@@ -161,6 +162,37 @@ export function PropsPlayground() {
     timer.current = setTimeout(() => setGlance(null), 1100)
   }
 
+  // the face as a file, exactly as set: toSvg is <Peek> without the motion
+  const [saved, setSaved] = useState(false)
+  const download = () => {
+    const fixed = GAZES[p.gaze]
+    const svg = toSvg(p.name, {
+      variant: p.variant,
+      eyewear: p.eyewear,
+      headwear: p.headwear,
+      neckwear: p.neckwear,
+      size: p.size,
+      expression: p.expression,
+      frame: p.frame,
+      square: p.square,
+      riso: p.riso,
+      gaze: typeof fixed === 'object' ? fixed : undefined,
+    })
+    const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }))
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${
+      p.name
+        .toLowerCase()
+        .replace(/[^\p{L}\p{N}]+/gu, '-')
+        .replace(/^-+|-+$/g, '') || 'peek'
+    }.svg`
+    a.click()
+    setTimeout(() => URL.revokeObjectURL(url), 1000)
+    setSaved(true)
+    setTimeout(() => setSaved(false), 1600)
+  }
+
   const gaze = glance ?? GAZES[p.gaze]
   const faint = p.riso && p.size < RISO_FROM
 
@@ -191,6 +223,22 @@ export function PropsPlayground() {
               gaze={gaze}
             />
           </div>
+          <motion.button
+            type='button'
+            whileTap={{ scale: reduce ? 1 : 0.94 }}
+            onClick={download}
+            aria-label={`Download ${p.name || 'this'} face as SVG`}
+            {...stylex.props(s.download)}
+          >
+            <svg
+              viewBox='0 0 16 16'
+              aria-hidden='true'
+              {...stylex.props(s.downloadIcon)}
+            >
+              <path d='M8 2.5v8M4.5 7 8 10.5 11.5 7M3 13.5h10' />
+            </svg>
+            {saved ? 'Saved' : 'SVG'}
+          </motion.button>
         </Stage>
         <div
           {...stylex.props(s.panel)}
@@ -482,6 +530,42 @@ const s = stylex.create({
     },
     transitionProperty: 'border-color',
     transitionDuration: '0.15s',
+  },
+  // in the stage's corner, clear of the face at every size
+  download: {
+    ...LINE,
+    position: 'absolute',
+    top: '14px',
+    right: '14px',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '6px',
+    minWidth: '76px',
+    justifyContent: 'center',
+    paddingBlock: '8px',
+    paddingInline: '12px',
+    borderRadius: '999px',
+    backgroundColor: sheet['--page'],
+    color: {
+      default: sheet['--soft'],
+      [HOVER]: { default: null, ':hover': sheet['--fg'] },
+    },
+    fontFamily: fonts['--mono'],
+    fontSize: '11px',
+    fontWeight: 500,
+    letterSpacing: '0.14em',
+    lineHeight: 1,
+    textTransform: 'uppercase',
+    cursor: 'pointer',
+  },
+  downloadIcon: {
+    width: '12px',
+    height: '12px',
+    fill: 'none',
+    stroke: 'currentColor',
+    strokeWidth: 1.8,
+    strokeLinecap: 'round',
+    strokeLinejoin: 'round',
   },
   icon: {
     ...LINE,
