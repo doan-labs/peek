@@ -22,6 +22,11 @@ import { cheer } from '@/components/creatures'
 import { DoanMark } from '@/components/doan-mark'
 import { line, MANAGERS, type Manager } from '@/components/figures/install'
 import { PropsPlayground } from '@/components/figures/react'
+import {
+  FRAMEWORKS,
+  type Framework,
+  FrameworkLogo,
+} from '@/components/framework-logo'
 import { ManagerLogo } from '@/components/manager-logo'
 import { REPO } from '@/lib/docs'
 import { CURVE, LAND, NONE } from '@/lib/motion'
@@ -124,6 +129,34 @@ export function InstallPill() {
         </span>
       </motion.button>
     </div>
+  )
+}
+
+const FRAMEWORK_NAME: Record<Framework, string> = {
+  react: 'React',
+  vue: 'Vue',
+  svelte: 'Svelte',
+}
+
+/** The frameworks it renders in, each a way into its own docs page. */
+export function Frameworks() {
+  return (
+    <nav aria-label='Frameworks' {...stylex.props(styles.frameworks)}>
+      <span {...stylex.props(styles.worksWith)}>For</span>
+      {FRAMEWORKS.map((fw) => (
+        <Link
+          key={fw}
+          to='/docs/$slug'
+          params={{ slug: fw }}
+          {...stylex.props(styles.tab, styles.framework)}
+        >
+          <span {...stylex.props(styles.tabText)}>
+            <FrameworkLogo fw={fw} />
+            {FRAMEWORK_NAME[fw]}
+          </span>
+        </Link>
+      ))}
+    </nav>
   )
 }
 
@@ -444,6 +477,30 @@ const styles = stylex.create({
     transitionDuration: '0.2s',
   },
   tabOn: { color: { default: colors['--bone'], ':hover': colors['--bone'] } },
+  frameworks: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: '2px',
+  },
+  worksWith: {
+    ...MICRO,
+    paddingInline: '6px',
+    color: colors['--muted'],
+  },
+  // a tab, a little tighter: the row sits in the hero's spare room
+  framework: {
+    paddingBlock: '6px',
+    paddingInline: '9px',
+    color: { default: colors['--bone'], ':hover': colors['--bone'] },
+    textDecoration: 'none',
+    backgroundColor: {
+      default: 'transparent',
+      ':hover': `color-mix(in srgb, ${colors['--bone']} 11%, transparent)`,
+    },
+    transitionProperty: 'background-color',
+  },
   tabPill: {
     position: 'absolute',
     inset: 0,

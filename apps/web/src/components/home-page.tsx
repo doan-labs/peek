@@ -23,6 +23,7 @@ import { Chrome } from '@/components/chrome'
 import { Creatures, cheer } from '@/components/creatures'
 import {
   DocsButton,
+  Frameworks,
   HomeSections,
   InstallPill,
 } from '@/components/home-sections'
@@ -143,6 +144,7 @@ export function HomePage() {
             }
             {...stylex.props(styles.try)}
           >
+            <Frameworks />
             <div {...stylex.props(styles.field)}>
               <label {...stylex.props(styles.label)}>
                 <span {...stylex.props(styles.face)}>
@@ -267,7 +269,8 @@ const styles = stylex.create({
     flexDirection: 'column',
     alignItems: 'center',
     gap: '14px',
-    paddingTop: 'clamp(18px, 3.4svh, 32px)',
+    // tight: the frameworks row reads as the line's subtitle
+    paddingTop: 'clamp(4px, 1svh, 12px)',
   },
   field: {
     display: 'flex',

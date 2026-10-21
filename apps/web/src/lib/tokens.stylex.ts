@@ -14,13 +14,16 @@ export const colors = stylex.defineVars({
   '--lav': '#D8CDF0',
 })
 
-/* The package managers' own colours, for their logos on a picked tab. From
- * the same icon set as the paths in manager-logo.tsx. */
+/* The package managers' and frameworks' own colours, for their logos. From
+ * the same icon set as the paths in manager-logo.tsx and framework-logo.tsx. */
 export const brands = stylex.defineVars({
   '--npm': '#E53935',
   '--bun': '#FFF8E1',
   '--pnpm': '#FFB300',
   '--yarn': '#0288D1',
+  '--react': '#00BCD4',
+  '--vue': '#41B883',
+  '--svelte': '#FF5722',
 })
 
 /* The playground at /play, from the v1.2 sheet (peek.html): a white page
