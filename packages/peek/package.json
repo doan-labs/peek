@@ -1,6 +1,6 @@
 {
   "name": "@doan-labs/peek",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "type": "module",
   "exports": {
     ".": {
@@ -18,6 +18,16 @@
       "types": "./dist/identity.d.ts",
       "import": "./dist/identity.js",
       "default": "./dist/identity.js"
+    },
+    "./vue": {
+      "types": "./dist/vue.d.ts",
+      "import": "./dist/vue.js",
+      "default": "./dist/vue.js"
+    },
+    "./svelte": {
+      "types": "./dist/svelte.d.ts",
+      "svelte": "./dist/svelte.js",
+      "default": "./dist/svelte.js"
     }
   },
   "scripts": {
@@ -27,7 +37,9 @@
     "prepack": "bun run build"
   },
   "peerDependencies": {
-    "react": ">=19"
+    "react": ">=19",
+    "svelte": ">=5.20",
+    "vue": ">=3.5"
   },
   "devDependencies": {
     "@peek/typescript-config": "workspace:*",
@@ -36,9 +48,11 @@
     "@types/react-dom": "^19.2.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "typescript": "^6.0.2"
+    "svelte": "^5.20",
+    "typescript": "^6.0.2",
+    "vue": "^3.5"
   },
-  "description": "Deterministic SVG avatars from a name, with expressions and a React component.",
+  "description": "Deterministic SVG avatars from a name, with expressions and components for React, Vue and Svelte.",
   "license": "MIT",
   "author": "Doan Labs",
   "homepage": "https://peek.doan-labs.com",
@@ -51,6 +65,8 @@
     "avatar",
     "svg",
     "react",
+    "vue",
+    "svelte",
     "deterministic",
     "peek"
   ],
@@ -58,6 +74,7 @@
     "dist",
     "src/*.ts",
     "src/*.tsx",
+    "src/*.svelte",
     "!src/*.test.ts",
     "README.md"
   ],
@@ -66,6 +83,12 @@
   },
   "peerDependenciesMeta": {
     "react": {
+      "optional": true
+    },
+    "svelte": {
+      "optional": true
+    },
+    "vue": {
       "optional": true
     }
   }

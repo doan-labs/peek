@@ -1,10 +1,14 @@
 import { describe, expect, test } from 'bun:test'
 import { createElement } from 'react'
 import { renderToString } from 'react-dom/server'
+import { render as svelteRender } from 'svelte/server'
+import { createSSRApp, h } from 'vue'
+import { renderToString as vueRender } from 'vue/server-renderer'
 import { depth, draw, type Node, restPose } from './draw'
 import { fnv1a, identify, seed, tidy } from './identity'
-import { Peek } from './peek'
-import { settle, toSvg } from './svg'
+import { Peek, type PeekProps } from './peek'
+import SveltePeek from './peek.svelte'
+import { type PeekOptions, settle, toSvg } from './svg'
 import {
   ACCESSORIES,
   type AccessorySlot,
@@ -15,6 +19,7 @@ import {
   type Face,
   PARTS,
 } from './tables'
+import { Peek as VuePeek } from './vue'
 
 const NAMES = [
   'Ada Lovelace',
@@ -453,6 +458,59 @@ describe('accessories', () => {
           expect(react).toContain('aria-label="Linh"')
         }
       }
+    }
+  })
+})
+
+describe('vue and svelte', () => {
+  // Each framework mints its own id prefix and SSR punctuation; past that,
+  // every component must write the bytes React writes.
+  const norm = (html: string) => {
+    const id = /id="([^"]+)-[^"-]+"/.exec(html)?.[1] ?? ''
+    return html
+      .replace(/<!--[\s\S]*?-->/g, '')
+      .replaceAll(id, 'ID')
+      .replaceAll(' aria-label>', ' aria-label="">') // Vue drops ="" off ''
+      .replace(/<(\w+)([^<>]*?)\/>/g, '<$1$2></$1>')
+  }
+  const CASES = [
+    {},
+    { expression: 'happy', size: 96 },
+    { animate: true, gaze: [0.5, -0.5] },
+    { animate: true, gaze: 'pointer', expression: 'sleepy' },
+    { frame: 'none', square: false, title: false, riso: true, size: 200 },
+    { face: 'circle', color: 'mint', version: 1, eyewear: 'glasses' },
+    { headwear: 'cap', neckwear: 'tie', eyewear: 'sunglasses', animate: true },
+  ] as const
+
+  test('render the same SVG as React and toSvg', async () => {
+    for (const name of NAMES)
+      for (const o of CASES) {
+        const props = { name, ...o } as Omit<PeekProps, 'style'>
+        const react = norm(renderToString(createElement(Peek, props)))
+        const vue = norm(
+          await vueRender(createSSRApp({ render: () => h(VuePeek, props) })),
+        )
+        const svelte = norm(svelteRender(SveltePeek, { props }).body)
+        expect(vue).toBe(react)
+        expect(svelte).toBe(react)
+        if (!('animate' in o))
+          expect(norm(toSvg(name, props as PeekOptions))).toBe(react)
+      }
+  })
+
+  test('class and style land on the svg', async () => {
+    const vue = await vueRender(
+      createSSRApp({
+        render: () => h(VuePeek, { name: 'Ada', class: 'a', style: 'top:0' }),
+      }),
+    )
+    const svelte = svelteRender(SveltePeek, {
+      props: { name: 'Ada', class: 'a', style: 'top:0' },
+    }).body
+    for (const html of [vue, svelte]) {
+      expect(html).toMatch(/^(<!--[\s\S]*?-->)*<svg [^>]*class="a"/)
+      expect(html).toMatch(/<svg [^>]*style="top:\s?0;?"/)
     }
   })
 })

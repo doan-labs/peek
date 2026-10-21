@@ -226,8 +226,8 @@ const who = identify(SAMPLE)
 
 const CALLS: { title: string; note: string; code: string; lang: Lang }[] = [
   {
-    title: 'React',
-    note: 'A component. Server rendered, hydrates to the same face.',
+    title: 'React, Vue, Svelte',
+    note: 'A component in each. Server rendered, hydrates to the same face.',
     code: `<Peek name="${SAMPLE}" ${outfitJsx} animate />`,
     lang: 'tsx',
   },
@@ -249,8 +249,8 @@ function Calls() {
   return (
     <section {...stylex.props(styles.section)}>
       <Head n='02' label='Three calls' title='A string in, a face out'>
-        One package with no runtime dependencies. Render it in React, or get the
-        SVG as text anywhere JavaScript runs.
+        One package with no runtime dependencies. Render it in React, Vue or
+        Svelte, or get the SVG as text anywhere JavaScript runs.
       </Head>
       <div {...stylex.props(styles.calls)}>
         {CALLS.map((c) => (

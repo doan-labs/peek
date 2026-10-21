@@ -102,7 +102,7 @@ export const PAGES: DocPage[] = [
       { figure: 'install', md: '```bash\nnpm install @doan-labs/peek\n```' },
       {
         list: [
-          '`<Peek>` needs React 19.',
+          '`<Peek>` needs React 19, Vue 3.5 or Svelte 5.20. Install the one you use; the others stay optional.',
           '`toSvg` and `identify` need nothing: any JavaScript runtime.',
         ],
       },
@@ -334,6 +334,53 @@ import { Peek } from '@doan-labs/peek'
     ],
   },
   {
+    slug: 'vue',
+    group: 'Usage',
+    title: 'Vue',
+    blurb: 'The `<Peek>` component for Vue 3.5.',
+    task: 'Render avatars in this Vue app with the Peek component.',
+    blocks: [
+      {
+        code: `<script setup lang="ts">
+import { Peek } from '@doan-labs/peek/vue'
+</script>
+
+<template>
+  <Peek name="Linh" />
+  <Peek name="Linh" :size="96" expression="happy" />
+  <Peek name="Linh" eyewear="glasses" headwear="sprout" animate gaze="pointer" />
+</template>`,
+        lang: 'tsx',
+        title: 'App.vue',
+      },
+      'The same props as the React component, and the same face for the same name. It renders the same markup on the server and the client, so it hydrates cleanly in Nuxt or any Vue SSR setup. With `animate`, the first paint is static and the face comes alive after mount.',
+      'Use `class` and `style` in place of `className` and `style`; both land on the `<svg>`. `@doan-labs/peek/vue` also exports `toSvg`, `identify` and the option lists, so a Vue app never needs React installed.',
+    ],
+  },
+  {
+    slug: 'svelte',
+    group: 'Usage',
+    title: 'Svelte',
+    blurb: 'The `<Peek>` component for Svelte 5.',
+    task: 'Render avatars in this Svelte app with the Peek component.',
+    blocks: [
+      {
+        code: `<script lang="ts">
+  import { Peek } from '@doan-labs/peek/svelte'
+  let online = $state(true)
+</script>
+
+<Peek name="Linh" />
+<Peek name="Linh" size={96} expression={online ? 'happy' : 'sleepy'} />
+<Peek name="Linh" eyewear="glasses" headwear="sprout" animate gaze="pointer" />`,
+        lang: 'tsx',
+        title: 'App.svelte',
+      },
+      'The same props as the React component, and the same face for the same name. It needs Svelte 5.20 or newer and ships as source, so your bundler compiles it like any other component. It renders the same markup on the server and the client, so it hydrates cleanly in SvelteKit. With `animate`, the first paint is static and the face comes alive after mount.',
+      'Use `class` and `style` in place of `className` and `style`; both land on the `<svg>`. `@doan-labs/peek/svelte` also exports `toSvg`, `identify` and the option lists, so a Svelte app never needs React installed.',
+    ],
+  },
+  {
     slug: 'svg',
     group: 'Usage',
     title: 'SVG string',
@@ -353,7 +400,7 @@ const svg = toSvg('Linh', {
         lang: 'ts',
       },
       'Same input, same bytes, on any machine. It takes the same options as `<Peek>`, minus `animate`, `className`, `style` and the pointer gaze.',
-      'The same wardrobe values produce the same geometry in React and `toSvg`. SVG export captures a static expression and gaze; `animate` and pointer tracking are React behaviors and are not embedded in the exported file.',
+      'The same wardrobe values produce the same geometry in the components and `toSvg`. SVG export captures a static expression and gaze; `animate` and pointer tracking are component behaviors and are not embedded in the exported file.',
       { figure: 'same-bytes' },
       { h: 'Serve it' },
       {
@@ -387,6 +434,14 @@ const svg = toSvg('Linh', {
     task: 'Upgrade @doan-labs/peek in this project to the latest release.',
     blocks: [
       'A pinned `version` keeps every face the same across upgrades.',
+      { h: '1.2.0 · October 21, 2026' },
+      'Faces leave React.',
+      {
+        list: [
+          '`<Peek>` for Vue 3.5 from `@doan-labs/peek/vue`, and for Svelte 5.20 from `@doan-labs/peek/svelte`.',
+          'Same props, same markup as React, animation included. Nothing changes for React apps.',
+        ],
+      },
       { h: '1.1.0 · October 9, 2026' },
       'Faces get dressed.',
       {
@@ -462,7 +517,7 @@ ${toMarkdown(p)}
 `
 
 const INTRO =
-  '# Peek\n\n> A string in, a face out. Peek, from Doan Labs, turns a name into a deterministic SVG face, with expressions, gaze and animation on top. React component and plain SVG string. Six accessories in three independent wardrobe slots.'
+  '# Peek\n\n> A string in, a face out. Peek, from Doan Labs, turns a name into a deterministic SVG face, with expressions, gaze and animation on top. Components for React, Vue and Svelte, and a plain SVG string. Six accessories in three independent wardrobe slots.'
 
 export const llmsTxt = () => `${INTRO}
 
