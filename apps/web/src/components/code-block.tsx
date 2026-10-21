@@ -73,14 +73,15 @@ function nameIn(before: string, text: string) {
 
 type Axes = Partial<PeekProps>
 
-/** The axis props a snippet sets (`face="circle"`), so its inline faces
- * wear them too. One set per snippet: they all describe one Peek. */
+/** The axis props a snippet sets (`face="circle"`), and its variant, so its
+ * inline faces wear them too. One set per snippet: they all describe one Peek. */
 const CALL = /<Peek\b|\bname=|\b(toSvg|identify)\(/
 
 function axesIn(code: string): Axes {
   const out: Record<string, string> = {}
   for (const [, k, v] of code.matchAll(/\b(\w+)\s*[=:]\s*["']([\w-]+)["']/g))
-    if (k && v && (AXES as string[]).includes(k)) out[k] = v
+    if (k && v && (k === 'variant' || (AXES as string[]).includes(k)))
+      out[k] = v
   return out as Axes
 }
 

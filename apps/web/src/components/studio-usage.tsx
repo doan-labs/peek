@@ -17,6 +17,7 @@ import {
   LATEST,
   PARTS,
   type PeekProps,
+  VARIANTS,
 } from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { StudioSection } from '@/components/studio-section'
@@ -42,6 +43,7 @@ const PROPS: Record<keyof PeekProps, Row> = {
   title: ['string | false', 'name', 'Accessible name. false hides it.'],
   riso: ['boolean', 'false', 'Print plates and grain, from 120 px.'],
   version: ['number', String(LATEST), 'Pins a style version.'],
+  variant: [one(VARIANTS), "'peek'", 'How it is drawn, never who.'],
   face: [one(Object.keys(FACES)), 'hashed', 'Overrides one axis.'],
   color: [one(Object.keys(COLORS)), 'hashed', 'Overrides one axis.'],
   eyes: [one(PARTS.eyes), 'hashed', 'Overrides one axis.'],

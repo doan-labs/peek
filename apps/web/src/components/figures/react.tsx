@@ -16,6 +16,8 @@ import {
   type Headwear,
   type Neckwear,
   Peek,
+  VARIANTS,
+  type Variant,
 } from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { motion, useReducedMotion } from 'motion/react'
@@ -62,6 +64,7 @@ const RISO_FROM = 120
 
 type Props = {
   name: string
+  variant: Variant
   eyewear: Eyewear
   headwear: Headwear
   neckwear: Neckwear
@@ -76,6 +79,7 @@ type Props = {
 
 const DEFAULTS: Props = {
   name: 'Linh',
+  variant: 'peek',
   ...wardrobeFor('Linh'),
   size: 96,
   expression: 'normal',
@@ -92,6 +96,7 @@ function jsx(p: Props) {
     ? `{${JSON.stringify(p.name)}}`
     : `"${p.name}"`
   const lines = [`  name=${name}`]
+  if (p.variant !== 'peek') lines.push(`  variant="${p.variant}"`)
   for (const slot of ['eyewear', 'headwear', 'neckwear'] as const)
     if (p[slot] !== 'none') lines.push(`  ${slot}="${p[slot]}"`)
   if (p.size !== 64) lines.push(`  size={${p.size}}`)
@@ -148,6 +153,7 @@ export function PropsPlayground() {
           >
             <Peek
               name={p.name}
+              variant={p.variant}
               eyewear={p.eyewear}
               headwear={p.headwear}
               neckwear={p.neckwear}
@@ -200,6 +206,14 @@ export function PropsPlayground() {
               onChange={(size) => set({ size })}
             />
           </Row>
+          <Row label='variant'>
+            <Segmented
+              label='Variant'
+              options={VARIANTS}
+              value={p.variant}
+              onChange={(variant) => set({ variant })}
+            />
+          </Row>
           <Row label='expression' value={p.expression}>
             <fieldset aria-label='Expression' {...stylex.props(s.faces)}>
               {EXPR.map((x) => (
@@ -221,6 +235,7 @@ export function PropsPlayground() {
                     round={false}
                     full
                     expression={x}
+                    variant={p.variant}
                     eyewear={p.eyewear}
                     headwear={p.headwear}
                     neckwear={p.neckwear}

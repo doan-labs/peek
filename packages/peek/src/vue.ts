@@ -117,6 +117,7 @@ export const Peek = defineComponent(
       },
       riso: flag,
       version: { type: Number, default: undefined },
+      variant: any,
       face: any,
       color: any,
       eyes: any,

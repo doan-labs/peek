@@ -7,6 +7,7 @@ import { IntroNumbers, SameFace } from './intro'
 import { Hydration, PropsPlayground } from './react'
 import { Alive, Expressions, GazePad } from './state'
 import { DataUri, SameBytes, ServeIt } from './svg'
+import { VariantTrio } from './variants'
 
 export const FIGURES: Record<FigureId, () => React.ReactNode> = {
   'intro-numbers': IntroNumbers,
@@ -23,4 +24,5 @@ export const FIGURES: Record<FigureId, () => React.ReactNode> = {
   expressions: Expressions,
   'gaze-pad': GazePad,
   alive: Alive,
+  'variant-trio': VariantTrio,
 }

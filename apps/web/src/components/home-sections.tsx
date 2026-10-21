@@ -1,8 +1,8 @@
 /*
  * The home page under the fold, on the same ink ground as the hero: a wall
- * of names, the three calls, the expressions on one face, the numbers and a
- * last call to install. Every value shown is read from the library or
- * computed by it, never typed.
+ * of names, the three calls, the expressions on one face, the variants, the
+ * numbers and a last call to install. Every value shown is read from the
+ * library or computed by it, never typed.
  */
 import {
   COLORS,
@@ -12,6 +12,7 @@ import {
   LATEST,
   Peek,
   toSvg,
+  VARIANTS,
 } from '@doan-labs/peek'
 import * as stylex from '@stylexjs/stylex'
 import { Link } from '@tanstack/react-router'
@@ -171,6 +172,7 @@ export function HomeSections() {
       <Wall />
       <Calls />
       <Moods />
+      <Drawings />
       <Numbers />
       <Footer />
     </div>
@@ -336,7 +338,49 @@ function Moods() {
   )
 }
 
-/* ---------- 04 · The numbers ---------- */
+/* ---------- 04 · The variants ---------- */
+
+const TRIO = ['Linh', 'Kwame', 'Thu Hà', 'Alan Turing', 'Hedy Lamarr', 'Duc']
+
+function Drawings() {
+  const [on, setOn] = useState<string | null>(null)
+  return (
+    <section {...stylex.props(styles.section)}>
+      <Head n='04' label='Variants' title='One face, three drawings'>
+        A variant changes how a face is drawn, never who it is. Peek is the
+        default, Haze fills the body with soft color, Bloc rebuilds it from a
+        square, a circle and a bar.
+      </Head>
+      <ul {...stylex.props(styles.trios)}>
+        {TRIO.map((name) => (
+          <li
+            key={name}
+            onPointerEnter={() => setOn(name)}
+            onPointerLeave={() => setOn((v) => (v === name ? null : v))}
+            {...stylex.props(styles.tile)}
+          >
+            <span {...stylex.props(styles.trio)}>
+              {VARIANTS.map((v) => (
+                <Peek
+                  key={v}
+                  name={name}
+                  variant={v}
+                  size={72}
+                  expression={on === name ? 'happy' : 'normal'}
+                  gaze='pointer'
+                  animate
+                />
+              ))}
+            </span>
+            <span {...stylex.props(styles.tileName)}>{name}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+/* ---------- 05 · The numbers ---------- */
 
 const FACTS = [
   [Object.keys(FACES).length, 'faces'],
@@ -634,6 +678,15 @@ const styles = stylex.create({
     gap: '12px',
   },
   tileName: { ...MICRO, color: colors['--muted'], textTransform: 'none' },
+  trios: {
+    listStyle: 'none',
+    margin: 0,
+    padding: 0,
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+    gap: '36px 16px',
+  },
+  trio: { display: 'flex', gap: '8px' },
   calls: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',

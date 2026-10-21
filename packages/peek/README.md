@@ -65,6 +65,19 @@ Eyewear: `none`, `glasses`, `sunglasses`. Headwear: `none`, `bow`, `cap`,
 existing avatars stay unchanged. Slots combine and work with every
 expression, gaze and frame. The same options work with `toSvg`.
 
+## Variants
+
+Draw the same face another way. A variant never changes who it is:
+
+```tsx
+<Peek name='Linh' variant='haze' />
+<Peek name='Linh' variant='bloc' expression='angry' animate />
+```
+
+`peek` (default), `haze` (the body in soft color) or `bloc` (flat
+geometry: two tones, one bar, hard edges). Every variant draws every
+expression, gaze and frame.
+
 ## Plain SVG, without a framework
 
 The SVG and identity entry points have no runtime dependencies:

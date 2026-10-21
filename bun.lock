@@ -40,7 +40,7 @@
     },
     "packages/peek": {
       "name": "@doan-labs/peek",
-      "version": "1.1.0",
+      "version": "2.0.0",
       "devDependencies": {
         "@peek/typescript-config": "workspace:*",
         "@types/bun": "latest",
@@ -54,9 +54,13 @@
       },
       "peerDependencies": {
         "react": ">=19",
+        "svelte": ">=5.20",
+        "vue": ">=3.5",
       },
       "optionalPeers": [
         "react",
+        "svelte",
+        "vue",
       ],
     },
     "packages/typescript-config": {

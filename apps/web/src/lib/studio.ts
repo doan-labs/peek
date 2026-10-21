@@ -13,10 +13,12 @@ import {
   LATEST,
   type Neckwear,
   type PeekOptions,
+  type Variant,
   VERSIONS,
 } from '@doan-labs/peek'
 
 export type Look = {
+  variant: Variant
   eyewear: Eyewear
   headwear: Headwear
   neckwear: Neckwear
@@ -31,6 +33,7 @@ export type Look = {
 }
 
 export const LOOK: Look = {
+  variant: 'peek',
   eyewear: 'none',
   headwear: 'none',
   neckwear: 'none',
@@ -108,6 +111,7 @@ export const NAMES = [
 
 /** The props a Peek gets from the look, minus size and name. */
 export const lookProps = (look: Look) => ({
+  variant: look.variant,
   eyewear: look.eyewear,
   headwear: look.headwear,
   neckwear: look.neckwear,
@@ -121,6 +125,7 @@ export const lookProps = (look: Look) => ({
 
 /** The same look as toSvg options, for the copy and download actions. */
 export const svgOptions = (look: Look, size: number): PeekOptions => ({
+  variant: look.variant,
   eyewear: look.eyewear,
   headwear: look.headwear,
   neckwear: look.neckwear,
@@ -136,6 +141,7 @@ const q = (s: string) => JSON.stringify(s)
 /** The JSX for one avatar in this look: only what differs from a default. */
 export function jsxFor(name: string, look: Look, size: number) {
   const a = [`name=${q(name)}`]
+  if (look.variant !== 'peek') a.push(`variant=${q(look.variant)}`)
   for (const axis of ['eyewear', 'headwear', 'neckwear'] as const)
     if (look[axis] !== 'none') a.push(`${axis}=${q(look[axis])}`)
   if (size !== 64) a.push(`size={${size}}`)

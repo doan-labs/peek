@@ -13,7 +13,13 @@ import {
   restPose,
 } from './draw'
 import { type Axes, fnv1a, type Identity, identify } from './identity'
-import { ACCESSORIES, type AccessorySlot, type Expression } from './tables'
+import {
+  ACCESSORIES,
+  type AccessorySlot,
+  type Expression,
+  VARIANTS,
+  type Variant,
+} from './tables'
 
 export type PeekOptions = Partial<Axes> & {
   /** px. Drives the stroke ramp (thicker below 96) and the riso print. */
@@ -30,6 +36,8 @@ export type PeekOptions = Partial<Axes> & {
   riso?: boolean
   /** Pin a style version. Default the latest. */
   version?: number
+  /** How the face is drawn: 'peek', 'haze' or 'bloc'. Never who it is. */
+  variant?: Variant
   /** Prefix for ids inside the SVG. Default derived from everything drawn,
    * so two different avatars inlined in one page never share defs. */
   id?: string
@@ -65,12 +73,18 @@ export function settle(
     neckwear: wear(o, base, 'neckwear'),
   }
   const pose = restPose(who, o.expression ?? 'normal', o.gaze)
+  // an unknown variant from untyped callers draws peek
+  const variant = VARIANTS.includes(o.variant as Variant)
+    ? (o.variant as Variant)
+    : 'peek'
   const look = {
     size: o.size ?? 64,
     frame: o.frame ?? 'ink',
     square: o.square ?? true,
     riso: o.riso ?? false,
     live,
+    // left out for peek, so its ids and bytes stay as they were
+    ...(variant !== 'peek' && { variant }),
   }
   // Keep the byte-level peek@1 contract for faces without accessories.
   const { eyewear, headwear, neckwear, ...legacy } = who

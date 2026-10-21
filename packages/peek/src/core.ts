@@ -21,14 +21,19 @@ export type {
   Mouth,
   Neckwear,
   Trait,
+  Variant,
 } from './tables'
 export {
   ACCESSORIES,
+  BLOC,
   COLORS,
   EXPRESSIONS,
   FACES,
   GROUPS,
+  HAZE,
   LATEST,
   PARTS,
+  VARIANTS,
   VERSIONS,
+  WHEEL,
 } from './tables'
