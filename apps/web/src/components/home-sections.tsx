@@ -286,7 +286,16 @@ function Calls() {
         {CALLS.map((c) => (
           <article key={c.title} {...stylex.props(styles.call)}>
             <div {...stylex.props(styles.callTop)}>
-              <h3 {...stylex.props(styles.h3)}>{c.title}</h3>
+              <h3 {...stylex.props(styles.h3, styles.callHead)}>
+                {c.title}
+                {c.title === 'React, Vue, Svelte' ? (
+                  <span aria-hidden='true' {...stylex.props(styles.callLogos)}>
+                    <FrameworkLogo fw='react' />
+                    <FrameworkLogo fw='vue' />
+                    <FrameworkLogo fw='svelte' />
+                  </span>
+                ) : null}
+              </h3>
               <Peek
                 name={SAMPLE}
                 {...(c.title !== 'Just the identity' ? outfit : {})}
@@ -705,6 +714,8 @@ const styles = stylex.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  callHead: { display: 'flex', alignItems: 'center', gap: '12px' },
+  callLogos: { display: 'flex', gap: '8px' },
   h3: {
     margin: 0,
     fontSize: '20px',
