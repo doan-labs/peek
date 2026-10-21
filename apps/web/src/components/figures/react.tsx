@@ -2,8 +2,9 @@
  * The React page's figures. The playground lives here; the hydration
  * figure has its own file.
  *
- * The playground is every prop of <Peek>, live, with the JSX for exactly
- * the props that differ from the defaults written underneath. Touch a
+ * The playground is every prop of <Peek>, live, with the code for exactly
+ * the props that differ from the defaults written underneath, in React, Vue
+ * or Svelte. Touch a
  * control and the face glances at it for a beat.
  */
 import {
@@ -23,6 +24,7 @@ import * as stylex from '@stylexjs/stylex'
 import { motion, useReducedMotion } from 'motion/react'
 import { type SyntheticEvent, useEffect, useRef, useState } from 'react'
 import { CodeBlock } from '@/components/code-block'
+import { type Framework, FrameworkLogo } from '@/components/framework-logo'
 import { LAND, NONE } from '@/lib/motion'
 import { fonts, sheet } from '@/lib/tokens.stylex'
 import { wardrobeFor } from '@/lib/wardrobe'
@@ -90,28 +92,51 @@ const DEFAULTS: Props = {
   gaze: 'none',
 }
 
-/** The JSX for these props, one per line, defaults left out. */
-function jsx(p: Props) {
-  const name = /["\\]/.test(p.name)
-    ? `{${JSON.stringify(p.name)}}`
-    : `"${p.name}"`
-  const lines = [`  name=${name}`]
-  if (p.variant !== 'peek') lines.push(`  variant="${p.variant}"`)
+const FILE: Record<Framework, string> = {
+  react: 'App.tsx',
+  vue: 'App.vue',
+  svelte: 'App.svelte',
+}
+const FRAMEWORK_NAME: Record<Framework, string> = {
+  react: 'React',
+  vue: 'Vue',
+  svelte: 'Svelte',
+}
+
+/** The code for these props in one framework, one prop per line, defaults
+ * left out. JSX and Svelte bind as `{x}`, Vue as `:prop="x"`. */
+function source(p: Props, fw: Framework) {
+  const bind = (k: string, v: string) =>
+    fw === 'vue' ? `:${k}="${v}"` : `${k}={${v}}`
+  const name = !/["\\]/.test(p.name)
+    ? `name="${p.name}"`
+    : fw === 'vue'
+      ? `name="${p.name.replaceAll('"', '&quot;')}"`
+      : bind('name', JSON.stringify(p.name))
+  const props = [name]
+  if (p.variant !== 'peek') props.push(`variant="${p.variant}"`)
   for (const slot of ['eyewear', 'headwear', 'neckwear'] as const)
-    if (p[slot] !== 'none') lines.push(`  ${slot}="${p[slot]}"`)
-  if (p.size !== 64) lines.push(`  size={${p.size}}`)
-  if (p.expression !== 'normal') lines.push(`  expression="${p.expression}"`)
-  if (p.frame !== 'ink') lines.push(`  frame="${p.frame}"`)
-  if (!p.square) lines.push('  square={false}')
-  if (p.riso) lines.push('  riso')
-  if (p.animate) lines.push('  animate')
-  if (p.gaze === 'pointer') lines.push('  gaze="pointer"')
-  else if (p.gaze !== 'none') lines.push(`  gaze={${p.gaze}}`)
-  return `import { Peek } from '@doan-labs/peek'\n\n<Peek\n${lines.join('\n')}\n/>`
+    if (p[slot] !== 'none') props.push(`${slot}="${p[slot]}"`)
+  if (p.size !== 64) props.push(bind('size', String(p.size)))
+  if (p.expression !== 'normal') props.push(`expression="${p.expression}"`)
+  if (p.frame !== 'ink') props.push(`frame="${p.frame}"`)
+  if (!p.square) props.push(bind('square', 'false'))
+  if (p.riso) props.push('riso')
+  if (p.animate) props.push('animate')
+  if (p.gaze === 'pointer') props.push('gaze="pointer"')
+  else if (p.gaze !== 'none') props.push(bind('gaze', p.gaze))
+  const pad = fw === 'vue' ? '    ' : '  '
+  const tag = `<Peek\n${props.map((l) => pad + l).join('\n')}\n${pad.slice(2)}/>`
+  if (fw === 'vue')
+    return `<script setup>\nimport { Peek } from '@doan-labs/peek/vue'\n</script>\n\n<template>\n  ${tag}\n</template>`
+  if (fw === 'svelte')
+    return `<script>\n  import { Peek } from '@doan-labs/peek/svelte'\n</script>\n\n${tag}`
+  return `import { Peek } from '@doan-labs/peek'\n\n${tag}`
 }
 
 export function PropsPlayground() {
   const [p, setP] = useState(DEFAULTS)
+  const [fw, setFw] = useState<Framework>('react')
   const set = (patch: Partial<Props>) => setP((o) => ({ ...o, ...patch }))
   const reduce = useReducedMotion()
 
@@ -324,7 +349,28 @@ export function PropsPlayground() {
         </div>
       </div>
       <div {...stylex.props(s.code)}>
-        <CodeBlock code={jsx(p)} lang='tsx' live />
+        <CodeBlock
+          code={source(p, fw)}
+          lang='tsx'
+          title={FILE[fw]}
+          live
+          action={
+            <fieldset aria-label='Framework' {...stylex.props(s.fws)}>
+              {(Object.keys(FILE) as Framework[]).map((f) => (
+                <button
+                  key={f}
+                  type='button'
+                  aria-pressed={f === fw}
+                  onClick={() => setFw(f)}
+                  {...stylex.props(s.fw, f === fw && s.fwOn)}
+                >
+                  <FrameworkLogo fw={f} />
+                  <span {...stylex.props(s.fwName)}>{FRAMEWORK_NAME[f]}</span>
+                </button>
+              ))}
+            </fieldset>
+          }
+        />
       </div>
     </Figure>
   )
@@ -493,6 +539,46 @@ const s = stylex.create({
     textUnderlineOffset: '3px',
     backgroundColor: 'transparent',
     cursor: 'pointer',
+  },
+  // the framework switch, in the code block's header beside copy
+  fws: {
+    display: 'inline-flex',
+    gap: '2px',
+    margin: 0,
+    marginRight: '8px',
+    padding: 0,
+    borderWidth: 0,
+  },
+  fw: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '6px',
+    paddingBlock: '5px',
+    paddingInline: '9px',
+    borderWidth: 0,
+    borderRadius: '999px',
+    backgroundColor: 'transparent',
+    color: { default: sheet['--quiet'], ':hover': sheet['--fg'] },
+    fontFamily: fonts['--mono'],
+    fontSize: '11.5px',
+    cursor: 'pointer',
+    transitionProperty: 'color, background-color',
+    transitionDuration: '0.2s',
+    outlineColor: { default: 'transparent', ':focus-visible': sheet['--red'] },
+    outlineStyle: 'solid',
+    outlineWidth: '2px',
+  },
+  // a phone keeps the logos and the copy button on one line
+  fwName: {
+    position: { default: 'static', '@media (max-width: 520px)': 'absolute' },
+    width: { default: 'auto', '@media (max-width: 520px)': '1px' },
+    height: { default: 'auto', '@media (max-width: 520px)': '1px' },
+    overflow: { default: 'visible', '@media (max-width: 520px)': 'hidden' },
+    clipPath: { default: 'none', '@media (max-width: 520px)': 'inset(50%)' },
+  },
+  fwOn: {
+    backgroundColor: sheet['--chip'],
+    color: { default: sheet['--fg'], ':hover': sheet['--fg'] },
   },
   code: {
     paddingInline: '14px',
