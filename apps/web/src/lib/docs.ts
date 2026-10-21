@@ -434,7 +434,7 @@ const svg = toSvg('Linh', {
     task: 'Upgrade @doan-labs/peek in this project to the latest release.',
     blocks: [
       'A pinned `version` keeps every face the same across upgrades.',
-      { h: '1.2.0 · October 21, 2026' },
+      { h: '2.0.0 · October 21, 2026' },
       'Faces leave React.',
       {
         list: [
