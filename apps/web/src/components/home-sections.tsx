@@ -22,11 +22,7 @@ import { cheer } from '@/components/creatures'
 import { DoanMark } from '@/components/doan-mark'
 import { line, MANAGERS, type Manager } from '@/components/figures/install'
 import { PropsPlayground } from '@/components/figures/react'
-import {
-  FRAMEWORKS,
-  type Framework,
-  FrameworkLogo,
-} from '@/components/framework-logo'
+import { type Framework, FrameworkLogo } from '@/components/framework-logo'
 import { ManagerLogo } from '@/components/manager-logo'
 import { REPO } from '@/lib/docs'
 import { CURVE, LAND, NONE } from '@/lib/motion'
@@ -138,25 +134,24 @@ const FRAMEWORK_NAME: Record<Framework, string> = {
   svelte: 'Svelte',
 }
 
-/** The frameworks it renders in, each a way into its own docs page. */
+/** The line's subtitle: one sentence, each framework a way into its own
+ * docs page. Set in the line's sans so it never reads as another control. */
 export function Frameworks() {
+  const link = (fw: Framework) => (
+    <Link
+      to='/docs/$slug'
+      params={{ slug: fw }}
+      {...stylex.props(styles.framework)}
+    >
+      <FrameworkLogo fw={fw} />
+      {FRAMEWORK_NAME[fw]}
+    </Link>
+  )
   return (
-    <nav aria-label='Frameworks' {...stylex.props(styles.frameworks)}>
-      <span {...stylex.props(styles.worksWith)}>For</span>
-      {FRAMEWORKS.map((fw) => (
-        <Link
-          key={fw}
-          to='/docs/$slug'
-          params={{ slug: fw }}
-          {...stylex.props(styles.tab, styles.framework)}
-        >
-          <span {...stylex.props(styles.tabText)}>
-            <FrameworkLogo fw={fw} />
-            {FRAMEWORK_NAME[fw]}
-          </span>
-        </Link>
-      ))}
-    </nav>
+    <p {...stylex.props(styles.frameworks)}>
+      Deterministic SVG faces for {link('react')}, {link('vue')} and{' '}
+      {link('svelte')}
+    </p>
   )
 }
 
@@ -477,29 +472,35 @@ const styles = stylex.create({
     transitionDuration: '0.2s',
   },
   tabOn: { color: { default: colors['--bone'], ':hover': colors['--bone'] } },
+  // hugs the line above and keeps the controls at arm's length
   frameworks: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: '2px',
-  },
-  worksWith: {
-    ...MICRO,
-    paddingInline: '6px',
+    margin: 0,
+    marginBottom: 'clamp(4px, 1.2svh, 12px)',
+    fontFamily: fonts['--sans'],
+    fontSize: 'clamp(15px, 2svh, 18px)',
+    lineHeight: 1.5,
+    letterSpacing: '-0.01em',
+    textAlign: 'center',
+    textWrap: 'balance',
     color: colors['--muted'],
   },
-  // a tab, a little tighter: the row sits in the hero's spare room
   framework: {
-    paddingBlock: '6px',
-    paddingInline: '9px',
-    color: { default: colors['--bone'], ':hover': colors['--bone'] },
-    textDecoration: 'none',
-    backgroundColor: {
+    ...RING,
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '6px',
+    verticalAlign: 'bottom',
+    borderRadius: '4px',
+    color: colors['--bone'],
+    textDecorationLine: 'underline',
+    textDecorationThickness: '1px',
+    textUnderlineOffset: '4px',
+    textDecorationColor: {
       default: 'transparent',
-      ':hover': `color-mix(in srgb, ${colors['--bone']} 11%, transparent)`,
+      ':hover': colors['--muted'],
     },
-    transitionProperty: 'background-color',
+    transitionProperty: 'text-decoration-color',
+    transitionDuration: '0.2s',
   },
   tabPill: {
     position: 'absolute',

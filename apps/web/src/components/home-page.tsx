@@ -269,8 +269,8 @@ const styles = stylex.create({
     flexDirection: 'column',
     alignItems: 'center',
     gap: '14px',
-    // tight: the frameworks row reads as the line's subtitle
-    paddingTop: 'clamp(4px, 1svh, 12px)',
+    // tight: the frameworks sentence reads as the line's subtitle
+    paddingTop: 'clamp(2px, 0.6svh, 8px)',
   },
   field: {
     display: 'flex',

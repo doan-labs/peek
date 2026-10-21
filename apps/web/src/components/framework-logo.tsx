@@ -8,8 +8,7 @@ import * as stylex from '@stylexjs/stylex'
 import type { ReactNode } from 'react'
 import { brands } from '@/lib/tokens.stylex'
 
-export const FRAMEWORKS = ['react', 'vue', 'svelte'] as const
-export type Framework = (typeof FRAMEWORKS)[number]
+export type Framework = 'react' | 'vue' | 'svelte'
 
 const GLYPHS: Record<Framework, { box: string; mark: string; rest?: string }> =
   {
