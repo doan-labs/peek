@@ -10,16 +10,24 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiServiceRouteImport } from './routes/api-service'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as LlmsFullDottxtRouteImport } from './routes/llms-full[.]txt'
 import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as StudioRouteImport } from './routes/studio'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as DocsIndexRouteImport } from './routes/docs.index'
 import { Route as DocsSlugRouteImport } from './routes/docs.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiServiceRoute = ApiServiceRouteImport.update({
+  id: '/api-service',
+  path: '/api-service',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DocsRoute = DocsRouteImport.update({
@@ -37,9 +45,19 @@ const LlmsDottxtRoute = LlmsDottxtRouteImport.update({
   path: '/llms.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StudioRoute = StudioRouteImport.update({
   id: '/studio',
   path: '/studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DocsIndexRoute = DocsIndexRouteImport.update({
@@ -55,28 +73,37 @@ const DocsSlugRoute = DocsSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api-service': typeof ApiServiceRoute
   '/docs': typeof DocsRouteWithChildren
   '/llms-full.txt': typeof LlmsFullDottxtRoute
   '/llms.txt': typeof LlmsDottxtRoute
+  '/privacy': typeof PrivacyRoute
   '/studio': typeof StudioRoute
+  '/terms': typeof TermsRoute
   '/docs/$slug': typeof DocsSlugRoute
   '/docs/': typeof DocsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api-service': typeof ApiServiceRoute
   '/llms-full.txt': typeof LlmsFullDottxtRoute
   '/llms.txt': typeof LlmsDottxtRoute
+  '/privacy': typeof PrivacyRoute
   '/studio': typeof StudioRoute
+  '/terms': typeof TermsRoute
   '/docs/$slug': typeof DocsSlugRoute
   '/docs': typeof DocsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/api-service': typeof ApiServiceRoute
   '/docs': typeof DocsRouteWithChildren
   '/llms-full.txt': typeof LlmsFullDottxtRoute
   '/llms.txt': typeof LlmsDottxtRoute
+  '/privacy': typeof PrivacyRoute
   '/studio': typeof StudioRoute
+  '/terms': typeof TermsRoute
   '/docs/$slug': typeof DocsSlugRoute
   '/docs/': typeof DocsIndexRoute
 }
@@ -84,31 +111,49 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/api-service'
     | '/docs'
     | '/llms-full.txt'
     | '/llms.txt'
+    | '/privacy'
     | '/studio'
+    | '/terms'
     | '/docs/$slug'
     | '/docs/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/llms-full.txt' | '/llms.txt' | '/studio' | '/docs/$slug' | '/docs'
+  to:
+    | '/'
+    | '/api-service'
+    | '/llms-full.txt'
+    | '/llms.txt'
+    | '/privacy'
+    | '/studio'
+    | '/terms'
+    | '/docs/$slug'
+    | '/docs'
   id:
     | '__root__'
     | '/'
+    | '/api-service'
     | '/docs'
     | '/llms-full.txt'
     | '/llms.txt'
+    | '/privacy'
     | '/studio'
+    | '/terms'
     | '/docs/$slug'
     | '/docs/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApiServiceRoute: typeof ApiServiceRoute
   DocsRoute: typeof DocsRouteWithChildren
   LlmsFullDottxtRoute: typeof LlmsFullDottxtRoute
   LlmsDottxtRoute: typeof LlmsDottxtRoute
+  PrivacyRoute: typeof PrivacyRoute
   StudioRoute: typeof StudioRoute
+  TermsRoute: typeof TermsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -118,6 +163,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api-service': {
+      id: '/api-service'
+      path: '/api-service'
+      fullPath: '/api-service'
+      preLoaderRoute: typeof ApiServiceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/docs': {
@@ -141,11 +193,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LlmsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/studio': {
       id: '/studio'
       path: '/studio'
       fullPath: '/studio'
       preLoaderRoute: typeof StudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/docs/': {
@@ -179,10 +245,13 @@ const DocsRouteWithChildren = DocsRoute._addFileChildren(DocsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApiServiceRoute: ApiServiceRoute,
   DocsRoute: DocsRouteWithChildren,
   LlmsFullDottxtRoute: LlmsFullDottxtRoute,
   LlmsDottxtRoute: LlmsDottxtRoute,
+  PrivacyRoute: PrivacyRoute,
   StudioRoute: StudioRoute,
+  TermsRoute: TermsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -75,6 +75,16 @@ export const sheet = stylex.defineVars({
   },
 })
 
+/* The mark on a sheet. A white page keeps its creature inks, each at its
+ * deep partner so a 32px mark still reads on white; the dark page settles
+ * them to bone, as on the home page. */
+export const mark = stylex.defineVars({
+  '--d': { default: '#A8BCDC', [DARK]: '#F3F0E8' },
+  '--o': { default: '#E2A893', [DARK]: '#F3F0E8' },
+  '--a': { default: '#D9C284', [DARK]: '#F3F0E8' },
+  '--n': { default: '#BDAEE6', [DARK]: '#F3F0E8' },
+})
+
 export const fonts = stylex.defineVars({
   '--sans': "'Inter Tight Variable', ui-sans-serif, system-ui, sans-serif",
   '--mono': "'JetBrains Mono Variable', ui-monospace, 'SF Mono', monospace",

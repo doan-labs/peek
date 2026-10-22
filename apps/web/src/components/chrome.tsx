@@ -2,9 +2,8 @@
  * Two corner labels from the teaser, the page's file stamp. The clock fades
  * in first; the maker's lockup waits for the line. Then both stay quiet:
  * the clock counts, nothing else moves. The top left one is the maker's
- * lockup and a link, the top right one the changelog and the source on
- * GitHub; the clock is
- * decoration.
+ * lockup and a link, the top right one the API and the source on GitHub,
+ * each with its own small Peek; the clock is decoration.
  *
  * The clock writes its own text node every frame; React renders it once.
  */
@@ -13,6 +12,7 @@ import { Link } from '@tanstack/react-router'
 import { motion, useReducedMotion } from 'motion/react'
 import { type ReactNode, useEffect, useRef } from 'react'
 import { DoanMark } from '@/components/doan-mark'
+import { LinkFace } from '@/components/link-face'
 import { REPO } from '@/lib/docs'
 import { BEAT, CURVE, NONE } from '@/lib/motion'
 import { colors, fonts } from '@/lib/tokens.stylex'
@@ -74,11 +74,11 @@ export function Chrome() {
         {...stylex.props(styles.corner, styles.tr, styles.links)}
       >
         <Link
-          to='/docs/$slug'
-          params={{ slug: 'changelog' }}
+          to='/api-service'
           {...stylex.props(styles.item, styles.maker, styles.repo, styles.wide)}
         >
-          Changelog
+          <LinkFace name='API' />
+          API
         </Link>
         <a
           href={REPO}
@@ -86,6 +86,7 @@ export function Chrome() {
           rel='noopener'
           {...stylex.props(styles.item, styles.maker, styles.repo)}
         >
+          <LinkFace name='GitHub' />
           GitHub
           <span aria-hidden='true'>↗</span>
         </a>

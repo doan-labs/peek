@@ -89,6 +89,11 @@ function useGlide(active: string, reduce: boolean | null) {
     // never reads as travel
     const box = n.getBoundingClientRect()
     const r = el.getBoundingClientRect()
+    // a hidden nav measures nothing: no travel to or from it
+    if (!r.width) {
+      last.current = null
+      return
+    }
     const at = {
       x: r.left - box.left + n.scrollLeft,
       y: r.top - box.top + n.scrollTop,
@@ -115,7 +120,7 @@ function useGlide(active: string, reduce: boolean | null) {
 }
 
 /* Its own component, so a click re-renders the nav and never the page. */
-function DocsNav() {
+function DocsNav({ drawer = false }: { drawer?: boolean }) {
   const path = useLocation({ select: (l) => l.pathname.replace(/\/$/, '') })
   const reduce = useReducedMotion()
   // the path a click is heading to, until the router gets there
@@ -125,7 +130,11 @@ function DocsNav() {
   const glide = useGlide(active, reduce)
   const navigate = useNavigate()
   return (
-    <nav ref={glide.nav} aria-label='Docs' {...stylex.props(styles.nav)}>
+    <nav
+      ref={glide.nav}
+      aria-label='Docs'
+      {...stylex.props(styles.nav, drawer && styles.navDrawer)}
+    >
       {GROUPS.map((group) => (
         <div key={group} {...stylex.props(styles.group)}>
           <p {...stylex.props(styles.groupHead)}>{group}</p>
@@ -208,24 +217,141 @@ function DocsNav() {
           </li>
         </ul>
       </div>
+      <div {...stylex.props(styles.group)}>
+        <p {...stylex.props(styles.groupHead)}>Hosted</p>
+        <ul {...stylex.props(styles.navList)}>
+          <li {...stylex.props(styles.navItem)}>
+            <Link to='/api-service' {...stylex.props(styles.navLink)}>
+              API service
+            </Link>
+          </li>
+        </ul>
+      </div>
     </nav>
+  )
+}
+
+function Brand() {
+  return (
+    <div {...stylex.props(styles.brand)}>
+      <PeekMark compact />
+      <Link to='/' {...stylex.props(styles.brandLink)}>
+        Peek
+      </Link>
+    </div>
+  )
+}
+
+/*
+ * The phone's sidebar: the same nav in a panel that slides in from the left
+ * over a scrim. Escape, the scrim, the close button or a picked page shuts
+ * it; the page behind holds still while it is open.
+ */
+function Drawer({
+  open,
+  reduce,
+  onClose,
+}: {
+  open: boolean
+  reduce: boolean | null
+  onClose: () => void
+}) {
+  const close = useRef<HTMLButtonElement>(null)
+  // the latest onClose, so a parent render never re-runs the effect below
+  const shut = useRef(onClose)
+  shut.current = onClose
+  useEffect(() => {
+    if (!open) return
+    close.current?.focus()
+    const root = document.documentElement
+    const was = root.style.overflow
+    root.style.overflow = 'hidden'
+    const key = (e: KeyboardEvent) => e.key === 'Escape' && shut.current()
+    window.addEventListener('keydown', key)
+    return () => {
+      root.style.overflow = was
+      window.removeEventListener('keydown', key)
+    }
+  }, [open])
+  const ease = reduce ? NONE : { duration: 0.32, ease: CURVE }
+  return (
+    <AnimatePresence>
+      {open ? (
+        <>
+          <motion.div
+            key='scrim'
+            aria-hidden='true'
+            onClick={onClose}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={ease}
+            {...stylex.props(styles.scrim)}
+          />
+          <motion.div
+            key='panel'
+            role='dialog'
+            aria-modal='true'
+            aria-label='Docs menu'
+            initial={{ transform: 'translateX(-100%)' }}
+            animate={{ transform: 'translateX(0%)' }}
+            exit={{ transform: 'translateX(-100%)' }}
+            transition={ease}
+            {...stylex.props(styles.drawer)}
+          >
+            <div {...stylex.props(styles.top)}>
+              <Brand />
+              <button
+                ref={close}
+                type='button'
+                aria-label='Close the docs menu'
+                onClick={onClose}
+                {...stylex.props(styles.burger)}
+              >
+                <Cross />
+              </button>
+            </div>
+            <DocsNav drawer />
+          </motion.div>
+        </>
+      ) : null}
+    </AnimatePresence>
   )
 }
 
 export function DocsLayout() {
   const path = useLocation({ select: (l) => l.pathname.replace(/\/$/, '') })
   const reduce = useReducedMotion()
+  // on a phone the sidebar waits behind a burger and slides in over the page
+  const [open, setOpen] = useState(false)
+  const burger = useRef<HTMLButtonElement>(null)
+  useEffect(() => setOpen(false), [path])
   return (
     <div data-sheet {...stylex.props(styles.page)}>
       <aside {...stylex.props(styles.side)}>
-        <div {...stylex.props(styles.brand)}>
-          <PeekMark compact />
-          <Link to='/' {...stylex.props(styles.brandLink)}>
-            Peek
-          </Link>
+        <div {...stylex.props(styles.top)}>
+          <Brand />
+          <button
+            ref={burger}
+            type='button'
+            aria-label='Open the docs menu'
+            aria-expanded={open}
+            onClick={() => setOpen(true)}
+            {...stylex.props(styles.burger)}
+          >
+            <Burger />
+          </button>
         </div>
         <DocsNav />
       </aside>
+      <Drawer
+        open={open}
+        reduce={reduce}
+        onClose={() => {
+          setOpen(false)
+          burger.current?.focus()
+        }}
+      />
       <main {...stylex.props(styles.main)}>
         <AnimatePresence mode='wait' initial={false}>
           <motion.div
@@ -622,6 +748,17 @@ const Chevron = ({ left = false }: { left?: boolean }) => (
   </svg>
 )
 
+const Burger = () => (
+  <svg aria-hidden='true' {...ICON} width={20} height={20}>
+    <path d='M4 7h16M4 12h16M4 17h16' />
+  </svg>
+)
+const Cross = () => (
+  <svg aria-hidden='true' {...ICON} width={20} height={20}>
+    <path d='M6 6l12 12M18 6 6 18' />
+  </svg>
+)
+
 const WIDE = '@media (width >= 56rem)'
 const HOVER = '@media (hover: hover)'
 const LINE = {
@@ -669,25 +806,72 @@ const styles = stylex.create({
     letterSpacing: '-0.02em',
   },
   brandLink: { color: 'inherit', textDecoration: 'none' },
-  nav: {
+  top: {
     display: 'flex',
-    flexDirection: { default: 'row', [WIDE]: 'column' },
-    gap: { default: '0', [WIDE]: '28px' },
-    overflowX: { default: 'auto', [WIDE]: 'visible' },
-    marginInline: { default: '-16px', [WIDE]: 0 },
-    paddingInline: { default: '8px', [WIDE]: 0 },
-    scrollbarWidth: 'none',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: '12px',
   },
+  // the phone's burger, and the drawer's close in the same spot
+  burger: {
+    display: { default: 'inline-grid', [WIDE]: 'none' },
+    placeItems: 'center',
+    width: '36px',
+    height: '36px',
+    padding: 0,
+    borderWidth: 0,
+    borderRadius: '10px',
+    color: sheet['--fg'],
+    backgroundColor: {
+      default: 'transparent',
+      [HOVER]: { default: null, ':hover': sheet['--wash'] },
+    },
+    cursor: 'pointer',
+    transitionProperty: 'background-color',
+    transitionDuration: '0.15s',
+  },
+  scrim: {
+    position: 'fixed',
+    inset: 0,
+    zIndex: 10,
+    display: { default: 'block', [WIDE]: 'none' },
+    backgroundColor: sheet['--scrim'],
+  },
+  drawer: {
+    position: 'fixed',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    zIndex: 11,
+    display: { default: 'flex', [WIDE]: 'none' },
+    flexDirection: 'column',
+    gap: '24px',
+    width: 'min(300px, 84vw)',
+    padding: '14px 16px 32px',
+    overflowY: 'auto',
+    overscrollBehavior: 'contain',
+    backgroundColor: sheet['--page'],
+    borderRightWidth: '1px',
+    borderRightStyle: 'solid',
+    borderRightColor: sheet['--rule'],
+    boxShadow: '0 0 48px rgba(0, 0, 0, 0.12)',
+  },
+  // the sidebar's nav: out on a wide screen, behind the burger on a phone
+  nav: {
+    display: { default: 'none', [WIDE]: 'flex' },
+    flexDirection: 'column',
+    gap: '28px',
+  },
+  navDrawer: { display: 'flex' },
   group: { display: 'flex', flexDirection: 'column', gap: '6px' },
   groupHead: {
-    display: { default: 'none', [WIDE]: 'block' },
     paddingInline: '8px',
     fontSize: '14px',
     color: sheet['--quiet'],
   },
   navList: {
     display: 'flex',
-    flexDirection: { default: 'row', [WIDE]: 'column' },
+    flexDirection: 'column',
     gap: '2px',
     margin: 0,
     padding: 0,

@@ -32,7 +32,7 @@ import { type ReactNode, type Ref, useEffect, useRef, useState } from 'react'
 import { INKS } from '@/lib/inks'
 import { BEAT, CURVE, HOP, LAND, NONE, TURN } from '@/lib/motion'
 import { playSound } from '@/lib/sound'
-import { colors } from '@/lib/tokens.stylex'
+import { colors, mark } from '@/lib/tokens.stylex'
 
 /* What a piece's paint does: arrive in its creature ink and settle to bone
  * as the turn starts, so the colour leaves with the motion, not after it. */
@@ -126,13 +126,16 @@ export function PeekMark({
   const [peeks, setPeeks] = useState<string[]>([])
   const t = (delay: number, spring: object = LAND) =>
     still ? NONE : { ...spring, delay }
-  const paint: Paint = (prop, ink) => ({
-    initial: { [prop]: ink },
-    animate: { [prop]: INKS.bone },
-    transition: still
-      ? NONE
-      : { duration: 0.9, delay: BEAT.turn + 0.08, ease: CURVE },
-  })
+  // compact sits on a sheet, where CSS picks the ink for the scheme
+  const paint: Paint = compact
+    ? (_, ink) => stylex.props(sheetInk(ink))
+    : (prop, ink) => ({
+        initial: { [prop]: ink },
+        animate: { [prop]: INKS.bone },
+        transition: still
+          ? NONE
+          : { duration: 0.9, delay: BEAT.turn + 0.08, ease: CURVE },
+      })
 
   useEffect(() => {
     if (still) return
@@ -174,7 +177,7 @@ export function PeekMark({
       }}
       onPointerEnter={() => setNear(true)}
       onPointerLeave={() => setNear(false)}
-      {...stylex.props(styles.button)}
+      {...stylex.props(styles.button, compact && styles.tight)}
     >
       <svg
         viewBox='74 72 260 260'
@@ -434,7 +437,12 @@ const styles = stylex.create({
     height: 'auto',
     overflow: 'visible',
   },
-  compact: { width: '32px', height: '32px', flexShrink: 0 },
+  tight: { flexShrink: 0, outlineOffset: '3px' },
+  compact: { width: '32px', height: '32px' },
+  d: { fill: mark['--d'] },
+  o: { stroke: mark['--o'] },
+  a: { fill: mark['--a'] },
+  n: { fill: mark['--n'] },
   center: {
     transformBox: 'fill-box',
     transformOrigin: 'center',
@@ -450,3 +458,13 @@ const styles = stylex.create({
     animationIterationCount: 'infinite',
   },
 })
+
+/* A piece's sheet ink, found by the ink it lands in on the home page. */
+const sheetInk = (ink: string) =>
+  ink === INKS.fog
+    ? styles.d
+    : ink === INKS.clay
+      ? styles.o
+      : ink === INKS.lav
+        ? styles.n
+        : styles.a

@@ -16,9 +16,12 @@ import {
   VARIANTS,
   WHEEL,
 } from '@doan-labs/peek'
+import { version } from '../../../../packages/peek/package.json'
 
 export const SITE = 'https://peek.doan-labs.com'
 export const REPO = 'https://github.com/doan-labs/peek'
+/** The npm release, beside LATEST, the style version it draws. */
+export const VERSION = version
 
 /** A string is a paragraph; `code` in backticks stays code. */
 export type Block =
@@ -606,6 +609,7 @@ ${PAGES.map((p) => `- [${p.title}](${pageUrl(p)}): ${p.blurb}`).join('\n')}
 
 - [Full docs](${SITE}/llms-full.txt): every page above in one file
 - [Source](${REPO}): the code, on GitHub
+- [API service](${SITE}/api-service): the hosted Peek API for teams, a face by URL
 `
 
 export const llmsFull = () =>

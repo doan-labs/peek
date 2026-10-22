@@ -5,7 +5,12 @@
   "name": "peek",
   "compatibility_date": "2026-09-30",
   "main": "./apps/web/worker.ts",
-  "assets": { "directory": "./apps/web/dist/client" },
+  // Pages prerender to dir/index.html; drop-trailing-slash serves them at
+  // the slashless URL every link and canonical uses, with no redirect.
+  "assets": {
+    "directory": "./apps/web/dist/client",
+    "html_handling": "drop-trailing-slash"
+  },
   // peek-notify, made by the first deploy. The id pins every deploy to it.
   "kv_namespaces": [
     { "binding": "NOTIFY", "id": "1a71e323cf6d46a2b435446bb06a08ed" }

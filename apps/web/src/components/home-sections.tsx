@@ -25,7 +25,7 @@ import { line, MANAGERS, type Manager } from '@/components/figures/install'
 import { PropsPlayground } from '@/components/figures/react'
 import { type Framework, FrameworkLogo } from '@/components/framework-logo'
 import { ManagerLogo } from '@/components/manager-logo'
-import { REPO } from '@/lib/docs'
+import { REPO, VERSION } from '@/lib/docs'
 import { CURVE, LAND, NONE } from '@/lib/motion'
 import { playSound } from '@/lib/sound'
 import { COMBOS, EXPRESSION_LIST, NAMES } from '@/lib/studio'
@@ -424,50 +424,92 @@ function Footer() {
         <h2 {...stylex.props(styles.h2, styles.center)}>
           Give every name a face
         </h2>
+        <p {...stylex.props(styles.lede, styles.center)}>
+          Free and open source under MIT. A{' '}
+          <Link to='/api-service' {...stylex.props(styles.inlineLink)}>
+            hosted API for teams
+          </Link>{' '}
+          is on the way.
+        </p>
         <div {...stylex.props(styles.waysRow)}>
           <InstallPill />
           <DocsButton />
         </div>
       </div>
       <div {...stylex.props(styles.base)}>
-        <a
-          href='https://doan-labs.com'
-          target='_blank'
-          rel='noopener'
-          {...stylex.props(styles.baseLink, styles.maker)}
-        >
-          A product by
-          <span {...stylex.props(styles.doan)}>
-            <DoanMark size={14} />
-            Doan Labs
-          </span>
-        </a>
-        <nav aria-label='More' {...stylex.props(styles.baseNav)}>
-          <Link to='/docs' {...stylex.props(styles.baseLink)}>
-            Docs
-          </Link>
-          <Link
-            to='/docs/$slug'
-            params={{ slug: 'changelog' }}
-            {...stylex.props(styles.baseLink)}
-          >
-            Changelog
-          </Link>
-          <a href='/llms.txt' {...stylex.props(styles.baseLink)}>
-            llms.txt
-          </a>
+        <div {...stylex.props(styles.stamp)}>
           <a
-            href={REPO}
+            href='https://doan-labs.com'
             target='_blank'
             rel='noopener'
-            {...stylex.props(styles.baseLink)}
+            {...stylex.props(styles.baseLink, styles.maker)}
           >
-            GitHub
+            A product by
+            <span {...stylex.props(styles.doan)}>
+              <DoanMark size={14} />
+              Doan Labs
+            </span>
           </a>
-          <span {...stylex.props(styles.version)}>peek@{LATEST}</span>
+          <span {...stylex.props(styles.version)}>
+            v{VERSION} · style peek@{LATEST}
+          </span>
+        </div>
+        <nav aria-label='More' {...stylex.props(styles.baseNav)}>
+          <FooterGroup title='Peek'>
+            <Link to='/docs' {...stylex.props(styles.baseLink)}>
+              Docs
+            </Link>
+            <Link to='/api-service' {...stylex.props(styles.baseLink)}>
+              API
+            </Link>
+            <Link
+              to='/docs/$slug'
+              params={{ slug: 'changelog' }}
+              {...stylex.props(styles.baseLink)}
+            >
+              Changelog
+            </Link>
+          </FooterGroup>
+          <FooterGroup title='Source'>
+            <a
+              href={REPO}
+              target='_blank'
+              rel='noopener'
+              {...stylex.props(styles.baseLink)}
+            >
+              GitHub
+            </a>
+            <a href='/llms.txt' {...stylex.props(styles.baseLink)}>
+              llms.txt
+            </a>
+          </FooterGroup>
+          <FooterGroup title='Legal'>
+            <Link to='/privacy' {...stylex.props(styles.baseLink)}>
+              Privacy
+            </Link>
+            <Link to='/terms' {...stylex.props(styles.baseLink)}>
+              Terms
+            </Link>
+          </FooterGroup>
         </nav>
       </div>
     </footer>
+  )
+}
+
+/* One column of footer links under a quiet label. */
+function FooterGroup({
+  title,
+  children,
+}: {
+  title: string
+  children: ReactNode
+}) {
+  return (
+    <div {...stylex.props(styles.group)}>
+      <p {...stylex.props(styles.groupHead)}>{title}</p>
+      {children}
+    </div>
   )
 }
 
@@ -807,23 +849,31 @@ const styles = stylex.create({
     alignItems: 'center',
     gap: '14px',
   },
+  // the maker on the left, three short columns of links on the right
   base: {
     display: 'flex',
     flexWrap: 'wrap',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
-    gap: '16px',
-    paddingBlock: '28px',
+    gap: '40px',
+    paddingBlock: '36px',
     borderTopWidth: '1px',
     borderTopStyle: 'solid',
     borderTopColor: colors['--faint'],
   },
+  stamp: { display: 'flex', flexDirection: 'column', gap: '14px' },
   baseNav: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    gap: '20px',
+    display: 'grid',
+    gridTemplateColumns: 'repeat(3, minmax(88px, auto))',
+    columnGap: 'clamp(32px, 6vw, 72px)',
   },
+  group: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    gap: '14px',
+  },
+  groupHead: { ...MICRO, color: colors['--faint'] },
   baseLink: {
     ...MICRO,
     ...RING,
@@ -838,5 +888,11 @@ const styles = stylex.create({
     gap: '7px',
     color: colors['--bone'],
   },
-  version: { ...MICRO, color: colors['--faint'] },
+  version: { ...MICRO, color: colors['--faint'], textTransform: 'none' },
+  inlineLink: {
+    ...RING,
+    color: { default: colors['--bone'], ':hover': colors['--signal'] },
+    textUnderlineOffset: '3px',
+    borderRadius: '4px',
+  },
 })

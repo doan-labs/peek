@@ -74,6 +74,9 @@ export default defineConfig({
       pages: [
         { path: '/' },
         { path: '/docs' },
+        { path: '/api-service' },
+        { path: '/privacy' },
+        { path: '/terms' },
         { path: '/llms.txt' },
         { path: '/llms-full.txt' },
       ],
