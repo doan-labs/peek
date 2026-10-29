@@ -45,6 +45,7 @@ export const Route = createRootRoute({
       { property: 'og:image:height', content: '630' },
       { property: 'og:image:alt', content: CARD_ALT },
       { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:creator', content: '@capythanh' },
       { name: 'twitter:title', content: TITLE },
       { name: 'twitter:description', content: DESCRIPTION },
       { name: 'twitter:image', content: CARD },
